@@ -13,14 +13,22 @@ import {
   PlusIcon,
   PencilIcon,
   ChevronLeft,
-  ChevronRight
+  ChevronRight,
+  Calendar,
+  MapPin,
+  Pencil,
+  Plus,
+  UserCheck,
+  UserX
 } from 'lucide-react';
-import { adminAPI, productsAPI, blogsAPI } from '../services/api';
+import { adminAPI, productsAPI, blogsAPI, formationsAPI } from '../services/api';
 import Swal from 'sweetalert2';
 import ProductModal from '../components/ProductModal';
 import ProductFormModal from '../components/ProductFormModal';
 import BlogModal from '../components/BlogModal';
 import BlogFormModal from '../components/BlogFormModal';
+import FormationFormModal from '../components/FormationFormModal';
+import FormationModal from '../components/FormationModal';
 
 interface AdminStats {
   totalUsers: number;
@@ -29,12 +37,13 @@ interface AdminStats {
   approvedEnrollments: number;
   rejectedEnrollments: number;
   totalProducts: number;
+  totalFormations: number;
   totalBlogs: number;
 }
 
 interface Enrollment {
   _id: string;
-  type: 'partner' | 'distributor';
+  type: 'partner' | 'member';
   firstName: string;
   lastName: string;
   email: string;
@@ -50,6 +59,27 @@ interface Enrollment {
   interests?: string[];
   status: 'pending' | 'approved' | 'rejected';
   userId: string;
+  createdAt: string;
+}
+
+interface Formation {
+  _id: string;
+  title: string;
+  description: string;
+  date: string;
+  location: string;
+  duration: string;
+  category: string;
+  maxSeats: number;
+  enrolledUsers: string[];
+  registrations: Array<{
+    _id: string;
+    userId: string;
+    userName: string;
+    userEmail: string;
+    status: 'pending' | 'approved' | 'rejected';
+    registeredAt: string;
+  }>;
   createdAt: string;
 }
 
@@ -101,11 +131,12 @@ interface BlogPost {
 }
 
 const AdminDashboard = () => {
-  const [activeTab, setActiveTab] = useState<'dashboard' | 'products' | 'blogs'>('dashboard');
+  const [activeTab, setActiveTab] = useState<'dashboard' | 'products' | 'blogs' | 'formations'>('dashboard');
   const [stats, setStats] = useState<AdminStats | null>(null);
   const [enrollments, setEnrollments] = useState<Enrollment[]>([]);
   const [products, setProducts] = useState<Product[]>([]);
   const [blogs, setBlogs] = useState<BlogPost[]>([]);
+  const [formations, setFormations] = useState<Formation[]>([]);
   const [loading, setLoading] = useState(true);
   const [showProductModal, setShowProductModal] = useState(false);
   const [showProductFormModal, setShowProductFormModal] = useState(false);
@@ -115,12 +146,17 @@ const AdminDashboard = () => {
   const [editingBlog, setEditingBlog] = useState<BlogPost | null>(null);
   const [enrollmentsLoading, setEnrollmentsLoading] = useState(false);
   const [filter, setFilter] = useState<'all' | 'pending' | 'approved' | 'rejected'>('all');
+  const [showFormationFormModal, setShowFormationFormModal] = useState(false);
+  const [editingFormation, setEditingFormation] = useState<Formation | null>(null);
   const [enrollmentsCurrentPage, setEnrollmentsCurrentPage] = useState(1);
   const [enrollmentsPerPage] = useState(5);
   const [productsCurrentPage, setProductsCurrentPage] = useState(1);
   const [productsPerPage] = useState(5);
   const [blogsCurrentPage, setBlogsCurrentPage] = useState(1);
+  //const [formationsPage, setFormationsPage] = useState(1);
+  const [showFormationModal, setShowFormationModal] = useState(false);
   const [blogsPerPage] = useState(5);
+  //const [formationsPerPage] = useState(5);
 
   useEffect(() => {
     fetchAdminData();
@@ -136,8 +172,21 @@ const AdminDashboard = () => {
     } else if (activeTab === 'blogs') {
       fetchBlogs();
     }
+    else if (activeTab === 'formations') {
+      fetchFormations();
+    }
   }, [activeTab]);
 
+
+    const fetchFormations = async () => {
+    try {
+      const response = await formationsAPI.getAll();
+      setFormations(response.data.formations || []);
+    } catch (error) {
+      console.error('Erreur formations:', error);
+      Swal.fire('Erreur', 'Impossible de charger les formations', 'error');
+    }
+  };
 
   const fetchAdminData = async () => {
     try {
@@ -235,6 +284,27 @@ const AdminDashboard = () => {
       }
     }
   };
+
+const handleRegistrationAction = async (formationId: string, regId: string, action: 'approve' | 'reject') => {
+  const result = await Swal.fire({
+    title: `Voulez-vous ${action === 'approve' ? 'valider' : 'refuser'} cette inscription ?`,
+    icon: 'warning',
+    showCancelButton: true,
+    confirmButtonColor: action === 'approve' ? '#059669' : '#dc2626',
+  });
+
+  if (result.isConfirmed) {
+    try {
+      await formationsAPI.updateRegistration(formationId, regId, { 
+        status: action === 'approve' ? 'approved' : 'rejected' 
+      });
+      Swal.fire('Succès', `Inscription ${action === 'approve' ? 'validée' : 'refusée'}`, 'success');
+      fetchFormations(); // Rafraîchit immédiatement
+    } catch (error) {
+      Swal.fire('Erreur', 'Action impossible', 'error');
+    }
+  }
+};
 
   const handleDeleteEnrollment = async (id: string) => {
     const result = await Swal.fire({
@@ -343,6 +413,12 @@ const AdminDashboard = () => {
     fetchBlogs();
   };
 
+  const handleFormationSaved = () => {
+  setEditingFormation(null);
+  setShowFormationFormModal(false);
+  fetchFormations(); // Rafraîchit la liste
+};
+
   const getStatusIcon = (status: string) => {
     switch (status) {
       case 'pending':
@@ -373,7 +449,7 @@ const AdminDashboard = () => {
     switch (type) {
       case 'partner':
         return 'bg-blue-100 text-blue-800';
-      case 'distributor':
+      case 'me':
         return 'bg-purple-100 text-purple-800';
       default:
         return 'bg-gray-100 text-gray-800';
@@ -421,6 +497,7 @@ const AdminDashboard = () => {
               onClick={() => {
                 fetchAdminData();
                 fetchEnrollments();
+                fetchFormations();
               }}
               className="flex items-center space-x-2 bg-white/20 backdrop-blur-xl text-white px-6 py-3 rounded-xl border border-white/30 hover:bg-white/30 transition-all duration-300 hover:scale-105 shadow-lg"
             >
@@ -446,6 +523,20 @@ const AdminDashboard = () => {
               <div className="flex items-center space-x-2">
                 <TrendingUp className="w-4 h-4" />
                 <span>Tableau de Bord</span>
+              </div>
+            </button>
+
+            <button
+              onClick={() => setActiveTab('formations')}
+              className={`py-3 sm:py4 px-4 sm:px-6 rounded-xl font-medium text-sm transition-all duration-300 ${
+                activeTab === 'formations'
+                  ? 'bg-green-500 text-white shadow-lg'
+                  : 'text-gray-600 hover:text-gray-900 hover:bg-white/50'
+              }`}
+            >
+              <div className="flex items-center space-x-2">
+                <BookOpen className="w-4 h-4" />
+                <span>Formations</span>
               </div>
             </button>
             <button
@@ -635,7 +726,7 @@ const AdminDashboard = () => {
                           <div className="flex-1">
                             <div className="flex items-center space-x-3 mb-4">
                               <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${getTypeColor(enrollment.type)}`}>
-                                {enrollment.type === 'partner' ? 'Partenaire' : 'Distributeur'}
+                                {enrollment.type === 'partner' ? 'Partenaire' : 'Membre'}
                               </span>
                               <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${getStatusColor(enrollment.status)}`}>
                                 {getStatusIcon(enrollment.status)}
@@ -758,6 +849,72 @@ const AdminDashboard = () => {
           </>
         )}
 
+        {/** Section Formations */}
+        {activeTab === 'formations' && (
+          <div>
+            <div className="flex justify-between items-center mb-6">
+              <h2 className="text-3xl font-bold">Formations</h2>
+ <button
+                onClick={() => {
+                  setEditingFormation(null);
+                  setShowFormationFormModal(true);
+                  
+                }}
+                className="flex items-center space-x-2 bg-gradient-to-r from-green-500 to-green-600 text-white px-6 py-3 rounded-xl hover:from-green-600 hover:to-green-700 transition-all duration-300 shadow-lg hover:shadow-xl cursor-pointer relative z-50"
+              >
+                <PlusIcon className="w-5 h-5" />
+                <span className="font-medium">Créer une formation</span>
+              </button>
+            </div>
+
+            <div className="space-y-6">
+              {formations.map(form => (
+                <motion.div key={form._id} initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}
+                  className="bg-white/70 backdrop-blur-xl rounded-2xl border border-white/30 shadow-xl p-6">
+                  <div className="flex justify-between items-start mb-4">
+                    <div>
+                      <h3 className="text-xl font-bold">{form.title}</h3>
+                      <p className="text-sm text-gray-600 flex items-center gap-1"><Calendar className="w-4 h-4" /> {new Date(form.date).toLocaleDateString('fr-FR')}</p>
+                      <p className="text-sm text-gray-600 flex items-center gap-1"><MapPin className="w-4 h-4" /> {form.location}</p>
+                      <p className="text-sm text-gray-600 mt-2">Places : {form.enrolledUsers.length}/{form.maxSeats}</p>
+                    </div>
+                    <button onClick={() => { setEditingFormation(form); setShowFormationFormModal(true); }}
+                      className="p-2 bg-blue-100 text-blue-600 rounded-lg hover:bg-blue-200">
+                      <Pencil className="w-4 h-4" />
+                    </button>
+                  </div>
+
+                  {form.registrations?.filter(r => r.status === 'pending').length > 0 && (
+                    <div className="mt-4 border-t pt-4">
+                      <p className="font-medium mb-2">Inscriptions en attente :</p>
+                      <div className="space-y-2">
+                        {form.registrations.filter(r => r.status === 'pending').map(reg => (
+                          <div key={reg._id} className="flex items-center justify-between bg-white/50 rounded-lg p-3">
+                            <div>
+                              <p className="font-medium">{reg.userName}</p>
+                              <p className="text-sm text-gray-600">{reg.userEmail}</p>
+                            </div>
+                            <div className="flex gap-2">
+                              <button onClick={() => handleRegistrationAction(form._id, reg._id, 'approve')}
+                                className="p-2 bg-green-100 text-green-600 rounded-lg hover:bg-green-200">
+                                <UserCheck className="w-4 h-4" />
+                              </button>
+                              <button onClick={() => handleRegistrationAction(form._id, reg._id, 'reject')}
+                                className="p-2 bg-red-100 text-red-600 rounded-lg hover:bg-red-200">
+                                <UserX className="w-4 h-4" />
+                              </button>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+                </motion.div>
+              ))}
+            </div>
+          </div>
+        )}
+      </div>
         {/* Section Produits */}
         {activeTab === 'products' && (
           <div>
@@ -1069,7 +1226,7 @@ const AdminDashboard = () => {
             </div>
           </div>
         )}
-      </div>
+      
 
       {/* Modals */}
       <ProductModal
@@ -1109,6 +1266,24 @@ const AdminDashboard = () => {
         }}
         blog={editingBlog}
         onBlogSaved={handleBlogSaved}
+      />
+      <FormationModal
+        isOpen={showFormationModal}
+        onClose={() => {
+          setShowFormationModal(false);
+          setEditingFormation(null);
+        } }
+        formation={editingFormation} onFormationSaved={function (): void {
+          throw new Error('Function not implemented.');
+        } }      />
+      <FormationFormModal
+        isOpen={showFormationFormModal}
+        onClose={() => {
+          setShowFormationFormModal(false);
+          setEditingFormation(null);
+        }}
+        formation={editingFormation}
+        onFormationSaved={handleFormationSaved}
       />
     </motion.div>
   );

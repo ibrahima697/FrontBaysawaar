@@ -1,6 +1,6 @@
-import axios from 'axios';
+import axios, { AxiosResponse } from 'axios';
 
-// Create axios instance with base configuration
+// Création d'une instance d'axios avec une configuration de base
 const api = axios.create({
   baseURL: import.meta.env.DEV
     ? 'http://localhost:5005/api'
@@ -11,26 +11,21 @@ const api = axios.create({
   },
 });
 
-// Request interceptor to add auth token
-api.interceptors.request.use(
-  (config) => {
-    const token = localStorage.getItem('token');
-    if (token) {
-      config.headers.Authorization = `Bearer ${token}`;
-    }
-    return config;
-  },
-  (error) => {
-    return Promise.reject(error);
+// Intercepteur de requêtes pour ajouter le token d'authentification
+api.interceptors.request.use((config) => {
+  const token = localStorage.getItem('token');
+  if (token) {
+    config.headers.Authorization = `Bearer ${token}`;
   }
-);
+  return config;
+}, (error) => Promise.reject(error));
 
-// Response interceptor to handle errors
+// Intercepteur de réponses pour gérer les erreurs, notamment 401 (Token expiré)
 api.interceptors.response.use(
   (response) => response,
   (error) => {
     if (error.response?.status === 401) {
-      // Token expired or invalid, redirect to login
+      // Token expiré ou invalide, redirige vers la page de login
       localStorage.removeItem('token');
       localStorage.removeItem('user');
       window.location.href = '/login';
@@ -39,161 +34,285 @@ api.interceptors.response.use(
   }
 );
 
-// Auth API endpoints
+
+
+// Interfaces pour typer les données d'API
+
+interface User {
+  id: string;
+  email: string;
+  firstName: string;
+  lastName: string;
+  role: string;
+  phone?: string;
+  photo?: {
+    publicId: string;
+    url: string;
+  };
+  companyDetails?: {
+    name?: string;
+    address?: string;
+    registrationNumber?: string;
+  };
+  photoURL?: string;
+  avatar?: string;
+}
+
+interface UserData {
+  firstName: string;
+  lastName: string;
+  email: string;
+  password: string;
+  phone?: string;
+  role?: string;
+  companyDetails?: {
+    name?: string;
+    address?: string;
+    registrationNumber?: string;
+  };
+}
+
+interface ProfileResponse {
+  id: string;
+  email: string;
+  firstName: string;
+  lastName: string;
+  role: string;
+  phone?: string;
+}
+
+interface LoginResponse {
+  token: string;
+  user: User;
+}
+
+interface ProductData {
+  name: string;
+  description: string;
+  price: number;
+  image: File;
+}
+
+interface EnrollmentData {
+  courseId: string;
+  userId: string;
+  status: string;
+  document?: File;
+}
+
+interface UserFilter {
+  role?: string;
+  status?: string;
+  searchQuery?: string;
+}
+
+interface EnrollmentUpdate {
+  status?: string;
+  document?: File;
+}
+
+interface FormationData {
+  title: string;
+  description: string;
+  date: string;
+  location: string;
+  maxSeats: number;
+}
+
+interface EventData {
+  title: string;
+  description: string;
+  dateStart: string;
+  dateEnd: string;
+  location: string;
+  priceMember: number;
+  priceNonMember: number;
+  maxParticipants: number;
+  isFeatured: boolean;
+}
+
+// Typage des différentes API
+
+// Auth API
 export const authAPI = {
-  login: (email: string, password: string) =>
+  login: (email: string, password: string): Promise<LoginResponse> =>
     api.post('/auth/login', { email, password }),
-  
-  register: (userData: {
-    firstName: string;
-    lastName: string;
-    email: string;
-    password: string;
-    phone?: string;
-    role?: string;
-    companyDetails?: any;
-  }) => api.post('/auth/register', userData),
-  
-  getProfile: () => api.get('/auth/profile'),
-  
-  getMe: () => api.get('/auth/me'),
-  
-  updateProfile: (updates: any) => api.put('/auth/profile', updates),
-  
-  changePassword: (currentPassword: string, newPassword: string) =>
+
+  register: (userData: UserData): Promise<AxiosResponse<User>> =>
+    api.post('/auth/register', userData),
+
+  getProfile: (): Promise<AxiosResponse<ProfileResponse>> => api.get('/auth/profile'),
+
+  getMe: (): Promise<AxiosResponse<{ data: User }>> => api.get('/auth/me'),
+
+  updateProfile: (updates: Partial<User>): Promise<AxiosResponse<User>> =>
+    api.put('/auth/profile', updates),
+
+  changePassword: (currentPassword: string, newPassword: string): Promise<AxiosResponse> =>
     api.post('/auth/change-password', { currentPassword, newPassword }),
-  
-  resetPassword: (email: string) =>
+
+  resetPassword: (email: string): Promise<AxiosResponse> =>
     api.post('/auth/reset-password', { email }),
 };
 
-// Dashboard API endpoints
+// Dashboard API
 export const dashboardAPI = {
-  getDashboardData: () => api.get('/dashboard/my-data'),
+  getDashboardData: (): Promise<AxiosResponse> => api.get('/dashboard/my-data'),
 };
 
-// Enrollments API endpoints
+// Enrollments API
 export const enrollmentsAPI = {
-  submitEnrollment: (enrollmentData: FormData) => 
+  submitEnrollment: (enrollmentData: EnrollmentData): Promise<AxiosResponse> =>
     api.post('/enrollments/submit', enrollmentData, {
-      headers: {
-        'Content-Type': 'multipart/form-data',
-      },
+      headers: { 'Content-Type': 'multipart/form-data' },
       timeout: 120000, // 2 minutes pour les uploads d'images
     }),
-  
-  getMyEnrollments: () => api.get('/enrollments/my-status'),
-  
-  getAllEnrollments: (params?: any) => api.get('/enrollments', { params }),
-  
-  getEnrollmentById: (id: string) => api.get(`/enrollments/${id}`),
-  
-  updateEnrollment: (id: string, updates: any) =>
+
+  getMyEnrollments: (): Promise<AxiosResponse> => api.get('/enrollments/my-status'),
+
+  getAllEnrollments: (params?: UserFilter): Promise<AxiosResponse> =>
+    api.get('/enrollments', { params }),
+
+  getEnrollmentById: (id: string): Promise<AxiosResponse> =>
+    api.get(`/enrollments/${id}`),
+
+  updateEnrollment: (id: string, updates: EnrollmentUpdate): Promise<AxiosResponse> =>
     api.put(`/enrollments/${id}`, updates),
-  
-  deleteEnrollment: (id: string) => api.delete(`/enrollments/${id}`),
+
+  deleteEnrollment: (id: string): Promise<AxiosResponse> =>
+    api.delete(`/enrollments/${id}`),
 };
 
-// Products API endpoints
+// Products API
 export const productsAPI = {
-  getAllProducts: (params?: any) => api.get('/products', { params }),
-  
-  getProductById: (id: string) => api.get(`/products/${id}`),
-  
-  createProduct: (productData: FormData) => 
+  getAllProducts: (params?: UserFilter): Promise<AxiosResponse> =>
+    api.get('/products', { params }),
+
+  getProductById: (id: string): Promise<AxiosResponse> =>
+    api.get(`/products/${id}`),
+
+  createProduct: (productData: ProductData): Promise<AxiosResponse> =>
     api.post('/products', productData, {
-      headers: {
-        'Content-Type': 'multipart/form-data',
-      },
+      headers: { 'Content-Type': 'multipart/form-data' },
       timeout: 120000, // 2 minutes pour les uploads d'images
     }),
-  
-  updateProduct: (id: string, updates: FormData) =>
+
+  updateProduct: (id: string, updates: ProductData): Promise<AxiosResponse> =>
     api.put(`/products/${id}`, updates, {
-      headers: {
-        'Content-Type': 'multipart/form-data',
-      },
+      headers: { 'Content-Type': 'multipart/form-data' },
       timeout: 120000, // 2 minutes pour les uploads d'images
     }),
-  
-  deleteProduct: (id: string) => api.delete(`/products/${id}`),
+
+  deleteProduct: (id: string): Promise<AxiosResponse> =>
+    api.delete(`/products/${id}`),
 };
 
-// Blogs API endpoints
+// Blogs API
 export const blogsAPI = {
-  getAllBlogs: (params?: any) => api.get('/blogs', { params }),
-  
-  getBlogById: (id: string) => api.get(`/blogs/${id}`),
-  
-  createBlog: (blogData: FormData) => 
+  getAllBlogs: (params?: UserFilter): Promise<AxiosResponse> =>
+    api.get('/blogs', { params }),
+
+  getBlogById: (id: string): Promise<AxiosResponse> =>
+    api.get(`/blogs/${id}`),
+
+  createBlog: (blogData: FormData): Promise<AxiosResponse> =>
     api.post('/blogs', blogData, {
-      headers: {
-        'Content-Type': 'multipart/form-data',
-      },
+      headers: { 'Content-Type': 'multipart/form-data' },
       timeout: 120000, // 2 minutes pour les uploads d'images
     }),
-  
-  updateBlog: (id: string, updates: FormData) =>
+
+  updateBlog: (id: string, updates: FormData): Promise<AxiosResponse> =>
     api.put(`/blogs/${id}`, updates, {
-      headers: {
-        'Content-Type': 'multipart/form-data',
-      },
+      headers: { 'Content-Type': 'multipart/form-data' },
       timeout: 120000, // 2 minutes pour les uploads d'images
     }),
-  
-  deleteBlog: (id: string) => api.delete(`/blogs/${id}`),
+
+  deleteBlog: (id: string): Promise<AxiosResponse> =>
+    api.delete(`/blogs/${id}`),
 };
 
-// Contacts API endpoints
+// Contacts API
 export const contactsAPI = {
-  submitContact: (contactData: any) =>
+  submitContact: (contactData: { name: string; email: string; message: string }): Promise<AxiosResponse> =>
     api.post('/contacts/submit', contactData),
-  
-  subscribeNewsletter: (email: string) =>
+
+  subscribeNewsletter: (email: string): Promise<AxiosResponse> =>
     api.post('/contacts/newsletter', { email }),
-  
-  getAllContacts: () => api.get('/contacts'),
-  
-  updateContactStatus: (id: string, status: string) =>
+
+  getAllContacts: (): Promise<AxiosResponse> => api.get('/contacts'),
+
+  updateContactStatus: (id: string, status: string): Promise<AxiosResponse> =>
     api.patch(`/contacts/${id}`, { status }),
 };
 
-// Admin API endpoints
+// Admin API
 export const adminAPI = {
-  getAdminStats: () => api.get('/admin/stats'),
-  
-  getAllUsers: (params?: any) => api.get('/admin/users', { params }),
-  
-  getUsersByRole: (role: string) => api.get(`/admin/users/role/${role}`),
-  
-  searchUsers: (query: string) => api.get('/admin/users/search', { params: { query } }),
-  
-  filterUsers: (filters: any) => api.get('/admin/users/filter', { params: filters }),
-  
-  getUserStats: () => api.get('/admin/user-stats'),
-  
-  deleteUser: (id: string) => api.delete(`/admin/users/${id}`),
-  
-  getAllEnrollments: (params?: any) => api.get('/admin/enrollments', { params }),
-  
-  getEnrollmentById: (id: string) => api.get(`/admin/enrollments/${id}`),
-  
-  updateEnrollment: (id: string, updates: any) =>
+  getAdminStats: (): Promise<AxiosResponse> => api.get('/admin/stats'),
+
+  getAllUsers: (params?: UserFilter): Promise<AxiosResponse> =>
+    api.get('/admin/users', { params }),
+
+  getUsersByRole: (role: string): Promise<AxiosResponse> =>
+    api.get(`/admin/users/role/${role}`),
+
+  searchUsers: (query: string): Promise<AxiosResponse> =>
+    api.get('/admin/users/search', { params: { query } }),
+
+  filterUsers: (filters: UserFilter): Promise<AxiosResponse> =>
+    api.get('/admin/users/filter', { params: filters }),
+
+  getUserStats: (): Promise<AxiosResponse> => api.get('/admin/user-stats'),
+
+  deleteUser: (id: string): Promise<AxiosResponse> =>
+    api.delete(`/admin/users/${id}`),
+
+  getAllEnrollments: (params?: UserFilter): Promise<AxiosResponse> =>
+    api.get('/admin/enrollments', { params }),
+
+  getEnrollmentById: (id: string): Promise<AxiosResponse> =>
+    api.get(`/admin/enrollments/${id}`),
+
+  updateEnrollment: (id: string, updates: EnrollmentUpdate): Promise<AxiosResponse> =>
     api.put(`/admin/enrollments/${id}`, updates),
-  
-  deleteEnrollment: (id: string) => api.delete(`/admin/enrollments/${id}`),
+
+  deleteEnrollment: (id: string): Promise<AxiosResponse> =>
+    api.delete(`/admin/enrollments/${id}`),
 };
 
-// Social API endpoints
+// Social API
 export const socialAPI = {
-  setConfig: (configData: any) => api.post('/social/config', configData),
-  
-  getConfigs: () => api.get('/social/config'),
-  
-  deleteConfig: (id: string) => api.delete(`/social/config/${id}`),
-  
-  fetchPosts: (platform: string, limit?: number) =>
+  setConfig: (configData: { platform: string; apiKey: string }): Promise<AxiosResponse> =>
+    api.post('/social/config', configData),
+
+  getConfigs: (): Promise<AxiosResponse> => api.get('/social/config'),
+
+  deleteConfig: (id: string): Promise<AxiosResponse> =>
+    api.delete(`/social/config/${id}`),
+
+  fetchPosts: (platform: string, limit?: number): Promise<AxiosResponse> =>
     api.get('/social/posts', { params: { platform, limit } }),
 };
 
+export const formationsAPI = {
+  // Admin & public utilisent la même route
+  getAll: () => api.get('/formations'), // Admin verra tout, public verra seulement upcoming/ongoing
+
+  create: (data: any) => api.post('/formations', data),
+  update: (id: string, data: any) => api.put(`/formations/${id}`, data),
+  register: (id: string) => api.post(`/formations/${id}/register`),
+  updateRegistration: (fid: string, rid: string, data: any) =>
+    api.put(`/formations/${fid}/registrations/${rid}`, data),
+};
+
+export const eventsAPI = {
+  // Admin & public utilisent la même route
+  getAll: () => api.get('/events'), // Admin verra tout, public verra seulement upcoming/ongoing
+
+  create: (data: EventData) => api.post('/events', data),
+  update: (id: string, data: EventData) => api.put(`/events/${id}`, data),
+  register: (slug: string) => api.post(`/events/${slug}/register`),
+  registerToEvent: (slug: string) => api.post(`/events/${slug}/register`),
+};
+
 export default api;
+

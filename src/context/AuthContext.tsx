@@ -23,6 +23,7 @@ interface User {
 
 interface AuthContextType {
   user: User | null;
+  token: string | null;
   login: (email: string, password: string) => Promise<boolean>;
   logout: () => void;
   isLoading: boolean;
@@ -45,27 +46,28 @@ interface AuthProviderProps {
 
 export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const [user, setUser] = useState<User | null>(null);
+  const [token, setToken] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
-  // Check if user is authenticated on app load
   const checkAuth = async () => {
     try {
-      const token = localStorage.getItem('token');
-      if (token) {
+      const storedToken = localStorage.getItem('token');
+      if (storedToken && storedToken !== 'null' && storedToken !== 'undefined') {
+        setToken(storedToken);
         const response = await authAPI.getMe();
-        if (response.data.data) {
+        if (response.data?.data) {
           setUser(response.data.data);
         } else {
-          // Invalid token, clear storage
           localStorage.removeItem('token');
           localStorage.removeItem('user');
+          setToken(null);
         }
       }
-    } catch (error) {
+    } catch (error: any) {
       console.error('Auth check failed:', error);
-      // Clear invalid tokens
       localStorage.removeItem('token');
       localStorage.removeItem('user');
+      setToken(null);
     } finally {
       setIsLoading(false);
     }
@@ -77,42 +79,39 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
   const login = async (email: string, password: string): Promise<boolean> => {
     setIsLoading(true);
-    
     try {
       const response = await authAPI.login(email, password);
-      const { token, user: userData } = response.data;
-      
-      // Store token and user data
-      localStorage.setItem('token', token);
+      const { token: newToken, user: userData } = response.data; // ← .data !
+
+      localStorage.setItem('token', newToken);
       localStorage.setItem('user', JSON.stringify(userData));
-      
+
+      setToken(newToken);
       setUser(userData);
       setIsLoading(false);
       return true;
     } catch (error: any) {
       console.error('Login failed:', error);
       setIsLoading(false);
-      
-      // Transmettre l'erreur originale au composant Login
-      // pour qu'il puisse gérer les différents codes de statut
       throw error;
     }
   };
 
   const logout = () => {
     setUser(null);
+    setToken(null);
     localStorage.removeItem('token');
     localStorage.removeItem('user');
-    // Redirect to home page after logout
     window.location.href = '/';
   };
 
   const value = {
     user,
+    token,
     login,
     logout,
     isLoading,
-    checkAuth
+    checkAuth,
   };
 
   return (
@@ -120,4 +119,4 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       {children}
     </AuthContext.Provider>
   );
-}; 
+};

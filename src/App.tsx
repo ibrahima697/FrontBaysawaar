@@ -8,6 +8,7 @@ import About from './pages/About';
 import Enrollments from './pages/Enrollments';
 import DashboardWrapper from './components/DashboardWrapper';
 import Platforms from './pages/Platforms';
+import Activities from './pages/Activities';
 import Contact from './pages/Contact';
 import Blog from './pages/Blog';
 import BlogPost from './pages/BlogPost';
@@ -15,6 +16,7 @@ import Login from './pages/Login';
 import FabiraTrading from './pages/FabiraTrading';
 import ScrollToTop from './components/ScrollToTop';
 import ProtectedRoute from './components/ProtectedRoute';
+import Events from './pages/Events';
 
 const AppContent = () => {
   const location = useLocation();
@@ -35,7 +37,9 @@ const AppContent = () => {
             </ProtectedRoute>
           } />
           <Route path="/platforms" element={<Platforms />} />
+          <Route path="/activities" element={<Activities />} />
           <Route path="/fabira-trading" element={<FabiraTrading />} />
+          <Route path="/events" element={<Events />} />
           <Route path="/contact" element={<Contact />} />
           <Route path="/blog" element={<Blog />} />
           <Route path="/blog/:id" element={<BlogPost />} />

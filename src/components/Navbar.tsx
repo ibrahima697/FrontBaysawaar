@@ -42,7 +42,9 @@ const Navbar = () => {
     { name: 'À propos', path: '/about' },
     { name: 'Enrôlement', path: '/enrollments' },
     { name: 'Plateformes', path: '/platforms' },
-    { name: 'Fabira Trading', path: '/fabira-trading' },
+    { name: 'Nos Activités', path: '/activities' },
+    //{ name: 'Fabira Trading', path: '/fabira-trading' },
+    { name: 'Événements', path: '/events' },
     { name: 'Contact', path: '/contact' },
     { name: 'Blog', path: '/blog' }
   ];
