@@ -95,38 +95,42 @@ const Home = () => {
               </p>
             </div>
 
-            {/* Enhanced President's Message */}
+            {/* Enhanced President's Message with Glassmorphism */}
             <motion.div
               initial={{ y: 30, opacity: 0 }}
               animate={{ y: 0, opacity: 1 }}
               transition={{ delay: 0.3, duration: 0.8 }}
-              className="relative bg-white/80 backdrop-blur-lg p-6 sm:p-8 rounded-3xl shadow-2xl max-w-4xl mx-auto border border-gray-100"
+              className="relative bg-white/40 backdrop-blur-2xl p-6 sm:p-8 rounded-3xl shadow-2xl max-w-4xl mx-auto border border-white/60 hover:bg-white/50 transition-all duration-500"
             >
+              {/* Glassmorphic Glow Effect */}
+              <div className="absolute inset-0 bg-gradient-to-br from-green-500/10 via-transparent to-blue-500/10 rounded-3xl" />
+
               <div className="absolute -top-6 left-1/2 transform -translate-x-1/2">
-                <div className="w-12 h-12 bg-green-600 rounded-full flex items-center justify-center ring-4 ring-white">
+                <div className="w-12 h-12 bg-gradient-to-br from-green-600 to-green-500 rounded-full flex items-center justify-center ring-4 ring-white/80 shadow-lg shadow-green-500/30">
                   <Quote className="text-white" size={24} />
                 </div>
               </div>
 
-              <div className="flex items-center space-x-4 sm:space-x-6 mb-4 sm:mb-6">
+              <div className="flex items-center space-x-4 sm:space-x-6 mb-4 sm:mb-6 relative">
                 <div className="relative">
+                  <div className="absolute inset-0 bg-green-400/30 rounded-full blur-md" />
                   <img
                     src="https://res.cloudinary.com/drxouwbms/image/upload/v1755778170/Web_Photo_Editor_1_nik1li.jpg"
                     alt="Fatou Fabira Dramé"
-                    className="w-16 h-16 sm:w-20 sm:h-20 rounded-full object-cover ring-4 ring-green-100"
+                    className="relative w-16 h-16 sm:w-20 sm:h-20 rounded-full object-cover ring-4 ring-white/80 shadow-xl"
                   />
-                  <div className="absolute -bottom-2 -right-2 w-8 h-8 bg-green-600 rounded-full flex items-center justify-center ring-4 ring-white">
+                  <div className="absolute -bottom-2 -right-2 w-8 h-8 bg-gradient-to-br from-green-600 to-green-500 rounded-full flex items-center justify-center ring-4 ring-white/80 shadow-lg">
                     <Check className="text-white" size={16} />
                   </div>
                 </div>
                 <div className="text-left">
                   <h3 className="text-xl sm:text-2xl font-bold text-gray-900">Message de la présidente</h3>
-                  <p className="text-gray-600">Mme Fatou Fabira Dramé</p>
-                  <p className="text-green-600 text-xs sm:text-sm font-medium">Présidente de la plateforme</p>
+                  <p className="text-gray-700">Mme Fatou Fabira Dramé</p>
+                  <p className="text-green-600 text-xs sm:text-sm font-bold">Présidente de la plateforme</p>
                 </div>
               </div>
 
-              <p className="text-gray-700 text-base sm:text-lg leading-relaxed italic">
+              <p className="text-gray-800 text-base sm:text-lg leading-relaxed italic relative">
                 "Chez BAY SA WARR, nous croyons au potentiel illimité des entreprises africaines.
                 Notre plateforme joue le rôle de pont reliant l'excellence locale aux marchés mondiaux,
                 favorisant l'innovation, le partenariat et une croissance durable à travers le continent."
@@ -190,12 +194,14 @@ const Home = () => {
                 viewport={{ once: true }}
                 className="relative group"
               >
-                <div className="absolute inset-0 bg-gradient-to-br from-green-500/5 to-blue-500/5 rounded-3xl transform group-hover:scale-105 transition-transform duration-500" />
+                {/* Glassmorphic Card */}
+                <div className="absolute inset-0 bg-white/40 backdrop-blur-xl rounded-3xl transform group-hover:scale-105 transition-all duration-500 border border-white/60 shadow-xl" />
+                <div className="absolute inset-0 bg-gradient-to-br from-green-500/10 via-transparent to-blue-500/10 rounded-3xl opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
 
                 <div className="relative p-8 text-center">
                   <div className="mb-6 relative">
-                    <div className="absolute inset-0 bg-gradient-to-br from-green-600 to-green-400 rounded-full blur-lg opacity-20 group-hover:opacity-30 transition-opacity duration-500" />
-                    <div className="relative w-16 h-16 sm:w-20 sm:h-20 mx-auto bg-gradient-to-br from-green-600 to-green-400 rounded-full flex items-center justify-center shadow-lg shadow-green-500/20">
+                    <div className="absolute inset-0 bg-gradient-to-br from-green-600 to-green-400 rounded-full blur-xl opacity-30 group-hover:opacity-50 transition-opacity duration-500" />
+                    <div className="relative w-16 h-16 sm:w-20 sm:h-20 mx-auto bg-gradient-to-br from-green-600 via-green-500 to-green-400 rounded-full flex items-center justify-center shadow-2xl shadow-green-500/40 group-hover:shadow-green-500/60 transition-shadow duration-500">
                       <stat.icon className="text-white" size={30} />
                     </div>
                   </div>
@@ -205,10 +211,10 @@ const Home = () => {
                     whileInView={{ opacity: 1, y: 0 }}
                     transition={{ delay: index * 0.2, duration: 0.5 }}
                     viewport={{ once: true }}
-                    className="text-3xl sm:text-4xl font-bold text-gray-900 mb-3 relative"
+                    className="text-3xl sm:text-4xl font-black text-gray-900 mb-3 relative"
                   >
-                    <span className="relative z-10">{stat.number}</span>
-                    <div className="absolute -bottom-1 left-1/2 transform -translate-x-1/2 w-1/2 h-2 bg-green-200/50 -z-10" />
+                    <span className="relative z-10 bg-gradient-to-r from-gray-900 to-gray-700 bg-clip-text text-transparent">{stat.number}</span>
+                    <div className="absolute -bottom-1 left-1/2 transform -translate-x-1/2 w-2/3 h-3 bg-green-300/40 -z-10 blur-sm" />
                   </motion.h3>
 
                   <motion.p
@@ -216,12 +222,12 @@ const Home = () => {
                     whileInView={{ opacity: 1 }}
                     transition={{ delay: index * 0.3, duration: 0.5 }}
                     viewport={{ once: true }}
-                    className="text-gray-600 font-medium text-sm sm:text-base"
+                    className="text-gray-700 font-semibold text-sm sm:text-base"
                   >
                     {stat.label}
                   </motion.p>
 
-                  <div className="absolute bottom-0 left-0 right-0 h-1 bg-gradient-to-r from-transparent via-green-500/20 to-transparent transform scale-x-0 group-hover:scale-x-100 transition-transform duration-500" />
+                  <div className="absolute bottom-0 left-0 right-0 h-1 bg-gradient-to-r from-transparent via-green-500/40 to-transparent transform scale-x-0 group-hover:scale-x-100 transition-transform duration-500 blur-sm" />
                 </div>
               </motion.div>
             ))}
@@ -229,24 +235,50 @@ const Home = () => {
         </div>
       </section>
 
-      {/* Product Carousel */}
-      <section className="py-16 bg-gray-50">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      {/* Product Carousel - Full Width */}
+      <section className="relative py-24 overflow-hidden">
+        {/* Glassmorphic Background */}
+        <div className="absolute inset-0 bg-gradient-to-br from-green-50 via-blue-50 to-purple-50" />
+        <div className="absolute inset-0 backdrop-blur-3xl bg-white/30" />
+
+        {/* Floating Orbs */}
+        <div className="absolute top-20 left-10 w-72 h-72 bg-green-400/20 rounded-full blur-3xl animate-pulse" />
+        <div className="absolute bottom-20 right-10 w-96 h-96 bg-blue-400/20 rounded-full blur-3xl animate-pulse delay-1000" />
+
+        <div className="relative">
           <motion.div
             initial={{ y: 30, opacity: 0 }}
             whileInView={{ y: 0, opacity: 1 }}
             transition={{ duration: 0.8 }}
             viewport={{ once: true }}
-            className="text-center mb-12"
+            className="text-center mb-16 px-4"
           >
-            <h2 className="text-3xl sm:text-4xl font-bold text-gray-900 mb-4">
-              Produits et services en vedette
+            <motion.span
+              initial={{ scale: 0.9, opacity: 0 }}
+              whileInView={{ scale: 1, opacity: 1 }}
+              transition={{ duration: 0.5 }}
+              className="inline-block text-green-600 font-bold px-6 py-2 rounded-full bg-white/60 backdrop-blur-md border border-white/40 shadow-lg mb-6"
+            >
+              ✨ Nos Vedettes
+            </motion.span>
+            <h2 className="text-4xl sm:text-5xl md:text-6xl font-black text-gray-900 mb-6 tracking-tight">
+              Produits et services{' '}
+              <span className="relative inline-block">
+                <span className="text-transparent bg-clip-text bg-gradient-to-r from-green-600 to-blue-600">
+                  en vedette
+                </span>
+                <div className="absolute -bottom-2 left-0 w-full h-4 bg-green-200/40 -z-10 blur-sm" />
+              </span>
             </h2>
-            <p className="text-lg sm:text-xl text-gray-600 max-w-2xl mx-auto">
-              Découvrez les meilleurs produits africains et les solutions commerciales innovantes
+            <p className="text-lg sm:text-xl text-gray-600 max-w-3xl mx-auto leading-relaxed">
+              Découvrez l'excellence africaine : produits authentiques et solutions innovantes
             </p>
           </motion.div>
-          <ProductCarousel />
+
+          {/* Full Width Carousel */}
+          <div className="w-full">
+            <ProductCarousel />
+          </div>
         </div>
       </section>
 
@@ -297,25 +329,29 @@ const Home = () => {
                 className="group relative"
               >
                 <Link to={card.path}>
-                  <div className="relative p-6 sm:p-8 rounded-3xl bg-white border border-gray-100 shadow-lg transition-all duration-500 group-hover:shadow-2xl group-hover:-translate-y-2 h-full">
+                  {/* Glassmorphic Card */}
+                  <div className="relative p-6 sm:p-8 rounded-3xl bg-white/50 backdrop-blur-xl border border-white/60 shadow-xl transition-all duration-500 group-hover:shadow-2xl group-hover:-translate-y-3 group-hover:bg-white/60 h-full">
+                    {/* Gradient Overlay */}
+                    <div className="absolute inset-0 bg-gradient-to-br from-white/20 via-transparent to-transparent rounded-3xl opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+
                     {/* Card Header with Icon */}
                     <div className="relative mb-8">
-                      <div className={`absolute inset-0 ${card.color} opacity-20 blur-xl transition-all duration-500 group-hover:opacity-30`} />
-                      <div className={`relative w-14 h-14 sm:w-16 sm:h-16 ${card.color} rounded-2xl flex items-center justify-center transform transition-all duration-500 group-hover:rotate-6`}>
+                      <div className={`absolute inset-0 ${card.color} opacity-30 blur-2xl transition-all duration-500 group-hover:opacity-50`} />
+                      <div className={`relative w-14 h-14 sm:w-16 sm:h-16 ${card.color} rounded-2xl flex items-center justify-center transform transition-all duration-500 group-hover:rotate-12 group-hover:scale-110 shadow-lg`}>
                         <card.icon className="text-white" size={28} />
                       </div>
                     </div>
 
                     {/* Card Content */}
-                    <h3 className="text-xl sm:text-2xl font-bold text-gray-900 mb-3 sm:mb-4 transition-colors duration-300 group-hover:text-green-600">
+                    <h3 className="text-xl sm:text-2xl font-bold text-gray-900 mb-3 sm:mb-4 transition-colors duration-300 group-hover:text-green-600 relative">
                       {card.title}
                     </h3>
-                    <p className="text-gray-600 mb-4 sm:mb-6 leading-relaxed overflow-hidden h-24">
+                    <p className="text-gray-700 mb-4 sm:mb-6 leading-relaxed overflow-hidden h-24">
                       {card.description}
                     </p>
 
                     {/* Card Footer */}
-                    <div className="flex items-center text-green-600 font-semibold">
+                    <div className="flex items-center text-green-600 font-bold">
                       <span className="mr-2">En savoir plus</span>
                       <motion.div
                         className="transform transition-transform duration-300 group-hover:translate-x-2"
@@ -325,8 +361,8 @@ const Home = () => {
                     </div>
 
                     {/* Decorative Elements */}
-                    <div className="absolute top-0 right-0 w-24 h-24 bg-gradient-to-br from-green-500/10 to-transparent rounded-full translate-x-8 -translate-y-8 opacity-0 group-hover:opacity-100 transition-all duration-500" />
-                    <div className="absolute bottom-0 left-0 right-0 h-1 bg-gradient-to-r from-transparent via-green-500/20 to-transparent transform scale-x-0 group-hover:scale-x-100 transition-transform duration-500" />
+                    <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-green-400/20 to-transparent rounded-full translate-x-12 -translate-y-12 opacity-0 group-hover:opacity-100 transition-all duration-500 blur-xl" />
+                    <div className="absolute bottom-0 left-0 right-0 h-1 bg-gradient-to-r from-transparent via-green-500/40 to-transparent transform scale-x-0 group-hover:scale-x-100 transition-transform duration-500" />
                   </div>
                 </Link>
               </motion.div>

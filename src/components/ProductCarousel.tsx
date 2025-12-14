@@ -39,7 +39,7 @@ const ProductCarousel = () => {
         const response = await productsAPI.getAllProducts();
         const productsData = response.data.products || [];
         // Filtrer seulement les produits actifs et avec des images
-        const activeProducts = productsData.filter((product: Product) => 
+        const activeProducts = productsData.filter((product: Product) =>
           product.isActive && product.images && product.images.length > 0
         );
         setProducts(activeProducts);
@@ -78,7 +78,7 @@ const ProductCarousel = () => {
   // Timer pour le carrousel automatique
   useEffect(() => {
     if (products.length === 0) return;
-    
+
     const timer = setInterval(() => {
       setCurrentSlide((prev) => (prev + 1) % products.length);
     }, 5000);
@@ -150,60 +150,77 @@ const ProductCarousel = () => {
 
   return (
     <>
-      <div className="relative max-w-6xl mx-auto">
-        <div className="relative h-80 sm:h-96 md:h-[500px] overflow-hidden rounded-2xl shadow-2xl">
+      {/* Full Width Carousel Container */}
+      <div className="relative w-full">
+        <div className="relative h-[500px] sm:h-[600px] md:h-[700px] overflow-hidden">
           <AnimatePresence mode="wait">
             <motion.div
               key={currentSlide}
-              initial={{ opacity: 0, x: 300 }}
-              animate={{ opacity: 1, x: 0 }}
-              exit={{ opacity: 0, x: -300 }}
-              transition={{ duration: 0.5 }}
+              initial={{ opacity: 0, scale: 1.1 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0, scale: 0.95 }}
+              transition={{ duration: 0.7, ease: "easeInOut" }}
               className="absolute inset-0"
             >
               <div className="relative h-full">
+                {/* Background Image */}
                 <img
                   src={products[currentSlide].images[0]?.url || '/placeholder-product.jpg'}
                   alt={products[currentSlide].images[0]?.alt || products[currentSlide].name}
                   className="w-full h-full object-cover"
                 />
-                <div className="absolute inset-0 bg-black/40" />
-                
+
+                {/* Gradient Overlays */}
+                <div className="absolute inset-0 bg-gradient-to-r from-black/80 via-black/50 to-transparent" />
+                <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
+
+                {/* Content Container */}
                 <div className="absolute inset-0 flex items-center">
-                  <div className="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 w-full">
-                    <div className="max-w-xl md:max-w-2xl text-white">
+                  <div className="max-w-[90rem] mx-auto px-6 sm:px-8 lg:px-12 w-full">
+                    <div className="max-w-2xl lg:max-w-3xl">
                       <motion.div
-                        initial={{ y: 30, opacity: 0 }}
+                        initial={{ y: 40, opacity: 0 }}
                         animate={{ y: 0, opacity: 1 }}
-                        transition={{ delay: 0.2, duration: 0.5 }}
+                        transition={{ delay: 0.3, duration: 0.6 }}
+                        className="relative"
                       >
-                        <div className="flex items-center space-x-2 mb-3 sm:mb-4">
-                          <span className="bg-green-600 px-2 sm:px-3 py-1 rounded-full text-xs sm:text-sm font-medium">
-                            {products[currentSlide].category}
-                          </span>
-                          {products[currentSlide].brand && (
-                            <span className="bg-blue-600 px-2 sm:px-3 py-1 rounded-full text-xs sm:text-sm font-medium">
-                              {products[currentSlide].brand}
+                        {/* Glassmorphic Card */}
+                        <div className="bg-white/10 backdrop-blur-2xl border border-white/20 rounded-3xl p-8 sm:p-10 shadow-2xl hover:bg-white/15 transition-all duration-500">
+                          {/* Category Tags */}
+                          <div className="flex flex-wrap items-center gap-2 sm:gap-3 mb-4 sm:mb-6">
+                            <span className="bg-green-500/90 backdrop-blur-md px-4 py-2 rounded-full text-sm sm:text-base font-bold text-white shadow-lg shadow-green-500/30">
+                              {products[currentSlide].category}
                             </span>
-                          )}
-                        </div>
-                        <h3 className="text-3xl sm:text-4xl md:text-6xl font-bold mb-3 sm:mb-4">
-                          {products[currentSlide].name}
-                        </h3>
-                        <p className="text-base sm:text-lg md:text-xl mb-4 sm:mb-6 opacity-90">
-                          {products[currentSlide].description}
-                        </p>
-                        <div className="flex items-center space-x-3 sm:space-x-4">
-                          <span className="text-xl sm:text-2xl font-bold text-yellow-400">
-                            {formatPrice(products[currentSlide].price)}
-                          </span>
-                          <button 
-                            onClick={handleExploreClick}
-                            className="bg-white text-gray-900 px-4 sm:px-6 py-2.5 sm:py-3 rounded-full font-semibold hover:bg-gray-100 transition-colors duration-200 flex items-center space-x-2"
-                          >
-                            <span>Explore</span>
-                            <ExternalLink size={16} />
-                          </button>
+                            {products[currentSlide].brand && (
+                              <span className="bg-blue-500/90 backdrop-blur-md px-4 py-2 rounded-full text-sm sm:text-base font-bold text-white shadow-lg shadow-blue-500/30">
+                                {products[currentSlide].brand}
+                              </span>
+                            )}
+                          </div>
+
+                          {/* Product Name */}
+                          <h3 className="text-4xl sm:text-5xl md:text-7xl font-black mb-4 sm:mb-6 text-white leading-tight tracking-tight">
+                            {products[currentSlide].name}
+                          </h3>
+
+                          {/* Description */}
+                          <p className="text-lg sm:text-xl md:text-2xl mb-6 sm:mb-8 text-white/90 leading-relaxed font-light">
+                            {products[currentSlide].description}
+                          </p>
+
+                          {/* Price and CTA */}
+                          <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4 sm:gap-6">
+                            <span className="text-3xl sm:text-4xl font-black text-yellow-400 drop-shadow-lg">
+                              {formatPrice(products[currentSlide].price)}
+                            </span>
+                            <button
+                              onClick={handleExploreClick}
+                              className="bg-white text-gray-900 px-8 py-4 rounded-full font-bold hover:bg-green-500 hover:text-white transition-all duration-300 flex items-center gap-3 shadow-xl hover:shadow-2xl hover:scale-105 group"
+                            >
+                              <span>Explorer</span>
+                              <ExternalLink size={20} className="group-hover:rotate-12 transition-transform" />
+                            </button>
+                          </div>
                         </div>
                       </motion.div>
                     </div>
@@ -213,30 +230,31 @@ const ProductCarousel = () => {
             </motion.div>
           </AnimatePresence>
 
-          {/* Navigation Buttons */}
+          {/* Glassmorphic Navigation Buttons */}
           <button
             onClick={prevSlide}
-            className="absolute left-3 sm:left-4 top-1/2 transform -translate-y-1/2 w-10 h-10 sm:w-12 sm:h-12 bg-white/20 hover:bg-white/30 rounded-full flex items-center justify-center backdrop-blur-sm transition-all duration-200"
+            className="absolute left-4 sm:left-8 top-1/2 transform -translate-y-1/2 w-14 h-14 sm:w-16 sm:h-16 bg-white/20 hover:bg-white/40 backdrop-blur-xl rounded-full flex items-center justify-center border border-white/30 transition-all duration-300 hover:scale-110 shadow-xl"
           >
-            <ChevronLeft className="text-white" size={20} />
-          </button>
-          
-          <button
-            onClick={nextSlide}
-            className="absolute right-3 sm:right-4 top-1/2 transform -translate-y-1/2 w-10 h-10 sm:w-12 sm:h-12 bg-white/20 hover:bg-white/30 rounded-full flex items-center justify-center backdrop-blur-sm transition-all duration-200"
-          >
-            <ChevronRight className="text-white" size={20} />
+            <ChevronLeft className="text-white" size={28} />
           </button>
 
-          {/* Dots Indicator */}
-          <div className="absolute bottom-4 sm:bottom-6 left-1/2 transform -translate-x-1/2 flex space-x-2">
+          <button
+            onClick={nextSlide}
+            className="absolute right-4 sm:right-8 top-1/2 transform -translate-y-1/2 w-14 h-14 sm:w-16 sm:h-16 bg-white/20 hover:bg-white/40 backdrop-blur-xl rounded-full flex items-center justify-center border border-white/30 transition-all duration-300 hover:scale-110 shadow-xl"
+          >
+            <ChevronRight className="text-white" size={28} />
+          </button>
+
+          {/* Glassmorphic Dots Indicator */}
+          <div className="absolute bottom-8 sm:bottom-12 left-1/2 transform -translate-x-1/2 flex gap-3 bg-black/20 backdrop-blur-xl px-6 py-3 rounded-full border border-white/20">
             {products.map((_, index) => (
               <button
                 key={index}
                 onClick={() => goToSlide(index)}
-                className={`w-2.5 h-2.5 sm:w-3 sm:h-3 rounded-full transition-all duration-200 ${
-                  index === currentSlide ? 'bg-white scale-110' : 'bg-white/50'
-                }`}
+                className={`transition-all duration-300 rounded-full ${index === currentSlide
+                    ? 'w-10 h-3 bg-white shadow-lg shadow-white/50'
+                    : 'w-3 h-3 bg-white/40 hover:bg-white/60'
+                  }`}
               />
             ))}
           </div>
