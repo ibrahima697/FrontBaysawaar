@@ -70,7 +70,7 @@ const Home = () => {
             className="space-y-8"
           >
             <div className="space-y-3 sm:space-y-4">
-              <motion.h1 
+              <motion.h1
                 className="text-4xl sm:text-5xl md:text-6xl font-bold text-white tracking-tight"
                 initial={{ y: 20, opacity: 0 }}
                 animate={{ y: 0, opacity: 1 }}
@@ -78,16 +78,16 @@ const Home = () => {
               >
                 Bienvenue sur{' '}
                 <span className="relative">
-                <span 
-  className="text-green-900 bg-clip-text bg-gradient-to-r from-green-900 to-green-900" 
-  style={{ 
-    WebkitTextStroke: '1px white', 
-  
-  }}
->
-  BAY SA WARR
-</span>
-                 
+                  <span
+                    className="text-green-900 bg-clip-text bg-gradient-to-r from-green-900 to-green-900"
+                    style={{
+                      WebkitTextStroke: '1px white',
+
+                    }}
+                  >
+                    BAY SA WARR
+                  </span>
+
                 </span>
               </motion.h1>
               <p className="text-base sm:text-lg md:text-2xl text-white max-w-3xl mx-auto leading-relaxed font-light">
@@ -110,9 +110,9 @@ const Home = () => {
 
               <div className="flex items-center space-x-4 sm:space-x-6 mb-4 sm:mb-6">
                 <div className="relative">
-                  <img 
-                    src="https://res.cloudinary.com/drxouwbms/image/upload/v1755778170/Web_Photo_Editor_1_nik1li.jpg" 
-                    alt="Fatou Fabira Dramé" 
+                  <img
+                    src="https://res.cloudinary.com/drxouwbms/image/upload/v1755778170/Web_Photo_Editor_1_nik1li.jpg"
+                    alt="Fatou Fabira Dramé"
                     className="w-16 h-16 sm:w-20 sm:h-20 rounded-full object-cover ring-4 ring-green-100"
                   />
                   <div className="absolute -bottom-2 -right-2 w-8 h-8 bg-green-600 rounded-full flex items-center justify-center ring-4 ring-white">
@@ -125,7 +125,7 @@ const Home = () => {
                   <p className="text-green-600 text-xs sm:text-sm font-medium">Présidente de la plateforme</p>
                 </div>
               </div>
-              
+
               <p className="text-gray-700 text-base sm:text-lg leading-relaxed italic">
                 "Chez BAY SA WARR, nous croyons au potentiel illimité des entreprises africaines.
                 Notre plateforme joue le rôle de pont reliant l'excellence locale aux marchés mondiaux,
@@ -163,7 +163,7 @@ const Home = () => {
         {/* Background Pattern */}
         <div className="absolute inset-0 bg-gradient-to-b from-white via-green-50/30 to-white" />
         <div className="absolute inset-0 bg-[url('/grid-pattern.svg')] opacity-5" />
-        
+
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
@@ -191,7 +191,7 @@ const Home = () => {
                 className="relative group"
               >
                 <div className="absolute inset-0 bg-gradient-to-br from-green-500/5 to-blue-500/5 rounded-3xl transform group-hover:scale-105 transition-transform duration-500" />
-                
+
                 <div className="relative p-8 text-center">
                   <div className="mb-6 relative">
                     <div className="absolute inset-0 bg-gradient-to-br from-green-600 to-green-400 rounded-full blur-lg opacity-20 group-hover:opacity-30 transition-opacity duration-500" />

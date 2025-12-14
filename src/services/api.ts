@@ -38,26 +38,17 @@ api.interceptors.response.use(
 
 // Interfaces pour typer les données d'API
 
-interface User {
-  id: string;
-  email: string;
-  firstName: string;
-  lastName: string;
-  role: string;
-  phone?: string;
-  photo?: {
-    publicId: string;
-    url: string;
-  };
-  companyDetails?: {
-    name?: string;
-    address?: string;
-    registrationNumber?: string;
-  };
-  photoURL?: string;
-  avatar?: string;
-}
+import {
+  User,
+  LoginResponse,
+  ProductData,
+  EnrollmentData,
+  UserFilter,
+  EnrollmentUpdate,
+  EventData
+} from '../types';
 
+// Local interfaces for specific API payloads not shared globally
 interface UserData {
   firstName: string;
   lastName: string;
@@ -81,61 +72,13 @@ interface ProfileResponse {
   phone?: string;
 }
 
-interface LoginResponse {
-  token: string;
-  user: User;
-}
 
-interface ProductData {
-  name: string;
-  description: string;
-  price: number;
-  image: File;
-}
-
-interface EnrollmentData {
-  courseId: string;
-  userId: string;
-  status: string;
-  document?: File;
-}
-
-interface UserFilter {
-  role?: string;
-  status?: string;
-  searchQuery?: string;
-}
-
-interface EnrollmentUpdate {
-  status?: string;
-  document?: File;
-}
-
-interface FormationData {
-  title: string;
-  description: string;
-  date: string;
-  location: string;
-  maxSeats: number;
-}
-
-interface EventData {
-  title: string;
-  description: string;
-  dateStart: string;
-  dateEnd: string;
-  location: string;
-  priceMember: number;
-  priceNonMember: number;
-  maxParticipants: number;
-  isFeatured: boolean;
-}
 
 // Typage des différentes API
 
 // Auth API
 export const authAPI = {
-  login: (email: string, password: string): Promise<LoginResponse> =>
+  login: (email: string, password: string): Promise<AxiosResponse<LoginResponse>> =>
     api.post('/auth/login', { email, password }),
 
   register: (userData: UserData): Promise<AxiosResponse<User>> =>
@@ -296,6 +239,7 @@ export const socialAPI = {
 export const formationsAPI = {
   // Admin & public utilisent la même route
   getAll: () => api.get('/formations'), // Admin verra tout, public verra seulement upcoming/ongoing
+  getAllAdmin: () => api.get('/formations/admin'),
 
   create: (data: any) => api.post('/formations', data),
   update: (id: string, data: any) => api.put(`/formations/${id}`, data),

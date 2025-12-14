@@ -114,7 +114,7 @@ const Login = () => {
         />
         <div className="absolute inset-0 bg-gradient-to-br from-slate-900/70 via-green-900/50 to-slate-800/70 backdrop-blur-[2px]"></div>
       </div>
-      
+
       {/* Geometric Background Elements */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
         <div className="absolute -top-40 -right-40 w-60 h-60 sm:w-80 sm:h-80 bg-gradient-to-br from-green-400/20 to-emerald-600/20 rounded-full blur-3xl"></div>
@@ -136,13 +136,13 @@ const Login = () => {
           <div className="relative">
             {/* Glow Effect */}
             <div className="absolute inset-0 bg-gradient-to-r from-green-500/20 via-emerald-500/20 to-green-600/20 rounded-2xl blur-xl"></div>
-            
+
             {/* Main Card */}
             <div className="relative bg-white/95 backdrop-blur-xl rounded-2xl shadow-2xl border border-white/20 overflow-hidden mx-1 xs:mx-2 sm:mx-4 md:mx-0">
-              
+
               <div className="p-4 xs:p-5 sm:p-6 md:p-8">
                 {/* Logo Section - More Compact */}
-                <motion.div 
+                <motion.div
                   initial={{ opacity: 0, y: -20 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: 0.2, duration: 0.6 }}
@@ -165,7 +165,7 @@ const Login = () => {
                 </motion.div>
 
                 {/* Welcome Section - Refined */}
-                <motion.div 
+                <motion.div
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: 0.3, duration: 0.6 }}
@@ -182,11 +182,11 @@ const Login = () => {
                 </motion.div>
 
                 {/* Form - Enhanced */}
-                <motion.form 
+                <motion.form
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: 0.4, duration: 0.6 }}
-                  onSubmit={handleSubmit} 
+                  onSubmit={handleSubmit}
                   className="space-y-4 xs:space-y-5 sm:space-y-6"
                 >
                   {error && (
@@ -222,9 +222,8 @@ const Login = () => {
                         value={email}
                         onChange={handleEmailChange}
                         placeholder="votre@email.com"
-                        className={`relative w-full pl-9 xs:pl-10 sm:pl-11 pr-2 xs:pr-3 sm:pr-4 py-2.5 xs:py-3 sm:py-3.5 border rounded-xl focus:ring-2 focus:ring-green-500/20 focus:border-green-500/40 transition-all duration-200 bg-white/60 backdrop-blur-sm hover:bg-white/80 text-slate-800 placeholder-slate-400 text-xs xs:text-sm sm:text-base ${
-                          willClearFields ? 'border-red-300 bg-red-50/30' : 'border-slate-200/60'
-                        }`}
+                        className={`relative w-full pl-9 xs:pl-10 sm:pl-11 pr-2 xs:pr-3 sm:pr-4 py-2.5 xs:py-3 sm:py-3.5 border rounded-xl focus:ring-2 focus:ring-green-500/20 focus:border-green-500/40 transition-all duration-200 bg-white/60 backdrop-blur-sm hover:bg-white/80 text-slate-800 placeholder-slate-400 text-xs xs:text-sm sm:text-base ${willClearFields ? 'border-red-300 bg-red-50/30' : 'border-slate-200/60'
+                          }`}
                       />
                     </div>
                   </div>
@@ -243,9 +242,8 @@ const Login = () => {
                         value={password}
                         onChange={handlePasswordChange}
                         placeholder="••••••••"
-                        className={`relative w-full pl-9 xs:pl-10 sm:pl-11 pr-10 xs:pr-11 sm:pr-12 py-2.5 xs:py-3 sm:py-3.5 border rounded-xl focus:ring-2 focus:ring-green-500/20 focus:border-green-500/40 transition-all duration-200 bg-white/60 backdrop-blur-sm hover:bg-white/80 text-slate-800 placeholder-slate-400 text-xs xs:text-sm sm:text-base ${
-                          willClearFields ? 'border-red-300 bg-red-50/30' : 'border-slate-200/60'
-                        }`}
+                        className={`relative w-full pl-9 xs:pl-10 sm:pl-11 pr-10 xs:pr-11 sm:pr-12 py-2.5 xs:py-3 sm:py-3.5 border rounded-xl focus:ring-2 focus:ring-green-500/20 focus:border-green-500/40 transition-all duration-200 bg-white/60 backdrop-blur-sm hover:bg-white/80 text-slate-800 placeholder-slate-400 text-xs xs:text-sm sm:text-base ${willClearFields ? 'border-red-300 bg-red-50/30' : 'border-slate-200/60'
+                          }`}
                       />
                       <button
                         type="button"
@@ -286,11 +284,11 @@ const Login = () => {
                     {/* Button Background */}
                     <div className="absolute inset-0 bg-gradient-to-r from-green-600 via-green-500 to-emerald-600 rounded-xl opacity-100 group-hover:opacity-90 transition-opacity duration-200"></div>
                     <div className="absolute inset-0 bg-gradient-to-r from-green-700 via-green-600 to-emerald-700 rounded-xl opacity-0 group-hover:opacity-100 transition-opacity duration-200"></div>
-                    
+
                     {/* Button Content */}
                     <div className="relative flex items-center justify-center space-x-1.5 xs:space-x-2 sm:space-x-3 py-2.5 xs:py-3 sm:py-3.5 px-3 xs:px-4 sm:px-6 text-white font-semibold">
                       <div className="absolute inset-0 bg-white/10 rounded-xl opacity-0 group-hover:opacity-100 transition-opacity duration-200"></div>
-                      
+
                       {isLoading ? (
                         <div className="flex items-center space-x-1.5 xs:space-x-2 sm:space-x-3">
                           <div className="w-4 h-4 xs:w-5 xs:h-5 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
@@ -304,14 +302,22 @@ const Login = () => {
                         </>
                       )}
                     </div>
-                    
+
                     {/* Button Shine Effect */}
                     <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -skew-x-12 -translate-x-full group-hover:translate-x-full transition-transform duration-700 rounded-xl"></div>
                   </motion.button>
                 </motion.form>
-                
+
                 {/* Sign Up Link */}
-               
+                {/* Sign Up Link */}
+                <div className="mt-6 text-center">
+                  <p className="text-slate-600 text-xs xs:text-sm">
+                    Pas encore membre ?{' '}
+                    <Link to="/enrollments" className="text-green-600 font-semibold hover:text-green-700 transition-colors">
+                      Rejoignez-nous
+                    </Link>
+                  </p>
+                </div>
               </div>
             </div>
           </div>

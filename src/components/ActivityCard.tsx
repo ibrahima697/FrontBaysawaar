@@ -11,17 +11,19 @@ interface ActivityCardProps {
   children: React.ReactNode;
   ctaText?: string;
   ctaLink?: string;
+  ctaState?: any;
 }
 
-const ActivityCard = ({ 
-  title, 
-  subtitle, 
-  description, 
-  icon: Icon, 
-  color, 
+const ActivityCard = ({
+  title,
+  subtitle,
+  description,
+  icon: Icon,
+  color,
   children,
   ctaText = "En savoir plus",
-  ctaLink = "#"
+  ctaLink = "#",
+  ctaState
 }: ActivityCardProps) => {
   return (
     <motion.div
@@ -51,6 +53,7 @@ const ActivityCard = ({
 
         <Link
           to={ctaLink}
+          state={ctaState}
           className="inline-flex items-center gap-2 bg-white text-gray-900 px-6 py-3 rounded-full font-semibold hover:bg-gray-100 transition"
         >
           {ctaText}

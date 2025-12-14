@@ -1,6 +1,6 @@
 import { motion } from 'framer-motion';
 import { Link } from 'react-router-dom';
-import { Globe, ShoppingCart, BookOpen, Facebook, Instagram, Linkedin,  ExternalLink, Users, TrendingUp, Shield, Zap, Youtube } from 'lucide-react';
+import { Globe, ShoppingCart, BookOpen, Facebook, Instagram, Linkedin, ExternalLink, Users, TrendingUp, Shield, Zap, Youtube } from 'lucide-react';
 
 const Platforms = () => {
   const platforms = [
@@ -108,7 +108,7 @@ const Platforms = () => {
       color: 'bg-red-600',
       link: 'https://www.youtube.com/@fabiratv2023'
     },
-  
+
   ];
 
   const benefits = [
@@ -145,7 +145,7 @@ const Platforms = () => {
       <section className="relative pt-16 pb-12 sm:py-20 md:py-24 bg-cover bg-center bg-no-repeat" style={{ backgroundImage: 'url(https://res.cloudinary.com/drxouwbms/image/upload/v1755949759/Screenshot_2025-08-23_at_11_41_05_1_-Picsart-AiImageEnhancer_kfsp1y.png)' }}>
         {/* Dark overlay for better text readability */}
         <div className="absolute inset-0 bg-black/50"></div>
-        
+
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center relative z-10">
           <motion.div
             initial={{ y: 50, opacity: 0 }}
@@ -206,7 +206,7 @@ const Platforms = () => {
                           <p className="text-white/80 text-sm sm:text-base md:text-lg">{platform.subtitle}</p>
                         </div>
                       </div>
-                      
+
                       <p className="text-sm sm:text-base md:text-lg leading-relaxed text-white/90">
                         {platform.description}
                       </p>

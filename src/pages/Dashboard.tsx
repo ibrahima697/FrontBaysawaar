@@ -4,40 +4,16 @@ import { useAuth } from '../context/AuthContext';
 import { enrollmentsAPI, formationsAPI } from '../services/api';
 import {
   Building2, Clock, CheckCircle, XCircle, AlertCircle,
-  User, TrendingUp, Calendar, MapPin, ArrowRight, Tag
+  User as UserIcon, TrendingUp, Calendar, MapPin, ArrowRight, Tag
 } from 'lucide-react';
 import Swal from 'sweetalert2';
 
 
-interface Enrollment {
-  _id: string;
-  status: 'pending' | 'approved' | 'rejected';
-  companyName?: string;
-  interests: string[];
-  createdAt: string;
-}
-export interface User {
-  _id: string;
-  id?: string;
-  firstName: string;
-  lastName: string;
-  email: string;
-  role: 'member' | 'admin';
-  phone?: string;
-}
-interface Formation {
-  _id: string;
-  title: string;
-  date: string;
-  location: string;
-  maxSeats: number;
-  enrolledUsers: string[];
-  status: string;
-  registrations?: { userId: string; status: string }[]; // ← CORRIGÉ
-}
+import { Enrollment, Formation } from '../types';
 
 const Dashboard = () => {
   const { user } = useAuth();
+  console.log('Dashboard User Object:', user); // DEBUG: Check user data structure
   const [activeTab, setActiveTab] = useState<'dashboard' | 'profile'>('dashboard');
   const [enrollment, setEnrollment] = useState<Enrollment | null>(null);
   const [formations, setFormations] = useState<Formation[]>([]);
@@ -65,73 +41,108 @@ const Dashboard = () => {
 
   const getStatusText = (status: string) => {
     return status === 'pending' ? 'En attente' :
-           status === 'approved' ? 'Approuvé' :
-           status === 'rejected' ? 'Rejeté' : status;
+      status === 'approved' ? 'Approuvé' :
+        status === 'rejected' ? 'Rejeté' : status;
   };
-const { isLoading: authLoading } = useAuth();
-const [registeredFormationIds, setRegisteredFormationIds] = useState<Set<string>>(new Set());
+
+  // Helper for user photo fallback
+  const getUserPhoto = () => {
+    // Priorité à la nouvelle propriété photo (Cloudinary)
+    if (user?.photo?.url) return user.photo.url;
+    if (user?.photoURL) return user.photoURL;
+    if (user?.avatar) return user.avatar;
+    // fallback: initials avatar
+    if (user?.firstName && user?.lastName) {
+      return `https://ui-avatars.com/api/?name=${encodeURIComponent(
+        `${user.firstName} ${user.lastName}`
+      )}&background=16a34a&color=fff&bold=true`;
+    }
+    return 'https://ui-avatars.com/api/?name=U&background=16a34a&color=fff&bold=true';
+  };
+  const { isLoading: authLoading } = useAuth();
+  const [registeredFormationIds, setRegisteredFormationIds] = useState<Set<string>>(new Set());
 
 
-useEffect(() => {
-  const userId = user?.id || user?._id;
-  if (authLoading || !userId) return;
+  useEffect(() => {
+    const userId = user?.id || user?._id;
+    if (authLoading || !userId) return;
 
-  const fetchData = async () => {
+    const fetchData = async () => {
+      try {
+        setIsLoading(true);
+        const [enrRes, formRes] = await Promise.all([
+          enrollmentsAPI.getMyEnrollments(),
+          formationsAPI.getAll()
+        ]);
+
+        if (enrRes.data.length > 0) setEnrollment(enrRes.data[0]);
+
+        const allFormations: Formation[] = formRes.data.formations || [];
+        setFormations(allFormations);
+
+        const myRegistrations = allFormations
+          .flatMap(f => f.registrations?.filter(r => r.userId === userId).map(() => f._id) || []);
+
+        setRegisteredFormationIds(new Set(myRegistrations));
+
+        const myRegs = allFormations.filter(f =>
+          f.registrations?.some(r => String(r.userId) === String(userId))
+        );
+        setMyFormations(myRegs);
+
+      } catch (err: any) {
+        setError('Erreur');
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchData();
+  }, [user?.id, user?._id, authLoading]);
+
+  const handleRegister = async (formationId: string) => {
     try {
-      setIsLoading(true);
-      const [enrRes, formRes] = await Promise.all([
-        enrollmentsAPI.getMyEnrollments(),
-        formationsAPI.getAll()
-      ]);
+      await formationsAPI.register(formationId);
 
-      if (enrRes.data.length > 0) setEnrollment(enrRes.data[0]);
-
-      const allFormations: Formation[] = formRes.data.formations || [];
+      const res = await formationsAPI.getAll();
+      const allFormations = res.data.formations || [];
       setFormations(allFormations);
 
-      const myRegistrations = allFormations
-        .flatMap(f => f.registrations?.filter(r => r.userId === userId).map(() => f._id) || []);
-
-      setRegisteredFormationIds(new Set(myRegistrations));
-
-      const approved = allFormations.filter(f =>
-        f.registrations?.some(r => r.userId === userId && r.status === 'approved')
+      const myRegistrations = allFormations.flatMap((f: any) =>
+        f.registrations?.filter((r: any) => r.userId === user!.id).map(() => f._id) || []
       );
-      setMyFormations(approved);
+      const registeredIds = new Set<string>(myRegistrations);
+      setRegisteredFormationIds(registeredIds);
 
+      Swal.fire('Succès', 'Inscription envoyée !', 'success');
     } catch (err: any) {
-      setError('Erreur');
-    } finally {
-      setIsLoading(false);
+      Swal.fire('Erreur', err.response?.data?.message || 'Échec', 'error');
     }
   };
+  // Skeleton Loader Component
+  const SkeletonLoader = () => (
+    <div className="animate-pulse space-y-8">
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
+        {[1, 2, 3].map((i) => (
+          <div key={i} className="h-32 bg-gray-200 rounded-2xl"></div>
+        ))}
+      </div>
+      <div className="h-8 w-48 bg-gray-200 rounded mb-4"></div>
+      <div className="grid md:grid-cols-2 gap-4">
+        {[1, 2].map((i) => (
+          <div key={i} className="h-40 bg-gray-200 rounded-xl"></div>
+        ))}
+      </div>
+    </div>
+  );
 
-  fetchData();
-}, [user?.id, user?._id, authLoading]);
-
-const handleRegister = async (formationId: string) => {
-  try {
-    await formationsAPI.register(formationId);
-    
-    const res = await formationsAPI.getAll();
-    const allFormations = res.data.formations || [];
-    setFormations(allFormations);
-
-    const myRegistrations = allFormations.flatMap((f: any) => 
-      f.registrations?.filter((r: any) => r.userId === user!.id).map(() => f._id) || []
-    );
-    const registeredIds = new Set<string>(myRegistrations);
-    setRegisteredFormationIds(registeredIds);
-
-    Swal.fire('Succès', 'Inscription envoyée !', 'success');
-  } catch (err: any) {
-    Swal.fire('Erreur', err.response?.data?.message || 'Échec', 'error');
-  }
-};
   if (isLoading) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="w-8 h-8 border-4 border-green-600 border-t-transparent rounded-full animate-spin"></div>
+      <div className="min-h-screen bg-gray-50 p-8">
+        <div className="max-w-7xl mx-auto space-y-8">
+          <div className="h-48 bg-gray-200 rounded-2xl animate-pulse"></div>
+          <SkeletonLoader />
+        </div>
       </div>
     );
   }
@@ -186,14 +197,13 @@ const handleRegister = async (formationId: string) => {
               <button
                 key={tab}
                 onClick={() => setActiveTab(tab as any)}
-                className={`flex-1 py-3 px-6 rounded-xl font-medium text-sm transition-all ${
-                  activeTab === tab
-                    ? 'bg-green-500 text-white shadow-lg'
-                    : 'text-gray-600 hover:text-gray-900 hover:bg-white/50'
-                }`}
+                className={`flex-1 py-3 px-6 rounded-xl font-medium text-sm transition-all ${activeTab === tab
+                  ? 'bg-green-500 text-white shadow-lg'
+                  : 'text-gray-600 hover:text-gray-900 hover:bg-white/50'
+                  }`}
               >
                 <div className="flex items-center justify-center space-x-2">
-                  {tab === 'dashboard' ? <TrendingUp className="w-4 h-4" /> : <User className="w-4 h-4" />}
+                  {tab === 'dashboard' ? <TrendingUp className="w-4 h-4" /> : <UserIcon className="w-4 h-4" />}
                   <span>{tab === 'dashboard' ? 'Tableau de Bord' : 'Mon Profil'}</span>
                 </div>
               </button>
@@ -247,13 +257,23 @@ const handleRegister = async (formationId: string) => {
               <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.4 }}>
                 <h2 className="text-xl font-bold text-gray-900 mb-4">Mes Formations</h2>
                 <div className="grid md:grid-cols-2 gap-4">
-                  {myFormations.map(f => (
-                    <div key={f._id} className="bg-white/60 backdrop-blur-sm rounded-xl p-5 border border-white/40">
-                      <h3 className="font-semibold text-lg">{f.title}</h3>
-                      <p className="text-sm text-gray-600 flex items-center gap-1"><Calendar size={14} /> {new Date(f.date).toLocaleDateString('fr-FR')}</p>
-                      <p className="text-sm text-gray-600 flex items-center gap-1"><MapPin size={14} /> {f.location}</p>
-                    </div>
-                  ))}
+                  {myFormations.map(f => {
+                    const myReg = f.registrations?.find(r => String(r.userId) === String(user?.id || user?._id));
+                    return (
+                      <div key={f._id} className="bg-white/60 backdrop-blur-sm rounded-xl p-5 border border-white/40">
+                        <div className="flex justify-between items-start mb-2">
+                          <h3 className="font-semibold text-lg">{f.title}</h3>
+                          {myReg && (
+                            <span className={`px-2 py-1 rounded-full text-xs font-medium flex items-center gap-1 ${getStatusColor(myReg.status)}`}>
+                              {getStatusIcon(myReg.status)} {getStatusText(myReg.status)}
+                            </span>
+                          )}
+                        </div>
+                        <p className="text-sm text-gray-600 flex items-center gap-1"><Calendar size={14} /> {new Date(f.date).toLocaleDateString('fr-FR')}</p>
+                        <p className="text-sm text-gray-600 flex items-center gap-1"><MapPin size={14} /> {f.location}</p>
+                      </div>
+                    );
+                  })}
                 </div>
               </motion.div>
             )}
@@ -266,12 +286,21 @@ const handleRegister = async (formationId: string) => {
                   Voir tout <ArrowRight size={16} />
                 </a>
               </div>
-              {formations.filter(f => !f.registrations?.includes(user!.id)).length === 0 ? (
-                <p className="text-gray-600">Aucune formation disponible.</p>
+              {formations.filter(f => !f.registrations?.some(r => String(r.userId) === String(user?.id || user?._id))).length === 0 ? (
+                <div className="text-center py-12 bg-white/50 backdrop-blur-sm rounded-2xl border border-dashed border-gray-300">
+                  <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                    <Calendar className="w-8 h-8 text-gray-400" />
+                  </div>
+                  <h3 className="text-lg font-medium text-gray-900 mb-1">Aucune formation disponible</h3>
+                  <p className="text-gray-500 mb-6">Revenez plus tard pour de nouvelles opportunités.</p>
+                  <a href="/activities" className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-full shadow-sm text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500">
+                    Voir toutes les activités
+                  </a>
+                </div>
               ) : (
                 <div className="grid md:grid-cols-2 gap-4">
                   {formations
-                    .filter(f => !f.registrations?.some(r => r.userId === (user?.id || user?._id)))
+                    .filter(f => !f.registrations?.some(r => String(r.userId) === String(user?.id || user?._id)))
                     .slice(0, 4)
                     .map(f => (
                       <div key={f._id} className="bg-white/60 backdrop-blur-sm rounded-xl p-5 border border-white/40 hover:shadow-lg transition">
@@ -281,18 +310,18 @@ const handleRegister = async (formationId: string) => {
                         <p className="text-xs text-gray-500 mt-2">
                           Places : {f.maxSeats - f.enrolledUsers.length}/{f.maxSeats}
                         </p>
-                       {registeredFormationIds.has(f._id) ? (
-                        <button disabled className="bg-gray-400 text-white px-4 py-1.5 rounded-full text-sm">
-                          Inscription envoyée
-                        </button>
-                      ) : (
-                        <button
-                          onClick={() => handleRegister(f._id)}
-                          className="bg-orange-500 text-white px-4 py-1.5 rounded-full text-sm font-medium hover:bg-orange-600"
-                        >
-                          S’inscrire
-                        </button>
-                      )}
+                        {registeredFormationIds.has(f._id) ? (
+                          <button disabled className="bg-gray-400 text-white px-4 py-1.5 rounded-full text-sm">
+                            Inscription envoyée
+                          </button>
+                        ) : (
+                          <button
+                            onClick={() => handleRegister(f._id)}
+                            className="bg-orange-500 text-white px-4 py-1.5 rounded-full text-sm font-medium hover:bg-orange-600"
+                          >
+                            S’inscrire
+                          </button>
+                        )}
                       </div>
                     ))}
                 </div>
@@ -307,8 +336,12 @@ const handleRegister = async (formationId: string) => {
             <h2 className="text-xl font-bold text-gray-900 mb-6">Mon Profil</h2>
             <div className="grid md:grid-cols-2 gap-8">
               <div className="flex flex-col items-center">
-                <div className="w-32 h-32 rounded-full bg-gradient-to-br from-green-400 to-blue-500 flex items-center justify-center shadow-lg">
-                  <User className="w-16 h-16 text-white" />
+                <div className="w-32 h-32 rounded-full bg-gradient-to-br from-green-400 to-blue-500 flex items-center justify-center shadow-lg overflow-hidden">
+                  <img
+                    src={getUserPhoto()}
+                    alt={`${user?.firstName} ${user?.lastName}`}
+                    className="w-full h-full object-cover"
+                  />
                 </div>
                 <h3 className="mt-4 text-xl font-bold">{user?.firstName} {user?.lastName}</h3>
                 <p className="text-gray-600 capitalize">{user?.role}</p>

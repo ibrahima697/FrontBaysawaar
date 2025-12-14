@@ -1,40 +1,14 @@
 import { motion } from 'framer-motion';
+
 import { BookOpen, Users, FileText, Calendar, MapPin, ExternalLink } from 'lucide-react';
 import ActivityCard from '../components/ActivityCard';
 import { useEffect, useState } from 'react';
 import { useAuth } from '../context/AuthContext';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import { formationsAPI } from '../services/api';
 import Swal from 'sweetalert2';
 
-// === INTERFACES ===
-interface Registration {
-  _id: string;
-  userId: string;
-  status: 'pending' | 'approved' | 'rejected';
-  registeredAt: string;
-}
-
-export interface User {
-  _id: string;
-  id?: string;
-  firstName: string;
-  lastName: string;
-  email: string;
-  role: 'member' | 'admin';
-  phone?: string;
-}
-
-interface Formation {
-  _id: string;
-  title: string;
-  date: string;
-  location: string;
-  maxSeats: number;
-  enrolledUsers: string[];
-  priceNonMember?: number;
-  registrations?: Registration[]; // ← AJOUTÉ
-}
+import { User, Formation } from '../types';
 
 const Activities = () => {
   const { user, token } = useAuth() as { user: User | null; token: string | null };
@@ -44,99 +18,109 @@ const Activities = () => {
   const [approvedFormationIds, setApprovedFormationIds] = useState<Set<string>>(new Set());
   const navigate = useNavigate();
 
-useEffect(() => {
-  const userId = user?._id || user?.id;
-  if (!userId || !token) {
-    setLoading(false);
-    return;
-  }
+  useEffect(() => {
+    const userId = user?._id || user?.id;
+    if (!userId || !token) {
+      setLoading(false);
+      return;
+    }
 
-  const fetchFormations = async () => {
+    const fetchFormations = async () => {
+      try {
+        const res = await formationsAPI.getAll();
+        const allFormations: Formation[] = res.data.formations || [];
+        setFormations(allFormations);
+
+        // On recalcule proprement les états
+        const registered = new Set<string>();
+        const approved = new Set<string>();
+
+        allFormations.forEach(f => {
+          const userReg = f.registrations?.find(r => String(r.userId) === String(userId));
+          if (userReg) {
+            registered.add(f._id);
+            if (userReg.status === 'approved') {
+              approved.add(f._id);
+            }
+          }
+        });
+
+        setRegisteredFormationIds(registered);
+        setApprovedFormationIds(approved);
+      } catch (err) {
+        console.error("Erreur chargement formations :", err);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchFormations();
+  }, [user, token]);
+  const handleRegister = async (formationId: string) => {
+    if (!token) {
+      navigate('/login');
+      return;
+    }
+
     try {
+      await formationsAPI.register(formationId);
+
+      // Recharge les formations
       const res = await formationsAPI.getAll();
       const allFormations: Formation[] = res.data.formations || [];
       setFormations(allFormations);
 
-      // On recalcule proprement les états
+      // Recalcule les Sets
+      const userId = user!._id || user!.id;
       const registered = new Set<string>();
       const approved = new Set<string>();
 
-      allFormations.forEach(f => {
-        const userReg = f.registrations?.find(r => r.userId === userId);
-        if (userReg) {
-          registered.add(f._id);
-          if (userReg.status === 'approved') {
-            approved.add(f._id);
+      allFormations.forEach((f) => {
+        f.registrations?.forEach((r) => {
+          if (String(r.userId) === String(userId)) {
+            registered.add(f._id);
+            if (r.status === 'approved') approved.add(f._id);
           }
-        }
+        });
       });
 
       setRegisteredFormationIds(registered);
       setApprovedFormationIds(approved);
-    } catch (err) {
-      console.error("Erreur chargement formations :", err);
-    } finally {
-      setLoading(false);
+
+      Swal.fire('Succès', 'Inscription envoyée !', 'success');
+    } catch (err: any) {
+      Swal.fire('Erreur', err.response?.data?.message || 'Problème', 'error');
     }
   };
-
-  fetchFormations();
-}, [user, token]);
-const handleRegister = async (formationId: string) => {
-  if (!token) {
-    navigate('/login');
-    return;
-  }
-
-  try {
-    await axios.post(
-      `http://localhost:5005/api/formations/${formationId}/register`,
-      {},
-      {
-        headers: { Authorization: `Bearer ${token}` }
-      }
-    );
-
-    // Recharge les formations
-    const res = await axios.get('http://localhost:5005/api/formations');
-    setFormations(res.data.formations || []);
-
-    // Recalcule les Sets
-    const userId = user!._id;
-    const registered = new Set<string>();
-    const approved = new Set<string>();
-
-    res.data.formations.forEach((f: any) => {
-      f.registrations?.forEach((r: any) => {
-        if (r.userId.toString() === userId) {
-          registered.add(f._id);
-          if (r.status === 'approved') approved.add(f._id);
-        }
-      });
-    });
-
-    setRegisteredFormationIds(registered);
-    setApprovedFormationIds(approved);
-
-    Swal.fire('Succès', 'Inscription envoyée !', 'success');
-  } catch (err: any) {
-    Swal.fire('Erreur', err.response?.data?.message || 'Problème', 'error');
-  }
-};
 
 
   return (
     <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="min-h-screen bg-gradient-to-b from-green-50 to-white">
       {/* Hero */}
-      <section className="relative pt-20 pb-16 bg-cover bg-center" style={{ backgroundImage: 'ur[](https://res.cloudinary.com/drxouwbms/image/upload/v1755949759/Screenshot_2025-08-23_at_11_41_05_1_-Picsart-AiImageEnhancer_kfsp1y.png)' }}>
+      {/* Hero */}
+      <section className="relative pt-16 pb-12 sm:py-20 md:py-24 bg-cover bg-center bg-no-repeat" style={{ backgroundImage: 'url(https://res.cloudinary.com/drxouwbms/image/upload/v1755949759/Screenshot_2025-08-23_at_11_41_05_1_-Picsart-AiImageEnhancer_kfsp1y.png)' }}>
         <div className="absolute inset-0 bg-black/50"></div>
-        <div className="relative z-10 max-w-7xl mx-auto px-4 text-center">
-          <motion.h1 initial={{ y: 30, opacity: 0 }} animate={{ y: 0, opacity: 1 }} className="text-4xl md:text-6xl font-bold text-white mb-6">
-            Nos <span className="text-orange-400">Activités Sociales</span>
-          </motion.h1>
-          <p className="text-xl text-white/90 max-w-3xl mx-auto">
-            Formations gratuites, autonomisation des femmes, formalisation des entreprises — tout pour votre réussite.
-          </p>
+
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center relative z-10">
+          <motion.div
+            initial={{ y: 50, opacity: 0 }}
+            animate={{ y: 0, opacity: 1 }}
+            transition={{ duration: 0.8 }}
+          >
+            <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold text-white mb-4 sm:mb-6">
+              Nos <span className="text-transparent bg-clip-text bg-gradient-to-r from-green-400 to-blue-400">Activités Sociales</span>
+            </h1>
+            <p className="text-base sm:text-lg md:text-xl text-white/90 max-w-3xl mx-auto mb-6 sm:mb-8 px-2 sm:px-0">
+              Formations gratuites, autonomisation des femmes, formalisation des entreprises — tout pour votre réussite.
+            </p>
+            <Link
+              to={token ? "/dashboard" : "/enrollments"}
+              className="inline-flex items-center space-x-2 bg-green-600 text-white px-6 sm:px-8 py-3 sm:py-4 rounded-full font-semibold hover:bg-green-700 transition-all duration-300 shadow-lg hover:shadow-xl text-sm sm:text-base"
+            >
+              <span>{token ? "Accéder à mon espace" : "Rejoindre la communauté"}</span>
+              <ExternalLink size={18} className="sm:w-5 sm:h-5" />
+            </Link>
+          </motion.div>
         </div>
       </section>
 
@@ -151,6 +135,7 @@ const handleRegister = async (formationId: string) => {
           color="from-green-500 to-emerald-600"
           ctaText={token ? "Voir mes formations" : "Devenir membre"}
           ctaLink={token ? "/dashboard" : "/enrollments"}
+          ctaState={{ type: 'formation' }}
         >
           {loading ? (
             <p className="text-white/80">Chargement...</p>
@@ -173,27 +158,26 @@ const handleRegister = async (formationId: string) => {
                     <span className="text-sm">
                       Places restantes : {formation.maxSeats - formation.enrolledUsers.length}
                     </span>
-             {user?.role !== 'admin' && (
-              <>
-                {approvedFormationIds.has(formation._id) ? (
-                  <span className="px-4 py-2 bg-green-600 text-white rounded-full font-bold text-sm">
-                    Inscription approuvée
-                  </span>
-                ) : registeredFormationIds.has(formation._id) ? (
-                  <span className="px-4 py-2 bg-yellow-500 text-white rounded-full font-bold text-sm">
-                    En attente d’approbation
-                  </span>
-                ) : (
-                  <button
-                    onClick={() => handleRegister(formation._id)}
-                    className="px-6 py-3 bg-white text-green-600 font-bold rounded-full hover:bg-green-50 transition shadow-md"
-                  >
-                    S’inscrire
-                  </button>
-                )}
-              </>
-            )}
-          </div>
+                    {user?.role !== 'admin' && (
+                      <>
+                        {registeredFormationIds.has(formation._id) ? (
+                          <button
+                            disabled
+                            className="px-6 py-3 bg-gray-300 text-gray-600 font-bold rounded-full cursor-not-allowed"
+                          >
+                            {approvedFormationIds.has(formation._id) ? 'Déjà inscrit (Validé)' : 'Déjà inscrit'}
+                          </button>
+                        ) : (
+                          <button
+                            onClick={() => handleRegister(formation._id)}
+                            className="px-6 py-3 bg-white text-green-600 font-bold rounded-full hover:bg-green-50 transition shadow-md"
+                          >
+                            S’inscrire
+                          </button>
+                        )}
+                      </>
+                    )}
+                  </div>
                 </div>
               ))}
             </div>
@@ -209,6 +193,7 @@ const handleRegister = async (formationId: string) => {
           color="from-purple-500 to-pink-600"
           ctaText="Rejoindre le programme"
           ctaLink="/enrollments"
+          ctaState={{ type: 'women_empowerment' }}
         >
           <div className="space-y-4">
             <div className="bg-white/20 p-4 rounded-xl">
@@ -231,6 +216,7 @@ const handleRegister = async (formationId: string) => {
           color="from-blue-500 to-cyan-600"
           ctaText="Demander un accompagnement"
           ctaLink="/enrollments"
+          ctaState={{ type: 'formalization' }}
         >
           <ol className="space-y-2 text-sm">
             {[

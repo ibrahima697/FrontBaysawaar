@@ -1,10 +1,10 @@
 import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { 
-  Users, 
-  Clock, 
-  CheckCircle, 
-  XCircle, 
+import {
+  Users,
+  Clock,
+  CheckCircle,
+  XCircle,
   Trash2,
   RefreshCw,
   TrendingUp,
@@ -17,7 +17,6 @@ import {
   Calendar,
   MapPin,
   Pencil,
-  Plus,
   UserCheck,
   UserX
 } from 'lucide-react';
@@ -178,9 +177,9 @@ const AdminDashboard = () => {
   }, [activeTab]);
 
 
-    const fetchFormations = async () => {
+  const fetchFormations = async () => {
     try {
-      const response = await formationsAPI.getAll();
+      const response = await formationsAPI.getAllAdmin();
       setFormations(response.data.formations || []);
     } catch (error) {
       console.error('Erreur formations:', error);
@@ -247,7 +246,7 @@ const AdminDashboard = () => {
   const handleEnrollmentAction = async (id: string, action: 'approve' | 'reject') => {
     const actionText = action === 'approve' ? 'approuver' : 'rejeter';
     const actionColor = action === 'approve' ? '#059669' : '#dc2626';
-    
+
     const result = await Swal.fire({
       title: `Êtes-vous sûr de vouloir ${actionText} cette demande ?`,
       text: "Cette action ne peut pas être annulée.",
@@ -262,7 +261,7 @@ const AdminDashboard = () => {
     if (result.isConfirmed) {
       try {
         await adminAPI.updateEnrollment(id, { status: action === 'approve' ? 'approved' : 'rejected' });
-        
+
         Swal.fire({
           icon: 'success',
           title: 'Succès',
@@ -285,26 +284,26 @@ const AdminDashboard = () => {
     }
   };
 
-const handleRegistrationAction = async (formationId: string, regId: string, action: 'approve' | 'reject') => {
-  const result = await Swal.fire({
-    title: `Voulez-vous ${action === 'approve' ? 'valider' : 'refuser'} cette inscription ?`,
-    icon: 'warning',
-    showCancelButton: true,
-    confirmButtonColor: action === 'approve' ? '#059669' : '#dc2626',
-  });
+  const handleRegistrationAction = async (formationId: string, regId: string, action: 'approve' | 'reject') => {
+    const result = await Swal.fire({
+      title: `Voulez-vous ${action === 'approve' ? 'valider' : 'refuser'} cette inscription ?`,
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: action === 'approve' ? '#059669' : '#dc2626',
+    });
 
-  if (result.isConfirmed) {
-    try {
-      await formationsAPI.updateRegistration(formationId, regId, { 
-        status: action === 'approve' ? 'approved' : 'rejected' 
-      });
-      Swal.fire('Succès', `Inscription ${action === 'approve' ? 'validée' : 'refusée'}`, 'success');
-      fetchFormations(); // Rafraîchit immédiatement
-    } catch (error) {
-      Swal.fire('Erreur', 'Action impossible', 'error');
+    if (result.isConfirmed) {
+      try {
+        await formationsAPI.updateRegistration(formationId, regId, {
+          status: action === 'approve' ? 'approved' : 'rejected'
+        });
+        Swal.fire('Succès', `Inscription ${action === 'approve' ? 'validée' : 'refusée'}`, 'success');
+        fetchFormations(); // Rafraîchit immédiatement
+      } catch (error) {
+        Swal.fire('Erreur', 'Action impossible', 'error');
+      }
     }
-  }
-};
+  };
 
   const handleDeleteEnrollment = async (id: string) => {
     const result = await Swal.fire({
@@ -321,7 +320,7 @@ const handleRegistrationAction = async (formationId: string, regId: string, acti
     if (result.isConfirmed) {
       try {
         await adminAPI.deleteEnrollment(id);
-        
+
         Swal.fire({
           icon: 'success',
           title: 'Supprimé',
@@ -414,10 +413,10 @@ const handleRegistrationAction = async (formationId: string, regId: string, acti
   };
 
   const handleFormationSaved = () => {
-  setEditingFormation(null);
-  setShowFormationFormModal(false);
-  fetchFormations(); // Rafraîchit la liste
-};
+    setEditingFormation(null);
+    setShowFormationFormModal(false);
+    fetchFormations(); // Rafraîchit la liste
+  };
 
   const getStatusIcon = (status: string) => {
     switch (status) {
@@ -514,11 +513,10 @@ const handleRegistrationAction = async (formationId: string, regId: string, acti
           <nav className="flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-2">
             <button
               onClick={() => setActiveTab('dashboard')}
-              className={`py-3 sm:py-4 px-4 sm:px-6 rounded-xl font-medium text-sm transition-all duration-300 ${
-                activeTab === 'dashboard'
-                  ? 'bg-green-500 text-white shadow-lg'
-                  : 'text-gray-600 hover:text-gray-900 hover:bg-white/50'
-              }`}
+              className={`py-3 sm:py-4 px-4 sm:px-6 rounded-xl font-medium text-sm transition-all duration-300 ${activeTab === 'dashboard'
+                ? 'bg-green-500 text-white shadow-lg'
+                : 'text-gray-600 hover:text-gray-900 hover:bg-white/50'
+                }`}
             >
               <div className="flex items-center space-x-2">
                 <TrendingUp className="w-4 h-4" />
@@ -528,11 +526,10 @@ const handleRegistrationAction = async (formationId: string, regId: string, acti
 
             <button
               onClick={() => setActiveTab('formations')}
-              className={`py-3 sm:py4 px-4 sm:px-6 rounded-xl font-medium text-sm transition-all duration-300 ${
-                activeTab === 'formations'
-                  ? 'bg-green-500 text-white shadow-lg'
-                  : 'text-gray-600 hover:text-gray-900 hover:bg-white/50'
-              }`}
+              className={`py-3 sm:py4 px-4 sm:px-6 rounded-xl font-medium text-sm transition-all duration-300 ${activeTab === 'formations'
+                ? 'bg-green-500 text-white shadow-lg'
+                : 'text-gray-600 hover:text-gray-900 hover:bg-white/50'
+                }`}
             >
               <div className="flex items-center space-x-2">
                 <BookOpen className="w-4 h-4" />
@@ -541,11 +538,10 @@ const handleRegistrationAction = async (formationId: string, regId: string, acti
             </button>
             <button
               onClick={() => setActiveTab('products')}
-              className={`py-3 sm:py-4 px-4 sm:px-6 rounded-xl font-medium text-sm transition-all duration-300 ${
-                activeTab === 'products'
-                  ? 'bg-green-500 text-white shadow-lg'
-                  : 'text-gray-600 hover:text-gray-900 hover:bg-white/50'
-              }`}
+              className={`py-3 sm:py-4 px-4 sm:px-6 rounded-xl font-medium text-sm transition-all duration-300 ${activeTab === 'products'
+                ? 'bg-green-500 text-white shadow-lg'
+                : 'text-gray-600 hover:text-gray-900 hover:bg-white/50'
+                }`}
             >
               <div className="flex items-center space-x-2">
                 <Package className="w-4 h-4" />
@@ -554,11 +550,10 @@ const handleRegistrationAction = async (formationId: string, regId: string, acti
             </button>
             <button
               onClick={() => setActiveTab('blogs')}
-              className={`py-3 sm:py-4 px-4 sm:px-6 rounded-xl font-medium text-sm transition-all duration-300 ${
-                activeTab === 'blogs'
-                  ? 'bg-green-500 text-white shadow-lg'
-                  : 'text-gray-600 hover:text-gray-900 hover:bg-white/50'
-              }`}
+              className={`py-3 sm:py-4 px-4 sm:px-6 rounded-xl font-medium text-sm transition-all duration-300 ${activeTab === 'blogs'
+                ? 'bg-green-500 text-white shadow-lg'
+                : 'text-gray-600 hover:text-gray-900 hover:bg-white/50'
+                }`}
             >
               <div className="flex items-center space-x-2">
                 <BookOpen className="w-4 h-4" />
@@ -657,41 +652,37 @@ const handleRegistrationAction = async (formationId: string, regId: string, acti
                   <div className="flex flex-wrap gap-2">
                     <button
                       onClick={() => setFilter('all')}
-                      className={`px-4 py-2 rounded-xl text-sm font-medium transition-all duration-300 ${
-                        filter === 'all'
-                          ? 'bg-green-500 text-white shadow-lg'
-                          : 'bg-white/60 text-gray-600 hover:bg-white/80 border border-white/40'
-                      }`}
+                      className={`px-4 py-2 rounded-xl text-sm font-medium transition-all duration-300 ${filter === 'all'
+                        ? 'bg-green-500 text-white shadow-lg'
+                        : 'bg-white/60 text-gray-600 hover:bg-white/80 border border-white/40'
+                        }`}
                     >
                       Tous
                     </button>
                     <button
                       onClick={() => setFilter('pending')}
-                      className={`px-4 py-2 rounded-xl text-sm font-medium transition-all duration-300 ${
-                        filter === 'pending'
-                          ? 'bg-yellow-500 text-white shadow-lg'
-                          : 'bg-white/60 text-gray-600 hover:bg-white/80 border border-white/40'
-                      }`}
+                      className={`px-4 py-2 rounded-xl text-sm font-medium transition-all duration-300 ${filter === 'pending'
+                        ? 'bg-yellow-500 text-white shadow-lg'
+                        : 'bg-white/60 text-gray-600 hover:bg-white/80 border border-white/40'
+                        }`}
                     >
                       En Attente
                     </button>
                     <button
                       onClick={() => setFilter('approved')}
-                      className={`px-4 py-2 rounded-xl text-sm font-medium transition-all duration-300 ${
-                        filter === 'approved'
-                          ? 'bg-green-500 text-white shadow-lg'
-                          : 'bg-white/60 text-gray-600 hover:bg-white/80 border border-white/40'
-                      }`}
+                      className={`px-4 py-2 rounded-xl text-sm font-medium transition-all duration-300 ${filter === 'approved'
+                        ? 'bg-green-500 text-white shadow-lg'
+                        : 'bg-white/60 text-gray-600 hover:bg-white/80 border border-white/40'
+                        }`}
                     >
                       Approuvés
                     </button>
                     <button
                       onClick={() => setFilter('rejected')}
-                      className={`px-4 py-2 rounded-xl text-sm font-medium transition-all duration-300 ${
-                        filter === 'rejected'
-                          ? 'bg-red-500 text-white shadow-lg'
-                          : 'bg-white/60 text-gray-600 hover:bg-white/80 border border-white/40'
-                      }`}
+                      className={`px-4 py-2 rounded-xl text-sm font-medium transition-all duration-300 ${filter === 'rejected'
+                        ? 'bg-red-500 text-white shadow-lg'
+                        : 'bg-white/60 text-gray-600 hover:bg-white/80 border border-white/40'
+                        }`}
                     >
                       Rejetés
                     </button>
@@ -716,86 +707,86 @@ const handleRegistrationAction = async (formationId: string, regId: string, acti
                       {enrollments
                         .slice((enrollmentsCurrentPage - 1) * enrollmentsPerPage, enrollmentsCurrentPage * enrollmentsPerPage)
                         .map((enrollment) => (
-                      <motion.div
-                        key={enrollment._id}
-                        initial={{ opacity: 0, y: 20 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        className="bg-white/60 backdrop-blur-sm rounded-xl p-4 sm:p-6 border border-white/40 hover:bg-white/80 transition-all duration-300 hover:shadow-lg"
-                      >
-                        <div className="flex items-start justify-between">
-                          <div className="flex-1">
-                            <div className="flex items-center space-x-3 mb-4">
-                              <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${getTypeColor(enrollment.type)}`}>
-                                {enrollment.type === 'partner' ? 'Partenaire' : 'Membre'}
-                              </span>
-                              <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${getStatusColor(enrollment.status)}`}>
-                                {getStatusIcon(enrollment.status)}
-                                <span className="ml-1">
-                                  {enrollment.status === 'pending' ? 'En Attente' : 
-                                   enrollment.status === 'approved' ? 'Approuvé' : 'Rejeté'}
-                                </span>
-                              </span>
-                            </div>
+                          <motion.div
+                            key={enrollment._id}
+                            initial={{ opacity: 0, y: 20 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            className="bg-white/60 backdrop-blur-sm rounded-xl p-4 sm:p-6 border border-white/40 hover:bg-white/80 transition-all duration-300 hover:shadow-lg"
+                          >
+                            <div className="flex items-start justify-between">
+                              <div className="flex-1">
+                                <div className="flex items-center space-x-3 mb-4">
+                                  <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${getTypeColor(enrollment.type)}`}>
+                                    {enrollment.type === 'partner' ? 'Partenaire' : 'Membre'}
+                                  </span>
+                                  <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${getStatusColor(enrollment.status)}`}>
+                                    {getStatusIcon(enrollment.status)}
+                                    <span className="ml-1">
+                                      {enrollment.status === 'pending' ? 'En Attente' :
+                                        enrollment.status === 'approved' ? 'Approuvé' : 'Rejeté'}
+                                    </span>
+                                  </span>
+                                </div>
 
-                            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-                              <div>
-                                <p className="text-sm font-medium text-gray-600">Nom</p>
-                                <p className="text-gray-900">{enrollment.firstName} {enrollment.lastName}</p>
+                                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                                  <div>
+                                    <p className="text-sm font-medium text-gray-600">Nom</p>
+                                    <p className="text-gray-900">{enrollment.firstName} {enrollment.lastName}</p>
+                                  </div>
+                                  <div>
+                                    <p className="text-sm font-medium text-gray-600">Email</p>
+                                    <p className="text-gray-900">{enrollment.email}</p>
+                                  </div>
+                                  <div>
+                                    <p className="text-sm font-medium text-gray-600">Téléphone</p>
+                                    <p className="text-gray-900">{enrollment.phone}</p>
+                                  </div>
+                                  <div>
+                                    <p className="text-sm font-medium text-gray-600">Entreprise</p>
+                                    <p className="text-gray-900">{enrollment.companyName}</p>
+                                  </div>
+                                  <div>
+                                    <p className="text-sm font-medium text-gray-600">Pays</p>
+                                    <p className="text-gray-900">{enrollment.country}</p>
+                                  </div>
+                                  <div>
+                                    <p className="text-sm font-medium text-gray-600">Date</p>
+                                    <p className="text-gray-900">
+                                      {new Date(enrollment.createdAt).toLocaleDateString('fr-FR')}
+                                    </p>
+                                  </div>
+                                </div>
                               </div>
-                              <div>
-                                <p className="text-sm font-medium text-gray-600">Email</p>
-                                <p className="text-gray-900">{enrollment.email}</p>
-                              </div>
-                              <div>
-                                <p className="text-sm font-medium text-gray-600">Téléphone</p>
-                                <p className="text-gray-900">{enrollment.phone}</p>
-                              </div>
-                              <div>
-                                <p className="text-sm font-medium text-gray-600">Entreprise</p>
-                                <p className="text-gray-900">{enrollment.companyName}</p>
-                              </div>
-                              <div>
-                                <p className="text-sm font-medium text-gray-600">Pays</p>
-                                <p className="text-gray-900">{enrollment.country}</p>
-                              </div>
-                              <div>
-                                <p className="text-sm font-medium text-gray-600">Date</p>
-                                <p className="text-gray-900">
-                                  {new Date(enrollment.createdAt).toLocaleDateString('fr-FR')}
-                                </p>
+
+                              <div className="flex flex-col sm:flex-row items-stretch sm:items-center space-y-2 sm:space-y-0 sm:space-x-2 ml-4">
+                                {enrollment.status === 'pending' && (
+                                  <>
+                                    <button
+                                      onClick={() => handleEnrollmentAction(enrollment._id, 'approve')}
+                                      className="flex items-center justify-center space-x-1 bg-gradient-to-r from-green-500 to-green-600 text-white px-4 py-2 rounded-xl hover:from-green-600 hover:to-green-700 transition-all duration-300 shadow-lg hover:shadow-xl"
+                                    >
+                                      <CheckCircle className="w-4 h-4" />
+                                      <span className="text-sm font-medium">Approuver</span>
+                                    </button>
+                                    <button
+                                      onClick={() => handleEnrollmentAction(enrollment._id, 'reject')}
+                                      className="flex items-center justify-center space-x-1 bg-gradient-to-r from-red-500 to-red-600 text-white px-4 py-2 rounded-xl hover:from-red-600 hover:to-red-700 transition-all duration-300 shadow-lg hover:shadow-xl"
+                                    >
+                                      <XCircle className="w-4 h-4" />
+                                      <span className="text-sm font-medium">Rejeter</span>
+                                    </button>
+                                  </>
+                                )}
+                                <button
+                                  onClick={() => handleDeleteEnrollment(enrollment._id)}
+                                  className="flex items-center justify-center space-x-1 bg-gradient-to-r from-gray-500 to-gray-600 text-white px-4 py-2 rounded-xl hover:from-gray-600 hover:to-gray-700 transition-all duration-300 shadow-lg hover:shadow-xl"
+                                >
+                                  <Trash2 className="w-4 h-4" />
+                                  <span className="text-sm font-medium">Supprimer</span>
+                                </button>
                               </div>
                             </div>
-                          </div>
-
-                          <div className="flex flex-col sm:flex-row items-stretch sm:items-center space-y-2 sm:space-y-0 sm:space-x-2 ml-4">
-                            {enrollment.status === 'pending' && (
-                              <>
-                                <button
-                                  onClick={() => handleEnrollmentAction(enrollment._id, 'approve')}
-                                  className="flex items-center justify-center space-x-1 bg-gradient-to-r from-green-500 to-green-600 text-white px-4 py-2 rounded-xl hover:from-green-600 hover:to-green-700 transition-all duration-300 shadow-lg hover:shadow-xl"
-                                >
-                                  <CheckCircle className="w-4 h-4" />
-                                  <span className="text-sm font-medium">Approuver</span>
-                                </button>
-                                <button
-                                  onClick={() => handleEnrollmentAction(enrollment._id, 'reject')}
-                                  className="flex items-center justify-center space-x-1 bg-gradient-to-r from-red-500 to-red-600 text-white px-4 py-2 rounded-xl hover:from-red-600 hover:to-red-700 transition-all duration-300 shadow-lg hover:shadow-xl"
-                                >
-                                  <XCircle className="w-4 h-4" />
-                                  <span className="text-sm font-medium">Rejeter</span>
-                                </button>
-                              </>
-                            )}
-                            <button
-                              onClick={() => handleDeleteEnrollment(enrollment._id)}
-                              className="flex items-center justify-center space-x-1 bg-gradient-to-r from-gray-500 to-gray-600 text-white px-4 py-2 rounded-xl hover:from-gray-600 hover:to-gray-700 transition-all duration-300 shadow-lg hover:shadow-xl"
-                            >
-                              <Trash2 className="w-4 h-4" />
-                              <span className="text-sm font-medium">Supprimer</span>
-                            </button>
-                          </div>
-                        </div>
-                      </motion.div>
+                          </motion.div>
                         ))}
                     </div>
 
@@ -806,39 +797,38 @@ const handleRegistrationAction = async (formationId: string, regId: string, acti
                         <div className="text-center mb-4 text-sm text-gray-600">
                           Affichage de {Math.min((enrollmentsCurrentPage - 1) * enrollmentsPerPage + 1, enrollments.length)} à {Math.min(enrollmentsCurrentPage * enrollmentsPerPage, enrollments.length)} sur {enrollments.length} enrôlements
                         </div>
-                        
-                        <div className="flex justify-center">
-                        <nav className="flex items-center space-x-2">
-                          <button
-                            onClick={() => setEnrollmentsCurrentPage(enrollmentsCurrentPage - 1)}
-                            disabled={enrollmentsCurrentPage === 1}
-                            className="px-3 py-2 rounded-lg border border-gray-300 text-gray-500 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
-                          >
-                            <ChevronLeft size={20} />
-                          </button>
 
-                          {Array.from({ length: Math.ceil(enrollments.length / enrollmentsPerPage) }, (_, i) => i + 1).map((pageNumber) => (
+                        <div className="flex justify-center">
+                          <nav className="flex items-center space-x-2">
                             <button
-                              key={pageNumber}
-                              onClick={() => setEnrollmentsCurrentPage(pageNumber)}
-                              className={`px-4 py-2 rounded-lg border ${
-                                enrollmentsCurrentPage === pageNumber
+                              onClick={() => setEnrollmentsCurrentPage(enrollmentsCurrentPage - 1)}
+                              disabled={enrollmentsCurrentPage === 1}
+                              className="px-3 py-2 rounded-lg border border-gray-300 text-gray-500 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
+                            >
+                              <ChevronLeft size={20} />
+                            </button>
+
+                            {Array.from({ length: Math.ceil(enrollments.length / enrollmentsPerPage) }, (_, i) => i + 1).map((pageNumber) => (
+                              <button
+                                key={pageNumber}
+                                onClick={() => setEnrollmentsCurrentPage(pageNumber)}
+                                className={`px-4 py-2 rounded-lg border ${enrollmentsCurrentPage === pageNumber
                                   ? 'bg-green-600 text-white border-green-600'
                                   : 'border-gray-300 text-gray-700 hover:bg-gray-50'
-                              }`}
-                            >
-                              {pageNumber}
-                            </button>
-                          ))}
+                                  }`}
+                              >
+                                {pageNumber}
+                              </button>
+                            ))}
 
-                          <button
-                            onClick={() => setEnrollmentsCurrentPage(enrollmentsCurrentPage + 1)}
-                            disabled={enrollmentsCurrentPage === Math.ceil(enrollments.length / enrollmentsPerPage)}
-                            className="px-3 py-2 rounded-lg border border-gray-300 text-gray-500 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
-                          >
-                            <ChevronRight size={20} />
-                          </button>
-                        </nav>
+                            <button
+                              onClick={() => setEnrollmentsCurrentPage(enrollmentsCurrentPage + 1)}
+                              disabled={enrollmentsCurrentPage === Math.ceil(enrollments.length / enrollmentsPerPage)}
+                              className="px-3 py-2 rounded-lg border border-gray-300 text-gray-500 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
+                            >
+                              <ChevronRight size={20} />
+                            </button>
+                          </nav>
                         </div>
                       </div>
                     )}
@@ -854,11 +844,11 @@ const handleRegistrationAction = async (formationId: string, regId: string, acti
           <div>
             <div className="flex justify-between items-center mb-6">
               <h2 className="text-3xl font-bold">Formations</h2>
- <button
+              <button
                 onClick={() => {
                   setEditingFormation(null);
                   setShowFormationFormModal(true);
-                  
+
                 }}
                 className="flex items-center space-x-2 bg-gradient-to-r from-green-500 to-green-600 text-white px-6 py-3 rounded-xl hover:from-green-600 hover:to-green-700 transition-all duration-300 shadow-lg hover:shadow-xl cursor-pointer relative z-50"
               >
@@ -915,57 +905,57 @@ const handleRegistrationAction = async (formationId: string, regId: string, acti
           </div>
         )}
       </div>
-        {/* Section Produits */}
-        {activeTab === 'products' && (
-          <div>
-            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between space-y-4 sm:space-y-0 mb-6">
-              <div>
-                <h2 className="text-2xl sm:text-3xl font-bold text-gray-900">Gestion des Produits</h2>
-                <p className="text-gray-600 mt-1">Gérez votre catalogue de produits</p>
-              </div>
-          
-              <button
-                onClick={() => {
-                  setEditingProduct(null);
-                  setShowProductFormModal(true);
-                  
-                }}
-                className="flex items-center space-x-2 bg-gradient-to-r from-green-500 to-green-600 text-white px-6 py-3 rounded-xl hover:from-green-600 hover:to-green-700 transition-all duration-300 shadow-lg hover:shadow-xl cursor-pointer relative z-50"
-              >
-                <PlusIcon className="w-5 h-5" />
-                <span className="font-medium">Ajouter un produit</span>
-              </button>
+      {/* Section Produits */}
+      {activeTab === 'products' && (
+        <div>
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between space-y-4 sm:space-y-0 mb-6">
+            <div>
+              <h2 className="text-2xl sm:text-3xl font-bold text-gray-900">Gestion des Produits</h2>
+              <p className="text-gray-600 mt-1">Gérez votre catalogue de produits</p>
             </div>
 
-            <div className="bg-white/70 backdrop-blur-xl rounded-2xl border border-white/30 shadow-xl">
-              <div className="overflow-x-auto">
-                <table className="min-w-full divide-y divide-white/20">
-                  <thead className="bg-white/50 backdrop-blur-sm">
-                    <tr>
-                      <th className="px-4 sm:px-6 py-3 sm:py-4 text-left text-xs sm:text-sm font-semibold text-gray-700 uppercase tracking-wider">
-                        Produit
-                      </th>
-                      <th className="px-4 sm:px-6 py-3 sm:py-4 text-left text-xs sm:text-sm font-semibold text-gray-700 uppercase tracking-wider">
-                        Prix
-                      </th>
-                      <th className="px-4 sm:px-6 py-3 sm:py-4 text-left text-xs sm:text-sm font-semibold text-gray-700 uppercase tracking-wider">
-                        Stock
-                      </th>
-                      <th className="px-4 sm:px-6 py-3 sm:py-4 text-left text-xs sm:text-sm font-semibold text-gray-700 uppercase tracking-wider">
-                        Catégorie
-                      </th>
-                      <th className="px-4 sm:px-6 py-3 sm:py-4 text-left text-xs sm:text-sm font-semibold text-gray-700 uppercase tracking-wider">
-                        Statut
-                      </th>
-                      <th className="px-4 sm:px-6 py-3 sm:py-4 text-left text-xs sm:text-sm font-semibold text-gray-700 uppercase tracking-wider">
-                        Actions
-                      </th>
-                    </tr>
-                  </thead>
-                  <tbody className="bg-white/30 backdrop-blur-sm divide-y divide-white/20">
-                    {products
-                      .slice((productsCurrentPage - 1) * productsPerPage, productsCurrentPage * productsPerPage)
-                      .map((product) => (
+            <button
+              onClick={() => {
+                setEditingProduct(null);
+                setShowProductFormModal(true);
+
+              }}
+              className="flex items-center space-x-2 bg-gradient-to-r from-green-500 to-green-600 text-white px-6 py-3 rounded-xl hover:from-green-600 hover:to-green-700 transition-all duration-300 shadow-lg hover:shadow-xl cursor-pointer relative z-50"
+            >
+              <PlusIcon className="w-5 h-5" />
+              <span className="font-medium">Ajouter un produit</span>
+            </button>
+          </div>
+
+          <div className="bg-white/70 backdrop-blur-xl rounded-2xl border border-white/30 shadow-xl">
+            <div className="overflow-x-auto">
+              <table className="min-w-full divide-y divide-white/20">
+                <thead className="bg-white/50 backdrop-blur-sm">
+                  <tr>
+                    <th className="px-4 sm:px-6 py-3 sm:py-4 text-left text-xs sm:text-sm font-semibold text-gray-700 uppercase tracking-wider">
+                      Produit
+                    </th>
+                    <th className="px-4 sm:px-6 py-3 sm:py-4 text-left text-xs sm:text-sm font-semibold text-gray-700 uppercase tracking-wider">
+                      Prix
+                    </th>
+                    <th className="px-4 sm:px-6 py-3 sm:py-4 text-left text-xs sm:text-sm font-semibold text-gray-700 uppercase tracking-wider">
+                      Stock
+                    </th>
+                    <th className="px-4 sm:px-6 py-3 sm:py-4 text-left text-xs sm:text-sm font-semibold text-gray-700 uppercase tracking-wider">
+                      Catégorie
+                    </th>
+                    <th className="px-4 sm:px-6 py-3 sm:py-4 text-left text-xs sm:text-sm font-semibold text-gray-700 uppercase tracking-wider">
+                      Statut
+                    </th>
+                    <th className="px-4 sm:px-6 py-3 sm:py-4 text-left text-xs sm:text-sm font-semibold text-gray-700 uppercase tracking-wider">
+                      Actions
+                    </th>
+                  </tr>
+                </thead>
+                <tbody className="bg-white/30 backdrop-blur-sm divide-y divide-white/20">
+                  {products
+                    .slice((productsCurrentPage - 1) * productsPerPage, productsCurrentPage * productsPerPage)
+                    .map((product) => (
                       <tr key={product._id} className="hover:bg-white/50 transition-all duration-300">
                         <td className="px-4 sm:px-6 py-4 whitespace-nowrap">
                           <div className="flex items-center space-x-3">
@@ -992,9 +982,8 @@ const handleRegistrationAction = async (formationId: string, regId: string, acti
                           {product.category}
                         </td>
                         <td className="px-4 sm:px-6 py-4 whitespace-nowrap">
-                          <span className={`inline-flex px-3 py-1 text-xs font-semibold rounded-full ${
-                            product.isActive ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'
-                          }`}>
+                          <span className={`inline-flex px-3 py-1 text-xs font-semibold rounded-full ${product.isActive ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'
+                            }`}>
                             {product.isActive ? 'Actif' : 'Inactif'}
                           </span>
                         </td>
@@ -1016,24 +1005,24 @@ const handleRegistrationAction = async (formationId: string, regId: string, acti
                         </td>
                       </tr>
                     ))}
-                  </tbody>
-                </table>
-                {products.length === 0 && (
-                  <div className="text-center py-8 text-gray-500">
-                    Aucun produit trouvé
-                  </div>
-                )}
-              </div>
+                </tbody>
+              </table>
+              {products.length === 0 && (
+                <div className="text-center py-8 text-gray-500">
+                  Aucun produit trouvé
+                </div>
+              )}
+            </div>
 
-              {/* Pagination pour les produits */}
-              {products.length > 0 && (
-                <div className="mt-6">
-                  {/* Info sur la pagination */}
-                  <div className="text-center mb-4 text-sm text-gray-600">
-                    Affichage de {Math.min((productsCurrentPage - 1) * productsPerPage + 1, products.length)} à {Math.min(productsCurrentPage * productsPerPage, products.length)} sur {products.length} produits
-                  </div>
-                  
-                  <div className="flex justify-center">
+            {/* Pagination pour les produits */}
+            {products.length > 0 && (
+              <div className="mt-6">
+                {/* Info sur la pagination */}
+                <div className="text-center mb-4 text-sm text-gray-600">
+                  Affichage de {Math.min((productsCurrentPage - 1) * productsPerPage + 1, products.length)} à {Math.min(productsCurrentPage * productsPerPage, products.length)} sur {products.length} produits
+                </div>
+
+                <div className="flex justify-center">
                   <nav className="flex items-center space-x-2">
                     <button
                       onClick={() => setProductsCurrentPage(productsCurrentPage - 1)}
@@ -1047,11 +1036,10 @@ const handleRegistrationAction = async (formationId: string, regId: string, acti
                       <button
                         key={pageNumber}
                         onClick={() => setProductsCurrentPage(pageNumber)}
-                        className={`px-4 py-2 rounded-lg border ${
-                          productsCurrentPage === pageNumber
-                            ? 'bg-green-600 text-white border-green-600'
-                            : 'border-gray-300 text-gray-700 hover:bg-gray-50'
-                        }`}
+                        className={`px-4 py-2 rounded-lg border ${productsCurrentPage === pageNumber
+                          ? 'bg-green-600 text-white border-green-600'
+                          : 'border-gray-300 text-gray-700 hover:bg-gray-50'
+                          }`}
                       >
                         {pageNumber}
                       </button>
@@ -1065,62 +1053,62 @@ const handleRegistrationAction = async (formationId: string, regId: string, acti
                       <ChevronRight size={20} />
                     </button>
                   </nav>
-                  </div>
                 </div>
-              )}
-            </div>
-          </div>
-        )}
-
-        {/* Section Blogs */}
-        {activeTab === 'blogs' && (
-          <div>
-            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between space-y-4 sm:space-y-0 mb-6">
-              <div>
-                <h2 className="text-2xl sm:text-3xl font-bold text-gray-900">Gestion du Blog</h2>
-                <p className="text-gray-600 mt-1">Gérez vos articles de blog</p>
               </div>
-              <button
-                onClick={() => {
-                  setEditingBlog(null);
-                  setShowBlogFormModal(true);
-                }}
-                className="flex items-center space-x-2 bg-gradient-to-r from-green-500 to-green-600 text-white px-6 py-3 rounded-xl hover:from-green-600 hover:to-green-700 transition-all duration-300 shadow-lg hover:shadow-xl cursor-pointer relative z-50"
-              >
-                <PlusIcon className="w-5 h-5" />
-                <span className="font-medium">Ajouter un article</span>
-              </button>
-            </div>
+            )}
+          </div>
+        </div>
+      )}
 
-            <div className="bg-white/70 backdrop-blur-xl rounded-2xl border border-white/30 shadow-xl">
-              <div className="overflow-x-auto">
-                <table className="min-w-full divide-y divide-white/20">
-                  <thead className="bg-white/50 backdrop-blur-sm">
-                    <tr>
-                      <th className="px-4 sm:px-6 py-3 sm:py-4 text-left text-xs sm:text-sm font-semibold text-gray-700 uppercase tracking-wider">
-                        Article
-                      </th>
-                      <th className="px-4 sm:px-6 py-3 sm:py-4 text-left text-xs sm:text-sm font-semibold text-gray-700 uppercase tracking-wider">
-                        Auteur
-                      </th>
-                      <th className="px-4 sm:px-6 py-3 sm:py-4 text-left text-xs sm:text-sm font-semibold text-gray-700 uppercase tracking-wider">
-                        Catégorie
-                      </th>
-                      <th className="px-4 sm:px-6 py-3 sm:py-4 text-left text-xs sm:text-sm font-semibold text-gray-700 uppercase tracking-wider">
-                        Statut
-                      </th>
-                      <th className="px-4 sm:px-6 py-3 sm:py-4 text-left text-xs sm:text-sm font-semibold text-gray-700 uppercase tracking-wider">
-                        Date
-                      </th>
-                      <th className="px-4 sm:px-6 py-3 sm:py-4 text-left text-xs sm:text-sm font-semibold text-gray-700 uppercase tracking-wider">
-                        Actions
-                      </th>
-                    </tr>
-                  </thead>
-                  <tbody className="bg-white/30 backdrop-blur-sm divide-y divide-white/20">
-                    {blogs
-                      .slice((blogsCurrentPage - 1) * blogsPerPage, blogsCurrentPage * blogsPerPage)
-                      .map((blog) => (
+      {/* Section Blogs */}
+      {activeTab === 'blogs' && (
+        <div>
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between space-y-4 sm:space-y-0 mb-6">
+            <div>
+              <h2 className="text-2xl sm:text-3xl font-bold text-gray-900">Gestion du Blog</h2>
+              <p className="text-gray-600 mt-1">Gérez vos articles de blog</p>
+            </div>
+            <button
+              onClick={() => {
+                setEditingBlog(null);
+                setShowBlogFormModal(true);
+              }}
+              className="flex items-center space-x-2 bg-gradient-to-r from-green-500 to-green-600 text-white px-6 py-3 rounded-xl hover:from-green-600 hover:to-green-700 transition-all duration-300 shadow-lg hover:shadow-xl cursor-pointer relative z-50"
+            >
+              <PlusIcon className="w-5 h-5" />
+              <span className="font-medium">Ajouter un article</span>
+            </button>
+          </div>
+
+          <div className="bg-white/70 backdrop-blur-xl rounded-2xl border border-white/30 shadow-xl">
+            <div className="overflow-x-auto">
+              <table className="min-w-full divide-y divide-white/20">
+                <thead className="bg-white/50 backdrop-blur-sm">
+                  <tr>
+                    <th className="px-4 sm:px-6 py-3 sm:py-4 text-left text-xs sm:text-sm font-semibold text-gray-700 uppercase tracking-wider">
+                      Article
+                    </th>
+                    <th className="px-4 sm:px-6 py-3 sm:py-4 text-left text-xs sm:text-sm font-semibold text-gray-700 uppercase tracking-wider">
+                      Auteur
+                    </th>
+                    <th className="px-4 sm:px-6 py-3 sm:py-4 text-left text-xs sm:text-sm font-semibold text-gray-700 uppercase tracking-wider">
+                      Catégorie
+                    </th>
+                    <th className="px-4 sm:px-6 py-3 sm:py-4 text-left text-xs sm:text-sm font-semibold text-gray-700 uppercase tracking-wider">
+                      Statut
+                    </th>
+                    <th className="px-4 sm:px-6 py-3 sm:py-4 text-left text-xs sm:text-sm font-semibold text-gray-700 uppercase tracking-wider">
+                      Date
+                    </th>
+                    <th className="px-4 sm:px-6 py-3 sm:py-4 text-left text-xs sm:text-sm font-semibold text-gray-700 uppercase tracking-wider">
+                      Actions
+                    </th>
+                  </tr>
+                </thead>
+                <tbody className="bg-white/30 backdrop-blur-sm divide-y divide-white/20">
+                  {blogs
+                    .slice((blogsCurrentPage - 1) * blogsPerPage, blogsCurrentPage * blogsPerPage)
+                    .map((blog) => (
                       <tr key={blog._id} className="hover:bg-white/50 transition-all duration-300">
                         <td className="px-4 sm:px-6 py-4 whitespace-nowrap">
                           <div className="flex items-center space-x-3">
@@ -1144,9 +1132,8 @@ const handleRegistrationAction = async (formationId: string, regId: string, acti
                           {blog.category}
                         </td>
                         <td className="px-4 sm:px-6 py-4 whitespace-nowrap">
-                          <span className={`inline-flex px-3 py-1 text-xs font-semibold rounded-full ${
-                            blog.isPublished ? 'bg-green-100 text-green-800' : 'bg-yellow-100 text-yellow-800'
-                          }`}>
+                          <span className={`inline-flex px-3 py-1 text-xs font-semibold rounded-full ${blog.isPublished ? 'bg-green-100 text-green-800' : 'bg-yellow-100 text-yellow-800'
+                            }`}>
                             {blog.isPublished ? 'Publié' : 'Brouillon'}
                           </span>
                         </td>
@@ -1171,24 +1158,24 @@ const handleRegistrationAction = async (formationId: string, regId: string, acti
                         </td>
                       </tr>
                     ))}
-                  </tbody>
-                </table>
-                {blogs.length === 0 && (
-                  <div className="text-center py-8 text-gray-500">
-                    Aucun article trouvé
-                  </div>
-                )}
-              </div>
+                </tbody>
+              </table>
+              {blogs.length === 0 && (
+                <div className="text-center py-8 text-gray-500">
+                  Aucun article trouvé
+                </div>
+              )}
+            </div>
 
-              {/* Pagination pour les blogs */}
-              {blogs.length > 0 && (
-                <div className="mt-6">
-                  {/* Info sur la pagination */}
-                  <div className="text-center mb-4 text-sm text-gray-600">
-                    Affichage de {Math.min((blogsCurrentPage - 1) * blogsPerPage + 1, blogs.length)} à {Math.min(blogsCurrentPage * blogsPerPage, blogs.length)} sur {blogs.length} articles
-                  </div>
-                  
-                  <div className="flex justify-center">
+            {/* Pagination pour les blogs */}
+            {blogs.length > 0 && (
+              <div className="mt-6">
+                {/* Info sur la pagination */}
+                <div className="text-center mb-4 text-sm text-gray-600">
+                  Affichage de {Math.min((blogsCurrentPage - 1) * blogsPerPage + 1, blogs.length)} à {Math.min(blogsCurrentPage * blogsPerPage, blogs.length)} sur {blogs.length} articles
+                </div>
+
+                <div className="flex justify-center">
                   <nav className="flex items-center space-x-2">
                     <button
                       onClick={() => setBlogsCurrentPage(blogsCurrentPage - 1)}
@@ -1202,11 +1189,10 @@ const handleRegistrationAction = async (formationId: string, regId: string, acti
                       <button
                         key={pageNumber}
                         onClick={() => setBlogsCurrentPage(pageNumber)}
-                        className={`px-4 py-2 rounded-lg border ${
-                          blogsCurrentPage === pageNumber
-                            ? 'bg-green-600 text-white border-green-600'
-                            : 'border-gray-300 text-gray-700 hover:bg-gray-50'
-                        }`}
+                        className={`px-4 py-2 rounded-lg border ${blogsCurrentPage === pageNumber
+                          ? 'bg-green-600 text-white border-green-600'
+                          : 'border-gray-300 text-gray-700 hover:bg-gray-50'
+                          }`}
                       >
                         {pageNumber}
                       </button>
@@ -1220,13 +1206,13 @@ const handleRegistrationAction = async (formationId: string, regId: string, acti
                       <ChevronRight size={20} />
                     </button>
                   </nav>
-                  </div>
                 </div>
-              )}
-            </div>
+              </div>
+            )}
           </div>
-        )}
-      
+        </div>
+      )}
+
 
       {/* Modals */}
       <ProductModal
@@ -1272,10 +1258,10 @@ const handleRegistrationAction = async (formationId: string, regId: string, acti
         onClose={() => {
           setShowFormationModal(false);
           setEditingFormation(null);
-        } }
+        }}
         formation={editingFormation} onFormationSaved={function (): void {
           throw new Error('Function not implemented.');
-        } }      />
+        }} />
       <FormationFormModal
         isOpen={showFormationFormModal}
         onClose={() => {

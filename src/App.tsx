@@ -1,5 +1,5 @@
 import { BrowserRouter as Router, Routes, Route, useLocation } from 'react-router-dom';
-import {  AnimatePresence } from 'framer-motion';
+import { AnimatePresence } from 'framer-motion';
 import { AuthProvider } from './context/AuthContext';
 import Navbar from './components/Navbar';
 import Footer from './components/Footer';
@@ -17,6 +17,7 @@ import FabiraTrading from './pages/FabiraTrading';
 import ScrollToTop from './components/ScrollToTop';
 import ProtectedRoute from './components/ProtectedRoute';
 import Events from './pages/Events';
+import ForgotPassword from './pages/ForgotPassword';
 
 const AppContent = () => {
   const location = useLocation();
@@ -44,6 +45,7 @@ const AppContent = () => {
           <Route path="/blog" element={<Blog />} />
           <Route path="/blog/:id" element={<BlogPost />} />
           <Route path="/login" element={<Login />} />
+          <Route path="/forgot-password" element={<ForgotPassword />} />
         </Routes>
       </AnimatePresence>
       {!isLoginPage && <Footer />}

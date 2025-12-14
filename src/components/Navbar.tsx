@@ -40,9 +40,9 @@ const Navbar = () => {
   const navItems = [
     { name: 'Accueil', path: '/' },
     { name: 'À propos', path: '/about' },
-    { name: 'Enrôlement', path: '/enrollments' },
+    { name: 'Rejoindre', path: '/enrollments' },
     { name: 'Plateformes', path: '/platforms' },
-    { name: 'Nos Activités', path: '/activities' },
+    { name: 'Activités', path: '/activities' },
     //{ name: 'Fabira Trading', path: '/fabira-trading' },
     { name: 'Événements', path: '/events' },
     { name: 'Contact', path: '/contact' },
@@ -140,9 +140,8 @@ const Navbar = () => {
       <motion.nav
         initial={{ y: -100 }}
         animate={{ y: 0 }}
-        className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
-          isScrolled ? 'bg-white shadow-lg' : 'bg-white/95 backdrop-blur-sm'
-        }`}
+        className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${isScrolled ? 'bg-white shadow-lg' : 'bg-white/95 backdrop-blur-sm'
+          }`}
       >
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-16">
@@ -154,18 +153,16 @@ const Navbar = () => {
               />
               <div>
                 <h1 className="text-xl font-bold text-gray-900">BAY SA WARR</h1>
-                <p className="text-xs text-gray-600">Valoriser la création locale</p>
               </div>
             </Link>
 
-            <div className="hidden md:flex items-center space-x-8">
+            <div className="hidden md:flex items-center space-x-4">
               {navItems.map((item) => (
                 <Link
                   key={item.path}
                   to={item.path}
-                  className={`nav-link text-sm font-medium px-2 py-1 rounded-md transition-all duration-200 ${
-                    isActive(item.path) ? 'active' : 'text-gray-700'
-                  }`}
+                  className={`nav-link text-sm font-medium px-2 py-1 rounded-md transition-all duration-200 ${isActive(item.path) ? 'active' : 'text-gray-700'
+                    }`}
                   tabIndex={0}
                 >
                   {item.name}
@@ -175,9 +172,8 @@ const Navbar = () => {
                 <div className="flex items-center space-x-4">
                   <Link
                     to="/dashboard"
-                    className={`dashboard-link flex items-center space-x-2 px-4 py-2 rounded-full text-sm font-semibold transition-all duration-200 focus:outline-none ${
-                      isActive('/dashboard') ? 'active' : ''
-                    }`}
+                    className={`dashboard-link flex items-center space-x-2 px-4 py-2 rounded-full text-sm font-semibold transition-all duration-200 focus:outline-none ${isActive('/dashboard') ? 'active' : ''
+                      }`}
                     tabIndex={0}
                   >
                     <User size={16} />
@@ -198,9 +194,8 @@ const Navbar = () => {
                       />
                       <ChevronDown
                         size={18}
-                        className={`transition-transform duration-200 ${
-                          dropdownOpen ? 'rotate-180' : ''
-                        } text-gray-500`}
+                        className={`transition-transform duration-200 ${dropdownOpen ? 'rotate-180' : ''
+                          } text-gray-500`}
                       />
                     </button>
                     <AnimatePresence>
@@ -274,11 +269,10 @@ const Navbar = () => {
                 <Link
                   key={item.path}
                   to={item.path}
-                  className={`flex items-center gap-2 text-base font-medium px-4 py-2 rounded-lg transition-all duration-200 ${
-                    isActive(item.path)
-                      ? 'bg-green-700 text-white font-semibold shadow'
-                      : 'text-gray-700 hover:bg-gray-100 hover:text-green-600'
-                  }`}
+                  className={`flex items-center gap-2 text-base font-medium px-4 py-2 rounded-lg transition-all duration-200 ${isActive(item.path)
+                    ? 'bg-green-700 text-white font-semibold shadow'
+                    : 'text-gray-700 hover:bg-gray-100 hover:text-green-600'
+                    }`}
                   style={{
                     position: 'relative',
                     overflow: 'hidden',
@@ -315,9 +309,8 @@ const Navbar = () => {
                   </div>
                   <Link
                     to="/dashboard"
-                    className={`flex items-center justify-center gap-2 px-4 py-2 rounded-full text-base font-semibold transition-all duration-200 dashboard-link ${
-                      isActive('/dashboard') ? 'active' : ''
-                    }`}
+                    className={`flex items-center justify-center gap-2 px-4 py-2 rounded-full text-base font-semibold transition-all duration-200 dashboard-link ${isActive('/dashboard') ? 'active' : ''
+                      }`}
                     style={{
                       boxShadow: isActive('/dashboard')
                         ? '0 4px 16px 0 rgba(34,197,94,0.18)'
