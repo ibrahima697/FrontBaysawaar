@@ -144,7 +144,7 @@ const Events = () => {
               initial={{ scale: 1.1 }}
               animate={{ scale: 1 }}
               transition={{ duration: 10, ease: "easeOut" }}
-              src="https://res.cloudinary.com/drxouwbms/image/upload/v1755959386/Screenshot_2025-08-23_at_14_28_33-Picsart-AiImageEnhancer_qey9ge.png"
+              src="https://res.cloudinary.com/drxouwbms/image/upload/v1765733341/african-kid-marketplace_zwl4xj.jpg"
               alt="FIPA 2025"
               className="w-full h-full object-cover grayscale-[30%]"
             />
