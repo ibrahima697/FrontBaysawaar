@@ -75,6 +75,8 @@ export interface EventData {
     maxParticipants: number;
     isFeatured: boolean;
     slug?: string;
+    type?: 'seminar' | 'business_trip' | 'fair' | 'conference' | 'training' | 'networking';
+    registrations?: { user: User; status: string }[];
 }
 
 export interface ProductData {

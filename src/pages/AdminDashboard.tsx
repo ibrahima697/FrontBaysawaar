@@ -20,7 +20,7 @@ import {
   UserCheck,
   UserX
 } from 'lucide-react';
-import { adminAPI, productsAPI, blogsAPI, formationsAPI } from '../services/api';
+import { adminAPI, productsAPI, blogsAPI, formationsAPI, eventsAPI } from '../services/api';
 import Swal from 'sweetalert2';
 import ProductModal from '../components/ProductModal';
 import ProductFormModal from '../components/ProductFormModal';
@@ -28,6 +28,8 @@ import BlogModal from '../components/BlogModal';
 import BlogFormModal from '../components/BlogFormModal';
 import FormationFormModal from '../components/FormationFormModal';
 import FormationModal from '../components/FormationModal';
+import EventFormModal from '../components/EventFormModal';
+import { EventData } from '../types';
 
 interface AdminStats {
   totalUsers: number;
@@ -130,7 +132,7 @@ interface BlogPost {
 }
 
 const AdminDashboard = () => {
-  const [activeTab, setActiveTab] = useState<'dashboard' | 'products' | 'blogs' | 'formations'>('dashboard');
+  const [activeTab, setActiveTab] = useState<'dashboard' | 'products' | 'blogs' | 'formations' | 'events'>('dashboard');
   const [stats, setStats] = useState<AdminStats | null>(null);
   const [enrollments, setEnrollments] = useState<Enrollment[]>([]);
   const [products, setProducts] = useState<Product[]>([]);
@@ -156,6 +158,10 @@ const AdminDashboard = () => {
   const [showFormationModal, setShowFormationModal] = useState(false);
   const [blogsPerPage] = useState(5);
   //const [formationsPerPage] = useState(5);
+  const [events, setEvents] = useState<EventData[]>([]);
+  const [showEventFormModal, setShowEventFormModal] = useState(false);
+  const [editingEvent, setEditingEvent] = useState<EventData | null>(null);
+
 
   useEffect(() => {
     fetchAdminData();
@@ -173,6 +179,8 @@ const AdminDashboard = () => {
     }
     else if (activeTab === 'formations') {
       fetchFormations();
+    } else if (activeTab === 'events') {
+      fetchEvents();
     }
   }, [activeTab]);
 
@@ -242,6 +250,27 @@ const AdminDashboard = () => {
       Swal.fire('Erreur', 'Impossible de charger les blogs', 'error');
     }
   };
+
+  const fetchEvents = async () => {
+    try {
+      const response = await eventsAPI.getAll();
+      setEvents(response.data.events || []);
+    } catch (error) {
+      console.error('Erreur events:', error);
+      Swal.fire('Erreur', 'Impossible de charger les événements', 'error');
+    }
+  };
+
+  const handleEditEvent = (event: EventData) => {
+    setEditingEvent(event);
+    setShowEventFormModal(true);
+  };
+
+  const handleEventSaved = () => {
+    setEditingEvent(null);
+    fetchEvents();
+  };
+
 
   const handleEnrollmentAction = async (id: string, action: 'approve' | 'reject') => {
     const actionText = action === 'approve' ? 'approuver' : 'rejeter';
@@ -558,6 +587,18 @@ const AdminDashboard = () => {
               <div className="flex items-center space-x-2">
                 <BookOpen className="w-4 h-4" />
                 <span>Blog</span>
+              </div>
+            </button>
+            <button
+              onClick={() => setActiveTab('events')}
+              className={`py-3 sm:py-4 px-4 sm:px-6 rounded-xl font-medium text-sm transition-all duration-300 ${activeTab === 'events'
+                ? 'bg-green-500 text-white shadow-lg'
+                : 'text-gray-600 hover:text-gray-900 hover:bg-white/50'
+                }`}
+            >
+              <div className="flex items-center space-x-2">
+                <Calendar className="w-4 h-4" />
+                <span>Événements</span>
               </div>
             </button>
           </nav>
@@ -904,316 +945,387 @@ const AdminDashboard = () => {
             </div>
           </div>
         )}
+
+        {/* Section Events */}
+        {activeTab === 'events' && (
+          <div>
+            <div className="flex justify-between items-center mb-6">
+              <h2 className="text-3xl font-bold">Événements</h2>
+              <button
+                onClick={() => {
+                  setEditingEvent(null);
+                  setShowEventFormModal(true);
+                }}
+                className="flex items-center space-x-2 bg-gradient-to-r from-green-500 to-green-600 text-white px-6 py-3 rounded-xl hover:from-green-600 hover:to-green-700 transition-all duration-300 shadow-lg hover:shadow-xl cursor-pointer relative z-50"
+              >
+                <PlusIcon className="w-5 h-5" />
+                <span className="font-medium">Créer un événement</span>
+              </button>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {events.map(event => (
+                <motion.div
+                  key={event._id}
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  className="bg-white/70 backdrop-blur-xl rounded-2xl border border-white/30 shadow-xl p-6 flex flex-col justify-between"
+                >
+                  <div>
+                    <div className="flex justify-between items-start mb-4">
+                      <h3 className="text-xl font-bold text-gray-900">{event.title}</h3>
+                      <span className={`px-2 py-1 text-xs rounded-full ${event.isFeatured ? 'bg-yellow-100 text-yellow-800' : 'bg-gray-100 text-gray-600'}`}>
+                        {event.isFeatured ? 'Featured' : 'Standard'}
+                      </span>
+                    </div>
+
+                    <p className="text-sm text-gray-600 mb-4 line-clamp-3">{event.description}</p>
+
+                    <div className="space-y-2 text-sm text-gray-600">
+                      <div className="flex items-center gap-2">
+                        <Calendar className="w-4 h-4 text-green-600" />
+                        <span>{new Date(event.dateStart).toLocaleDateString()} - {new Date(event.dateEnd).toLocaleDateString()}</span>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <MapPin className="w-4 h-4 text-green-600" />
+                        <span>{event.location}</span>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <Users className="w-4 h-4 text-green-600" />
+                        <span>{event.maxParticipants} max</span>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="mt-6 flex justify-end gap-2">
+                    <button
+                      onClick={() => handleEditEvent(event)}
+                      className="p-2 bg-blue-100 text-blue-600 rounded-lg hover:bg-blue-200"
+                    >
+                      <Pencil className="w-4 h-4" />
+                    </button>
+                  </div>
+                </motion.div>
+              ))}
+              {events.length === 0 && (
+                <div className="col-span-full text-center py-10 text-gray-500">
+                  Aucun événement trouvé.
+                </div>
+              )}
+            </div>
+          </div>
+        )}
+
+        {/* Section Produits */}
+        {activeTab === 'products' && (
+          <div>
+            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between space-y-4 sm:space-y-0 mb-6">
+              <div>
+                <h2 className="text-2xl sm:text-3xl font-bold text-gray-900">Gestion des Produits</h2>
+                <p className="text-gray-600 mt-1">Gérez votre catalogue de produits</p>
+              </div>
+
+              <button
+                onClick={() => {
+                  setEditingProduct(null);
+                  setShowProductFormModal(true);
+
+                }}
+                className="flex items-center space-x-2 bg-gradient-to-r from-green-500 to-green-600 text-white px-6 py-3 rounded-xl hover:from-green-600 hover:to-green-700 transition-all duration-300 shadow-lg hover:shadow-xl cursor-pointer relative z-50"
+              >
+                <PlusIcon className="w-5 h-5" />
+                <span className="font-medium">Ajouter un produit</span>
+              </button>
+            </div>
+
+            <div className="bg-white/70 backdrop-blur-xl rounded-2xl border border-white/30 shadow-xl p-6">
+              <div className="overflow-x-auto">
+                <table className="min-w-full divide-y divide-white/20">
+                  <thead className="bg-white/50 backdrop-blur-sm">
+                    <tr>
+                      <th className="px-4 sm:px-6 py-3 sm:py-4 text-left text-xs sm:text-sm font-semibold text-gray-700 uppercase tracking-wider">
+                        Produit
+                      </th>
+                      <th className="px-4 sm:px-6 py-3 sm:py-4 text-left text-xs sm:text-sm font-semibold text-gray-700 uppercase tracking-wider">
+                        Prix
+                      </th>
+                      <th className="px-4 sm:px-6 py-3 sm:py-4 text-left text-xs sm:text-sm font-semibold text-gray-700 uppercase tracking-wider">
+                        Stock
+                      </th>
+                      <th className="px-4 sm:px-6 py-3 sm:py-4 text-left text-xs sm:text-sm font-semibold text-gray-700 uppercase tracking-wider">
+                        Catégorie
+                      </th>
+                      <th className="px-4 sm:px-6 py-3 sm:py-4 text-left text-xs sm:text-sm font-semibold text-gray-700 uppercase tracking-wider">
+                        Statut
+                      </th>
+                      <th className="px-4 sm:px-6 py-3 sm:py-4 text-left text-xs sm:text-sm font-semibold text-gray-700 uppercase tracking-wider">
+                        Actions
+                      </th>
+                    </tr>
+                  </thead>
+                  <tbody className="bg-white/30 backdrop-blur-sm divide-y divide-white/20">
+                    {products
+                      .slice((productsCurrentPage - 1) * productsPerPage, productsCurrentPage * productsPerPage)
+                      .map((product) => (
+                        <tr key={product._id} className="hover:bg-white/50 transition-all duration-300">
+                          <td className="px-4 sm:px-6 py-4 whitespace-nowrap">
+                            <div className="flex items-center space-x-3">
+                              {product.images && product.images.length > 0 && (
+                                <img
+                                  src={product.images[0].url}
+                                  alt={product.images[0].alt}
+                                  className="h-12 w-12 sm:h-14 sm:w-14 rounded-xl object-cover shadow-md"
+                                />
+                              )}
+                              <div>
+                                <div className="text-sm sm:text-base font-semibold text-gray-900">{product.name}</div>
+                                <div className="text-xs sm:text-sm text-gray-600">{product.brand}</div>
+                              </div>
+                            </div>
+                          </td>
+                          <td className="px-4 sm:px-6 py-4 whitespace-nowrap text-sm sm:text-base font-semibold text-gray-900">
+                            {product.price.toFixed(2)} €
+                          </td>
+                          <td className="px-4 sm:px-6 py-4 whitespace-nowrap text-sm sm:text-base text-gray-900">
+                            {product.stock}
+                          </td>
+                          <td className="px-4 sm:px-6 py-4 whitespace-nowrap text-sm sm:text-base text-gray-900">
+                            {product.category}
+                          </td>
+                          <td className="px-4 sm:px-6 py-4 whitespace-nowrap">
+                            <span className={`inline-flex px-3 py-1 text-xs font-semibold rounded-full ${product.isActive ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'
+                              }`}>
+                              {product.isActive ? 'Actif' : 'Inactif'}
+                            </span>
+                          </td>
+                          <td className="px-4 sm:px-6 py-4 whitespace-nowrap text-sm font-medium">
+                            <div className="flex space-x-2">
+                              <button
+                                onClick={() => handleEditProduct(product)}
+                                className="p-2 bg-blue-100 text-blue-600 rounded-lg hover:bg-blue-200 transition-colors"
+                              >
+                                <PencilIcon className="w-4 h-4" />
+                              </button>
+                              <button
+                                onClick={() => handleDeleteProduct(product._id)}
+                                className="p-2 bg-red-100 text-red-600 rounded-lg hover:bg-red-200 transition-colors"
+                              >
+                                <Trash2 className="w-4 h-4" />
+                              </button>
+                            </div>
+                          </td>
+                        </tr>
+                      ))}
+                  </tbody>
+                </table>
+                {products.length === 0 && (
+                  <div className="text-center py-8 text-gray-500">
+                    Aucun produit trouvé
+                  </div>
+                )}
+              </div>
+
+              {/* Pagination pour les produits */}
+              {products.length > 0 && (
+                <div className="mt-6">
+                  {/* Info sur la pagination */}
+                  <div className="text-center mb-4 text-sm text-gray-600">
+                    Affichage de {Math.min((productsCurrentPage - 1) * productsPerPage + 1, products.length)} à {Math.min(productsCurrentPage * productsPerPage, products.length)} sur {products.length} produits
+                  </div>
+
+                  <div className="flex justify-center">
+                    <nav className="flex items-center space-x-2">
+                      <button
+                        onClick={() => setProductsCurrentPage(productsCurrentPage - 1)}
+                        disabled={productsCurrentPage === 1}
+                        className="px-3 py-2 rounded-lg border border-gray-300 text-gray-500 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
+                      >
+                        <ChevronLeft size={20} />
+                      </button>
+
+                      {Array.from({ length: Math.ceil(products.length / productsPerPage) }, (_, i) => i + 1).map((pageNumber) => (
+                        <button
+                          key={pageNumber}
+                          onClick={() => setProductsCurrentPage(pageNumber)}
+                          className={`px-4 py-2 rounded-lg border ${productsCurrentPage === pageNumber
+                            ? 'bg-green-600 text-white border-green-600'
+                            : 'border-gray-300 text-gray-700 hover:bg-gray-50'
+                            }`}
+                        >
+                          {pageNumber}
+                        </button>
+                      ))}
+
+                      <button
+                        onClick={() => setProductsCurrentPage(productsCurrentPage + 1)}
+                        disabled={productsCurrentPage === Math.ceil(products.length / productsPerPage)}
+                        className="px-3 py-2 rounded-lg border border-gray-300 text-gray-500 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
+                      >
+                        <ChevronRight size={20} />
+                      </button>
+                    </nav>
+                  </div>
+                </div>
+              )}
+            </div>
+          </div>
+        )}
+
+        {/* Section Blogs */}
+        {activeTab === 'blogs' && (
+          <div>
+            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between space-y-4 sm:space-y-0 mb-6">
+              <div>
+                <h2 className="text-2xl sm:text-3xl font-bold text-gray-900">Gestion du Blog</h2>
+                <p className="text-gray-600 mt-1">Gérez vos articles de blog</p>
+              </div>
+              <button
+                onClick={() => {
+                  setEditingBlog(null);
+                  setShowBlogFormModal(true);
+                }}
+                className="flex items-center space-x-2 bg-gradient-to-r from-green-500 to-green-600 text-white px-6 py-3 rounded-xl hover:from-green-600 hover:to-green-700 transition-all duration-300 shadow-lg hover:shadow-xl cursor-pointer relative z-50"
+              >
+                <PlusIcon className="w-5 h-5" />
+                <span className="font-medium">Ajouter un article</span>
+              </button>
+            </div>
+
+            <div className="bg-white/70 backdrop-blur-xl rounded-2xl border border-white/30 shadow-xl p-6">
+              <div className="overflow-x-auto">
+                <table className="min-w-full divide-y divide-white/20">
+                  <thead className="bg-white/50 backdrop-blur-sm">
+                    <tr>
+                      <th className="px-4 sm:px-6 py-3 sm:py-4 text-left text-xs sm:text-sm font-semibold text-gray-700 uppercase tracking-wider">
+                        Article
+                      </th>
+                      <th className="px-4 sm:px-6 py-3 sm:py-4 text-left text-xs sm:text-sm font-semibold text-gray-700 uppercase tracking-wider">
+                        Auteur
+                      </th>
+                      <th className="px-4 sm:px-6 py-3 sm:py-4 text-left text-xs sm:text-sm font-semibold text-gray-700 uppercase tracking-wider">
+                        Catégorie
+                      </th>
+                      <th className="px-4 sm:px-6 py-3 sm:py-4 text-left text-xs sm:text-sm font-semibold text-gray-700 uppercase tracking-wider">
+                        Statut
+                      </th>
+                      <th className="px-4 sm:px-6 py-3 sm:py-4 text-left text-xs sm:text-sm font-semibold text-gray-700 uppercase tracking-wider">
+                        Date
+                      </th>
+                      <th className="px-4 sm:px-6 py-3 sm:py-4 text-left text-xs sm:text-sm font-semibold text-gray-700 uppercase tracking-wider">
+                        Actions
+                      </th>
+                    </tr>
+                  </thead>
+                  <tbody className="bg-white/30 backdrop-blur-sm divide-y divide-white/20">
+                    {blogs
+                      .slice((blogsCurrentPage - 1) * blogsPerPage, blogsCurrentPage * blogsPerPage)
+                      .map((blog) => (
+                        <tr key={blog._id} className="hover:bg-white/50 transition-all duration-300">
+                          <td className="px-4 sm:px-6 py-4 whitespace-nowrap">
+                            <div className="flex items-center space-x-3">
+                              {blog.featuredImage && (
+                                <img
+                                  src={blog.featuredImage.url}
+                                  alt={blog.featuredImage.alt}
+                                  className="h-12 w-12 sm:h-14 sm:w-14 rounded-xl object-cover shadow-md"
+                                />
+                              )}
+                              <div>
+                                <div className="text-sm sm:text-base font-semibold text-gray-900">{blog.title}</div>
+                                <div className="text-xs sm:text-sm text-gray-600">{blog.readTime}</div>
+                              </div>
+                            </div>
+                          </td>
+                          <td className="px-4 sm:px-6 py-4 whitespace-nowrap text-sm sm:text-base text-gray-900">
+                            {blog.author}
+                          </td>
+                          <td className="px-4 sm:px-6 py-4 whitespace-nowrap text-sm sm:text-base text-gray-900">
+                            {blog.category}
+                          </td>
+                          <td className="px-4 sm:px-6 py-4 whitespace-nowrap">
+                            <span className={`inline-flex px-3 py-1 text-xs font-semibold rounded-full ${blog.isPublished ? 'bg-green-100 text-green-800' : 'bg-yellow-100 text-yellow-800'
+                              }`}>
+                              {blog.isPublished ? 'Publié' : 'Brouillon'}
+                            </span>
+                          </td>
+                          <td className="px-4 sm:px-6 py-4 whitespace-nowrap text-sm sm:text-base text-gray-900">
+                            {new Date(blog.createdAt).toLocaleDateString('fr-FR')}
+                          </td>
+                          <td className="px-4 sm:px-6 py-4 whitespace-nowrap text-sm font-medium">
+                            <div className="flex space-x-2">
+                              <button
+                                onClick={() => handleEditBlog(blog)}
+                                className="p-2 bg-blue-100 text-blue-600 rounded-lg hover:bg-blue-200 transition-colors"
+                              >
+                                <PencilIcon className="w-4 h-4" />
+                              </button>
+                              <button
+                                onClick={() => handleDeleteBlog(blog._id)}
+                                className="p-2 bg-red-100 text-red-600 rounded-lg hover:bg-red-200 transition-colors"
+                              >
+                                <Trash2 className="w-4 h-4" />
+                              </button>
+                            </div>
+                          </td>
+                        </tr>
+                      ))}
+                  </tbody>
+                </table>
+                {blogs.length === 0 && (
+                  <div className="text-center py-8 text-gray-500">
+                    Aucun article trouvé
+                  </div>
+                )}
+              </div>
+
+              {/* Pagination pour les blogs */}
+              {blogs.length > 0 && (
+                <div className="mt-6">
+                  {/* Info sur la pagination */}
+                  <div className="text-center mb-4 text-sm text-gray-600">
+                    Affichage de {Math.min((blogsCurrentPage - 1) * blogsPerPage + 1, blogs.length)} à {Math.min(blogsCurrentPage * blogsPerPage, blogs.length)} sur {blogs.length} articles
+                  </div>
+
+                  <div className="flex justify-center">
+                    <nav className="flex items-center space-x-2">
+                      <button
+                        onClick={() => setBlogsCurrentPage(blogsCurrentPage - 1)}
+                        disabled={blogsCurrentPage === 1}
+                        className="px-3 py-2 rounded-lg border border-gray-300 text-gray-500 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
+                      >
+                        <ChevronLeft size={20} />
+                      </button>
+
+                      {Array.from({ length: Math.ceil(blogs.length / blogsPerPage) }, (_, i) => i + 1).map((pageNumber) => (
+                        <button
+                          key={pageNumber}
+                          onClick={() => setBlogsCurrentPage(pageNumber)}
+                          className={`px-4 py-2 rounded-lg border ${blogsCurrentPage === pageNumber
+                            ? 'bg-green-600 text-white border-green-600'
+                            : 'border-gray-300 text-gray-700 hover:bg-gray-50'
+                            }`}
+                        >
+                          {pageNumber}
+                        </button>
+                      ))}
+
+                      <button
+                        onClick={() => setBlogsCurrentPage(blogsCurrentPage + 1)}
+                        disabled={blogsCurrentPage === Math.ceil(blogs.length / blogsPerPage)}
+                        className="px-3 py-2 rounded-lg border border-gray-300 text-gray-500 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
+                      >
+                        <ChevronRight size={20} />
+                      </button>
+                    </nav>
+                  </div>
+                </div>
+              )}
+            </div>
+          </div>
+        )}
+
+
       </div>
-      {/* Section Produits */}
-      {activeTab === 'products' && (
-        <div>
-          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between space-y-4 sm:space-y-0 mb-6">
-            <div>
-              <h2 className="text-2xl sm:text-3xl font-bold text-gray-900">Gestion des Produits</h2>
-              <p className="text-gray-600 mt-1">Gérez votre catalogue de produits</p>
-            </div>
-
-            <button
-              onClick={() => {
-                setEditingProduct(null);
-                setShowProductFormModal(true);
-
-              }}
-              className="flex items-center space-x-2 bg-gradient-to-r from-green-500 to-green-600 text-white px-6 py-3 rounded-xl hover:from-green-600 hover:to-green-700 transition-all duration-300 shadow-lg hover:shadow-xl cursor-pointer relative z-50"
-            >
-              <PlusIcon className="w-5 h-5" />
-              <span className="font-medium">Ajouter un produit</span>
-            </button>
-          </div>
-
-          <div className="bg-white/70 backdrop-blur-xl rounded-2xl border border-white/30 shadow-xl">
-            <div className="overflow-x-auto">
-              <table className="min-w-full divide-y divide-white/20">
-                <thead className="bg-white/50 backdrop-blur-sm">
-                  <tr>
-                    <th className="px-4 sm:px-6 py-3 sm:py-4 text-left text-xs sm:text-sm font-semibold text-gray-700 uppercase tracking-wider">
-                      Produit
-                    </th>
-                    <th className="px-4 sm:px-6 py-3 sm:py-4 text-left text-xs sm:text-sm font-semibold text-gray-700 uppercase tracking-wider">
-                      Prix
-                    </th>
-                    <th className="px-4 sm:px-6 py-3 sm:py-4 text-left text-xs sm:text-sm font-semibold text-gray-700 uppercase tracking-wider">
-                      Stock
-                    </th>
-                    <th className="px-4 sm:px-6 py-3 sm:py-4 text-left text-xs sm:text-sm font-semibold text-gray-700 uppercase tracking-wider">
-                      Catégorie
-                    </th>
-                    <th className="px-4 sm:px-6 py-3 sm:py-4 text-left text-xs sm:text-sm font-semibold text-gray-700 uppercase tracking-wider">
-                      Statut
-                    </th>
-                    <th className="px-4 sm:px-6 py-3 sm:py-4 text-left text-xs sm:text-sm font-semibold text-gray-700 uppercase tracking-wider">
-                      Actions
-                    </th>
-                  </tr>
-                </thead>
-                <tbody className="bg-white/30 backdrop-blur-sm divide-y divide-white/20">
-                  {products
-                    .slice((productsCurrentPage - 1) * productsPerPage, productsCurrentPage * productsPerPage)
-                    .map((product) => (
-                      <tr key={product._id} className="hover:bg-white/50 transition-all duration-300">
-                        <td className="px-4 sm:px-6 py-4 whitespace-nowrap">
-                          <div className="flex items-center space-x-3">
-                            {product.images && product.images.length > 0 && (
-                              <img
-                                src={product.images[0].url}
-                                alt={product.images[0].alt}
-                                className="h-12 w-12 sm:h-14 sm:w-14 rounded-xl object-cover shadow-md"
-                              />
-                            )}
-                            <div>
-                              <div className="text-sm sm:text-base font-semibold text-gray-900">{product.name}</div>
-                              <div className="text-xs sm:text-sm text-gray-600">{product.brand}</div>
-                            </div>
-                          </div>
-                        </td>
-                        <td className="px-4 sm:px-6 py-4 whitespace-nowrap text-sm sm:text-base font-semibold text-gray-900">
-                          {product.price.toFixed(2)} €
-                        </td>
-                        <td className="px-4 sm:px-6 py-4 whitespace-nowrap text-sm sm:text-base text-gray-900">
-                          {product.stock}
-                        </td>
-                        <td className="px-4 sm:px-6 py-4 whitespace-nowrap text-sm sm:text-base text-gray-900">
-                          {product.category}
-                        </td>
-                        <td className="px-4 sm:px-6 py-4 whitespace-nowrap">
-                          <span className={`inline-flex px-3 py-1 text-xs font-semibold rounded-full ${product.isActive ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'
-                            }`}>
-                            {product.isActive ? 'Actif' : 'Inactif'}
-                          </span>
-                        </td>
-                        <td className="px-4 sm:px-6 py-4 whitespace-nowrap text-sm font-medium">
-                          <div className="flex space-x-2">
-                            <button
-                              onClick={() => handleEditProduct(product)}
-                              className="p-2 bg-blue-100 text-blue-600 rounded-lg hover:bg-blue-200 transition-colors"
-                            >
-                              <PencilIcon className="w-4 h-4" />
-                            </button>
-                            <button
-                              onClick={() => handleDeleteProduct(product._id)}
-                              className="p-2 bg-red-100 text-red-600 rounded-lg hover:bg-red-200 transition-colors"
-                            >
-                              <Trash2 className="w-4 h-4" />
-                            </button>
-                          </div>
-                        </td>
-                      </tr>
-                    ))}
-                </tbody>
-              </table>
-              {products.length === 0 && (
-                <div className="text-center py-8 text-gray-500">
-                  Aucun produit trouvé
-                </div>
-              )}
-            </div>
-
-            {/* Pagination pour les produits */}
-            {products.length > 0 && (
-              <div className="mt-6">
-                {/* Info sur la pagination */}
-                <div className="text-center mb-4 text-sm text-gray-600">
-                  Affichage de {Math.min((productsCurrentPage - 1) * productsPerPage + 1, products.length)} à {Math.min(productsCurrentPage * productsPerPage, products.length)} sur {products.length} produits
-                </div>
-
-                <div className="flex justify-center">
-                  <nav className="flex items-center space-x-2">
-                    <button
-                      onClick={() => setProductsCurrentPage(productsCurrentPage - 1)}
-                      disabled={productsCurrentPage === 1}
-                      className="px-3 py-2 rounded-lg border border-gray-300 text-gray-500 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
-                    >
-                      <ChevronLeft size={20} />
-                    </button>
-
-                    {Array.from({ length: Math.ceil(products.length / productsPerPage) }, (_, i) => i + 1).map((pageNumber) => (
-                      <button
-                        key={pageNumber}
-                        onClick={() => setProductsCurrentPage(pageNumber)}
-                        className={`px-4 py-2 rounded-lg border ${productsCurrentPage === pageNumber
-                          ? 'bg-green-600 text-white border-green-600'
-                          : 'border-gray-300 text-gray-700 hover:bg-gray-50'
-                          }`}
-                      >
-                        {pageNumber}
-                      </button>
-                    ))}
-
-                    <button
-                      onClick={() => setProductsCurrentPage(productsCurrentPage + 1)}
-                      disabled={productsCurrentPage === Math.ceil(products.length / productsPerPage)}
-                      className="px-3 py-2 rounded-lg border border-gray-300 text-gray-500 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
-                    >
-                      <ChevronRight size={20} />
-                    </button>
-                  </nav>
-                </div>
-              </div>
-            )}
-          </div>
-        </div>
-      )}
-
-      {/* Section Blogs */}
-      {activeTab === 'blogs' && (
-        <div>
-          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between space-y-4 sm:space-y-0 mb-6">
-            <div>
-              <h2 className="text-2xl sm:text-3xl font-bold text-gray-900">Gestion du Blog</h2>
-              <p className="text-gray-600 mt-1">Gérez vos articles de blog</p>
-            </div>
-            <button
-              onClick={() => {
-                setEditingBlog(null);
-                setShowBlogFormModal(true);
-              }}
-              className="flex items-center space-x-2 bg-gradient-to-r from-green-500 to-green-600 text-white px-6 py-3 rounded-xl hover:from-green-600 hover:to-green-700 transition-all duration-300 shadow-lg hover:shadow-xl cursor-pointer relative z-50"
-            >
-              <PlusIcon className="w-5 h-5" />
-              <span className="font-medium">Ajouter un article</span>
-            </button>
-          </div>
-
-          <div className="bg-white/70 backdrop-blur-xl rounded-2xl border border-white/30 shadow-xl">
-            <div className="overflow-x-auto">
-              <table className="min-w-full divide-y divide-white/20">
-                <thead className="bg-white/50 backdrop-blur-sm">
-                  <tr>
-                    <th className="px-4 sm:px-6 py-3 sm:py-4 text-left text-xs sm:text-sm font-semibold text-gray-700 uppercase tracking-wider">
-                      Article
-                    </th>
-                    <th className="px-4 sm:px-6 py-3 sm:py-4 text-left text-xs sm:text-sm font-semibold text-gray-700 uppercase tracking-wider">
-                      Auteur
-                    </th>
-                    <th className="px-4 sm:px-6 py-3 sm:py-4 text-left text-xs sm:text-sm font-semibold text-gray-700 uppercase tracking-wider">
-                      Catégorie
-                    </th>
-                    <th className="px-4 sm:px-6 py-3 sm:py-4 text-left text-xs sm:text-sm font-semibold text-gray-700 uppercase tracking-wider">
-                      Statut
-                    </th>
-                    <th className="px-4 sm:px-6 py-3 sm:py-4 text-left text-xs sm:text-sm font-semibold text-gray-700 uppercase tracking-wider">
-                      Date
-                    </th>
-                    <th className="px-4 sm:px-6 py-3 sm:py-4 text-left text-xs sm:text-sm font-semibold text-gray-700 uppercase tracking-wider">
-                      Actions
-                    </th>
-                  </tr>
-                </thead>
-                <tbody className="bg-white/30 backdrop-blur-sm divide-y divide-white/20">
-                  {blogs
-                    .slice((blogsCurrentPage - 1) * blogsPerPage, blogsCurrentPage * blogsPerPage)
-                    .map((blog) => (
-                      <tr key={blog._id} className="hover:bg-white/50 transition-all duration-300">
-                        <td className="px-4 sm:px-6 py-4 whitespace-nowrap">
-                          <div className="flex items-center space-x-3">
-                            {blog.featuredImage && (
-                              <img
-                                src={blog.featuredImage.url}
-                                alt={blog.featuredImage.alt}
-                                className="h-12 w-12 sm:h-14 sm:w-14 rounded-xl object-cover shadow-md"
-                              />
-                            )}
-                            <div>
-                              <div className="text-sm sm:text-base font-semibold text-gray-900">{blog.title}</div>
-                              <div className="text-xs sm:text-sm text-gray-600">{blog.readTime}</div>
-                            </div>
-                          </div>
-                        </td>
-                        <td className="px-4 sm:px-6 py-4 whitespace-nowrap text-sm sm:text-base text-gray-900">
-                          {blog.author}
-                        </td>
-                        <td className="px-4 sm:px-6 py-4 whitespace-nowrap text-sm sm:text-base text-gray-900">
-                          {blog.category}
-                        </td>
-                        <td className="px-4 sm:px-6 py-4 whitespace-nowrap">
-                          <span className={`inline-flex px-3 py-1 text-xs font-semibold rounded-full ${blog.isPublished ? 'bg-green-100 text-green-800' : 'bg-yellow-100 text-yellow-800'
-                            }`}>
-                            {blog.isPublished ? 'Publié' : 'Brouillon'}
-                          </span>
-                        </td>
-                        <td className="px-4 sm:px-6 py-4 whitespace-nowrap text-sm sm:text-base text-gray-900">
-                          {new Date(blog.createdAt).toLocaleDateString('fr-FR')}
-                        </td>
-                        <td className="px-4 sm:px-6 py-4 whitespace-nowrap text-sm font-medium">
-                          <div className="flex space-x-2">
-                            <button
-                              onClick={() => handleEditBlog(blog)}
-                              className="p-2 bg-blue-100 text-blue-600 rounded-lg hover:bg-blue-200 transition-colors"
-                            >
-                              <PencilIcon className="w-4 h-4" />
-                            </button>
-                            <button
-                              onClick={() => handleDeleteBlog(blog._id)}
-                              className="p-2 bg-red-100 text-red-600 rounded-lg hover:bg-red-200 transition-colors"
-                            >
-                              <Trash2 className="w-4 h-4" />
-                            </button>
-                          </div>
-                        </td>
-                      </tr>
-                    ))}
-                </tbody>
-              </table>
-              {blogs.length === 0 && (
-                <div className="text-center py-8 text-gray-500">
-                  Aucun article trouvé
-                </div>
-              )}
-            </div>
-
-            {/* Pagination pour les blogs */}
-            {blogs.length > 0 && (
-              <div className="mt-6">
-                {/* Info sur la pagination */}
-                <div className="text-center mb-4 text-sm text-gray-600">
-                  Affichage de {Math.min((blogsCurrentPage - 1) * blogsPerPage + 1, blogs.length)} à {Math.min(blogsCurrentPage * blogsPerPage, blogs.length)} sur {blogs.length} articles
-                </div>
-
-                <div className="flex justify-center">
-                  <nav className="flex items-center space-x-2">
-                    <button
-                      onClick={() => setBlogsCurrentPage(blogsCurrentPage - 1)}
-                      disabled={blogsCurrentPage === 1}
-                      className="px-3 py-2 rounded-lg border border-gray-300 text-gray-500 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
-                    >
-                      <ChevronLeft size={20} />
-                    </button>
-
-                    {Array.from({ length: Math.ceil(blogs.length / blogsPerPage) }, (_, i) => i + 1).map((pageNumber) => (
-                      <button
-                        key={pageNumber}
-                        onClick={() => setBlogsCurrentPage(pageNumber)}
-                        className={`px-4 py-2 rounded-lg border ${blogsCurrentPage === pageNumber
-                          ? 'bg-green-600 text-white border-green-600'
-                          : 'border-gray-300 text-gray-700 hover:bg-gray-50'
-                          }`}
-                      >
-                        {pageNumber}
-                      </button>
-                    ))}
-
-                    <button
-                      onClick={() => setBlogsCurrentPage(blogsCurrentPage + 1)}
-                      disabled={blogsCurrentPage === Math.ceil(blogs.length / blogsPerPage)}
-                      className="px-3 py-2 rounded-lg border border-gray-300 text-gray-500 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
-                    >
-                      <ChevronRight size={20} />
-                    </button>
-                  </nav>
-                </div>
-              </div>
-            )}
-          </div>
-        </div>
-      )}
-
-
       {/* Modals */}
       <ProductModal
         isOpen={showProductModal}
@@ -1270,6 +1382,16 @@ const AdminDashboard = () => {
         }}
         formation={editingFormation}
         onFormationSaved={handleFormationSaved}
+      />
+
+      <EventFormModal
+        isOpen={showEventFormModal}
+        onClose={() => {
+          setShowEventFormModal(false);
+          setEditingEvent(null);
+        }}
+        event={editingEvent}
+        onEventSaved={handleEventSaved}
       />
     </motion.div>
   );
