@@ -9,7 +9,7 @@ interface Product {
   category: string;
   brand: string;
   stock: number;
-  specifications: Record<string, any>;
+  specifications: { name: string; value: string }[] | Record<string, any>;
   tags: string[];
   images: Array<{
     publicId: string;
@@ -39,7 +39,7 @@ const ProductModal = ({ product, isOpen, onClose }: ProductModalProps) => {
     }).format(price);
   };
 
- 
+
 
   return (
     <AnimatePresence>
@@ -88,7 +88,7 @@ const ProductModal = ({ product, isOpen, onClose }: ProductModalProps) => {
                       </div>
                     )}
                   </div>
-                  
+
                   {/* Gallery thumbnails */}
                   {product.images && product.images.length > 1 && (
                     <div className="grid grid-cols-4 gap-2">
@@ -157,28 +157,40 @@ const ProductModal = ({ product, isOpen, onClose }: ProductModalProps) => {
                   )}
 
                   {/* Specifications */}
-                  {product.specifications && Object.keys(product.specifications).length > 0 && (
+                  {product.specifications && (
                     <div>
                       <h3 className="text-lg font-semibold text-gray-900 mb-3">Spécifications</h3>
                       <div className="space-y-2">
-                        {Object.entries(product.specifications).map(([key, value]) => (
-                          <div key={key} className="flex justify-between py-2 border-b border-gray-100">
-                            <span className="font-medium text-gray-700 capitalize">
-                              {key.replace(/([A-Z])/g, ' $1').trim()}:
-                            </span>
-                            <span className="text-gray-600">{String(value)}</span>
-                          </div>
-                        ))}
+                        {Array.isArray(product.specifications) ? (
+                          product.specifications.map((spec: any, index: number) => (
+                            <div key={index} className="flex justify-between py-2 border-b border-gray-100">
+                              <span className="font-medium text-gray-700 capitalize">
+                                {spec.name}:
+                              </span>
+                              <span className="text-gray-600">{spec.value}</span>
+                            </div>
+                          ))
+                        ) : (
+                          // Legacy support for object format
+                          Object.entries(product.specifications).map(([key, value]) => (
+                            <div key={key} className="flex justify-between py-2 border-b border-gray-100">
+                              <span className="font-medium text-gray-700 capitalize">
+                                {key.replace(/([A-Z])/g, ' $1').trim()}:
+                              </span>
+                              <span className="text-gray-600">{String(value)}</span>
+                            </div>
+                          ))
+                        )}
                       </div>
                     </div>
                   )}
 
                   {/* Action Buttons */}
-                 
+
 
 
                   {/* Product Info */}
-                 
+
                 </div>
               </div>
             </div>

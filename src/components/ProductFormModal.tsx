@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { X, Package, Upload, Tag } from 'lucide-react';
+import { X, Plus, Trash2 } from 'lucide-react';
 import ImageUpload from './ImageUpload';
 import { productsAPI } from '../services/api';
 import Swal from 'sweetalert2';
@@ -12,7 +12,7 @@ interface Product {
   category: string;
   brand: string;
   stock: number;
-  specifications: Record<string, any>;
+  specifications: { name: string; value: string }[];
   tags: string[];
   images: Array<{
     publicId: string;
@@ -39,6 +39,7 @@ const ProductFormModal: React.FC<ProductFormModalProps> = ({
 }) => {
   const [isLoading, setIsLoading] = useState(false);
   const [imageFiles, setImageFiles] = useState<File[]>([]);
+  const [specList, setSpecList] = useState<{ name: string; value: string }[]>([]);
   const [formData, setFormData] = useState({
     name: '',
     description: '',
@@ -46,7 +47,6 @@ const ProductFormModal: React.FC<ProductFormModalProps> = ({
     category: '',
     brand: '',
     stock: '',
-    specifications: '',
     tags: '',
     isActive: true
   });
@@ -60,10 +60,18 @@ const ProductFormModal: React.FC<ProductFormModalProps> = ({
         category: product.category || '',
         brand: product.brand || '',
         stock: product.stock?.toString() || '',
-        specifications: JSON.stringify(product.specifications || {}, null, 2),
         tags: product.tags?.join(', ') || '',
         isActive: product.isActive ?? true
       });
+      // Handle legacy or correct format
+      if (Array.isArray(product.specifications)) {
+        setSpecList(product.specifications);
+      } else if (typeof product.specifications === 'object' && product.specifications !== null) {
+        // Convert old object format to array if necessary, though backend should be sending array now
+        setSpecList(Object.entries(product.specifications).map(([key, value]) => ({ name: key, value: String(value) })));
+      } else {
+        setSpecList([]);
+      }
     } else {
       setFormData({
         name: '',
@@ -72,17 +80,31 @@ const ProductFormModal: React.FC<ProductFormModalProps> = ({
         category: '',
         brand: '',
         stock: '',
-        specifications: '',
         tags: '',
         isActive: true
       });
+      setSpecList([]);
     }
     setImageFiles([]);
   }, [product, isOpen]);
 
+  const handleSpecChange = (index: number, field: 'name' | 'value', value: string) => {
+    const newSpecs = [...specList];
+    newSpecs[index][field] = value;
+    setSpecList(newSpecs);
+  };
+
+  const addSpec = () => {
+    setSpecList([...specList, { name: '', value: '' }]);
+  };
+
+  const removeSpec = (index: number) => {
+    setSpecList(specList.filter((_, i) => i !== index));
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     if (!formData.name || !formData.description || !formData.price || !formData.category) {
       Swal.fire({
         icon: 'warning',
@@ -95,7 +117,7 @@ const ProductFormModal: React.FC<ProductFormModalProps> = ({
 
     try {
       setIsLoading(true);
-      
+
       const submitData = new FormData();
       submitData.append('name', formData.name);
       submitData.append('description', formData.description);
@@ -103,12 +125,12 @@ const ProductFormModal: React.FC<ProductFormModalProps> = ({
       submitData.append('category', formData.category);
       submitData.append('brand', formData.brand);
       submitData.append('stock', formData.stock);
-      submitData.append('specifications', formData.specifications);
+      submitData.append('specifications', JSON.stringify(specList));
       submitData.append('tags', formData.tags);
       submitData.append('isActive', formData.isActive.toString());
-      
+
       // Ajouter les images
-      imageFiles.forEach((file, index) => {
+      imageFiles.forEach((file) => {
         submitData.append('images', file);
       });
 
@@ -298,16 +320,44 @@ const ProductFormModal: React.FC<ProductFormModalProps> = ({
             {/* Specifications */}
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">
-                Spécifications (JSON)
+                Spécifications
               </label>
-              <textarea
-                name="specifications"
-                value={formData.specifications}
-                onChange={handleInputChange}
-                rows={4}
-                placeholder='{"couleur": "rouge", "taille": "M", "matériau": "coton"}'
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent font-mono text-sm"
-              />
+              <div className="space-y-3">
+                {specList.map((spec, index) => (
+                  <div key={index} className="flex gap-2">
+                    <input
+                      type="text"
+                      placeholder="Nom (ex: Couleur)"
+                      value={spec.name}
+                      onChange={(e) => handleSpecChange(index, 'name', e.target.value)}
+                      className="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
+                    />
+                    <input
+                      type="text"
+                      placeholder="Valeur (ex: Rouge)"
+                      value={spec.value}
+                      onChange={(e) => handleSpecChange(index, 'value', e.target.value)}
+                      className="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
+                    />
+                    <button
+                      type="button"
+                      onClick={() => removeSpec(index)}
+                      className="p-2 text-red-600 hover:bg-red-50 rounded-lg transition-colors"
+                    >
+                      <Trash2 size={20} />
+                    </button>
+                  </div>
+                ))}
+
+                <button
+                  type="button"
+                  onClick={addSpec}
+                  className="flex items-center space-x-2 text-sm text-green-600 hover:text-green-700 font-medium"
+                >
+                  <Plus size={16} />
+                  <span>Ajouter une spécification</span>
+                </button>
+              </div>
             </div>
 
             {/* Active Status */}

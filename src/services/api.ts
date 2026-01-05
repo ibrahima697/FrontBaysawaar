@@ -134,13 +134,13 @@ export const productsAPI = {
   getProductById: (id: string): Promise<AxiosResponse> =>
     api.get(`/products/${id}`),
 
-  createProduct: (productData: ProductData): Promise<AxiosResponse> =>
+  createProduct: (productData: ProductData | FormData): Promise<AxiosResponse> =>
     api.post('/products', productData, {
       headers: { 'Content-Type': 'multipart/form-data' },
       timeout: 120000, // 2 minutes pour les uploads d'images
     }),
 
-  updateProduct: (id: string, updates: ProductData): Promise<AxiosResponse> =>
+  updateProduct: (id: string, updates: ProductData | FormData): Promise<AxiosResponse> =>
     api.put(`/products/${id}`, updates, {
       headers: { 'Content-Type': 'multipart/form-data' },
       timeout: 120000, // 2 minutes pour les uploads d'images
@@ -254,6 +254,7 @@ export const eventsAPI = {
 
   create: (data: EventData) => api.post('/events', data),
   update: (id: string, data: EventData) => api.put(`/events/${id}`, data),
+  delete: (id: string) => api.delete(`/events/${id}`),
   register: (slug: string) => api.post(`/events/${slug}/register`),
   registerToEvent: (slug: string) => api.post(`/events/${slug}/register`),
 };

@@ -271,6 +271,29 @@ const AdminDashboard = () => {
     fetchEvents();
   };
 
+  const handleDeleteEvent = async (id: string) => {
+    const result = await Swal.fire({
+      title: 'Êtes-vous sûr de vouloir supprimer cet événement ?',
+      text: "Cette action ne peut pas être annulée.",
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#dc2626',
+      cancelButtonColor: '#6b7280',
+      confirmButtonText: 'Oui, supprimer',
+      cancelButtonText: 'Annuler'
+    });
+
+    if (result.isConfirmed) {
+      try {
+        await eventsAPI.delete(id);
+        Swal.fire('Succès!', 'Événement supprimé avec succès', 'success');
+        fetchEvents();
+      } catch (error: any) {
+        Swal.fire('Erreur!', error.response?.data?.error || 'Une erreur est survenue', 'error');
+      }
+    }
+  };
+
 
   const handleEnrollmentAction = async (id: string, action: 'approve' | 'reject') => {
     const actionText = action === 'approve' ? 'approuver' : 'rejeter';
@@ -1003,6 +1026,12 @@ const AdminDashboard = () => {
                       className="p-2 bg-blue-100 text-blue-600 rounded-lg hover:bg-blue-200"
                     >
                       <Pencil className="w-4 h-4" />
+                    </button>
+                    <button
+                      onClick={() => handleDeleteEvent(event._id!)}
+                      className="p-2 bg-red-100 text-red-600 rounded-lg hover:bg-red-200"
+                    >
+                      <Trash2 className="w-4 h-4" />
                     </button>
                   </div>
                 </motion.div>
