@@ -13,7 +13,19 @@ interface Props {
     onEventSaved: () => void;
 }
 
+import { useAuth } from '../context/AuthContext';
+
 const EventFormModal: React.FC<Props> = ({ isOpen, onClose, event, onEventSaved }) => {
+    const { user } = useAuth();
+
+    useEffect(() => {
+        if (isOpen) {
+            console.log("[DEBUG] Current User:", user);
+            console.log("[DEBUG] User Role:", user?.role);
+            console.log("[DEBUG] User ID:", user?._id || user?.id);
+        }
+    }, [isOpen, user]);
+
     const [form, setForm] = useState<EventData>({
         title: '',
         description: '',
@@ -76,33 +88,69 @@ const EventFormModal: React.FC<Props> = ({ isOpen, onClose, event, onEventSaved 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         try {
-            const formData = new FormData();
-            formData.append('title', form.title);
-            formData.append('description', form.description);
-            formData.append('dateStart', form.dateStart);
-            formData.append('dateEnd', form.dateEnd);
-            formData.append('location', form.location);
-            formData.append('maxParticipants', form.maxParticipants.toString());
-            formData.append('priceMember', form.priceMember.toString());
-            formData.append('priceNonMember', form.priceNonMember.toString());
-            formData.append('isFeatured', String(form.isFeatured));
-            if (form.type) formData.append('type', form.type);
+            // DEBUG LOGGING
+            console.log("--- SUBMITTING EVENT FORM ---");
+            console.log("Event ID:", event?._id);
+            console.log("Image File:", imageFile ? "Yes" : "No");
 
-            if (imageFile) {
-                formData.append('images', imageFile);
-            }
+            // Logic decision: If we have an image, we MUST use FormData.
+            // If we don't have an image, we can try using JSON, assuming the backend supports it.
+            // Many backends have trouble with PUT + Multipart if not configured correctly.
 
-            if (event?._id) {
-                await eventsAPI.update(event._id, formData);
+            if (event?._id && !imageFile) {
+                // Update mode without new image -> Use JSON
+                console.log("Using JSON strategy for update...");
+                const jsonData = {
+                    title: form.title,
+                    description: form.description,
+                    dateStart: form.dateStart,
+                    dateEnd: form.dateEnd,
+                    location: form.location,
+                    maxParticipants: form.maxParticipants,
+                    priceMember: form.priceMember,
+                    priceNonMember: form.priceNonMember,
+                    isFeatured: form.isFeatured,
+                    type: form.type
+                };
+
+                await eventsAPI.update(event._id, jsonData as any); // Cast as any to bypass strict type check if needed, or update API sig
                 Swal.fire('Succès', 'Événement mis à jour', 'success');
             } else {
-                await eventsAPI.create(formData);
-                Swal.fire('Succès', 'Événement créé avec succès', 'success');
+                // Create mode OR Update with Image -> Use FormData
+                console.log("Using FormData strategy...");
+                const formData = new FormData();
+                formData.append('title', form.title);
+                formData.append('description', form.description);
+                formData.append('dateStart', form.dateStart);
+                formData.append('dateEnd', form.dateEnd);
+                formData.append('location', form.location);
+                formData.append('maxParticipants', form.maxParticipants.toString());
+                formData.append('priceMember', form.priceMember.toString());
+                formData.append('priceNonMember', form.priceNonMember.toString());
+                formData.append('isFeatured', String(form.isFeatured));
+                if (form.type) formData.append('type', form.type);
+
+                if (imageFile) {
+                    formData.append('images', imageFile);
+                }
+
+                if (event?._id) {
+                    await eventsAPI.update(event._id, formData);
+                    Swal.fire('Succès', 'Événement mis à jour', 'success');
+                } else {
+                    await eventsAPI.create(formData);
+                    Swal.fire('Succès', 'Événement créé avec succès', 'success');
+                }
             }
+
             onEventSaved();
             onClose();
         } catch (err: any) {
-            console.error(err);
+            console.error("API Error Details:", err);
+            if (err.response) {
+                console.error("Response Status:", err.response.status);
+                console.error("Response Data:", err.response.data);
+            }
             Swal.fire('Erreur', err.response?.data?.message || 'Impossible de sauvegarder', 'error');
         }
     };

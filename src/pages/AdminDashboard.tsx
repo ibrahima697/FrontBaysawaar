@@ -807,6 +807,49 @@ const AdminDashboard = () => {
                       ))}
                   </div>
                 )}
+
+                {/* Pagination pour les enrôlements */}
+                {enrollments.length > 0 && (
+                  <div className="mt-6">
+                    {/* Info sur la pagination */}
+                    <div className="text-center mb-4 text-sm text-gray-600">
+                      Affichage de {Math.min((enrollmentsCurrentPage - 1) * enrollmentsPerPage + 1, enrollments.length)} à {Math.min(enrollmentsCurrentPage * enrollmentsPerPage, enrollments.length)} sur {enrollments.length} enrôlements
+                    </div>
+
+                    <div className="flex justify-center">
+                      <nav className="flex items-center space-x-2">
+                        <button
+                          onClick={() => setEnrollmentsCurrentPage(enrollmentsCurrentPage - 1)}
+                          disabled={enrollmentsCurrentPage === 1}
+                          className="px-3 py-2 rounded-lg border border-gray-300 text-gray-500 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
+                        >
+                          <ChevronLeft size={20} />
+                        </button>
+
+                        {Array.from({ length: Math.ceil(enrollments.length / enrollmentsPerPage) }, (_, i) => i + 1).map((pageNumber) => (
+                          <button
+                            key={pageNumber}
+                            onClick={() => setEnrollmentsCurrentPage(pageNumber)}
+                            className={`px-4 py-2 rounded-lg border ${enrollmentsCurrentPage === pageNumber
+                              ? 'bg-green-600 text-white border-green-600'
+                              : 'border-gray-300 text-gray-700 hover:bg-gray-50'
+                              }`}
+                          >
+                            {pageNumber}
+                          </button>
+                        ))}
+
+                        <button
+                          onClick={() => setEnrollmentsCurrentPage(enrollmentsCurrentPage + 1)}
+                          disabled={enrollmentsCurrentPage === Math.ceil(enrollments.length / enrollmentsPerPage)}
+                          className="px-3 py-2 rounded-lg border border-gray-300 text-gray-500 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
+                        >
+                          <ChevronRight size={20} />
+                        </button>
+                      </nav>
+                    </div>
+                  </div>
+                )}
               </div>
             </div>
           </>

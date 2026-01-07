@@ -14,8 +14,11 @@ const api = axios.create({
 // Intercepteur de requêtes pour ajouter le token d'authentification
 api.interceptors.request.use((config) => {
   const token = localStorage.getItem('token');
+  console.log('[API DEBUG] Request URL:', config.url);
+  console.log('[API DEBUG] Token present:', !!token);
   if (token) {
     config.headers.Authorization = `Bearer ${token}`;
+    console.log('[API DEBUG] Auth Header set');
   }
   return config;
 }, (error) => Promise.reject(error));
@@ -136,13 +139,13 @@ export const productsAPI = {
 
   createProduct: (productData: ProductData | FormData): Promise<AxiosResponse> =>
     api.post('/products', productData, {
-      headers: { 'Content-Type': 'multipart/form-data' },
+      headers: { 'Content-Type': productData instanceof FormData ? undefined : 'application/json' },
       timeout: 120000, // 2 minutes pour les uploads d'images
     }),
 
   updateProduct: (id: string, updates: ProductData | FormData): Promise<AxiosResponse> =>
     api.put(`/products/${id}`, updates, {
-      headers: { 'Content-Type': 'multipart/form-data' },
+      headers: { 'Content-Type': updates instanceof FormData ? undefined : 'application/json' },
       timeout: 120000, // 2 minutes pour les uploads d'images
     }),
 
@@ -160,13 +163,13 @@ export const blogsAPI = {
 
   createBlog: (blogData: FormData): Promise<AxiosResponse> =>
     api.post('/blogs', blogData, {
-      headers: { 'Content-Type': 'multipart/form-data' },
+      headers: { 'Content-Type': undefined }, // Let browser set boundary
       timeout: 120000, // 2 minutes pour les uploads d'images
     }),
 
   updateBlog: (id: string, updates: FormData): Promise<AxiosResponse> =>
     api.put(`/blogs/${id}`, updates, {
-      headers: { 'Content-Type': 'multipart/form-data' },
+      headers: { 'Content-Type': undefined }, // Let browser set boundary
       timeout: 120000, // 2 minutes pour les uploads d'images
     }),
 
@@ -253,10 +256,10 @@ export const eventsAPI = {
   getAll: () => api.get('/events'), // Admin verra tout, public verra seulement upcoming/ongoing
 
   create: (data: EventData | FormData) => api.post('/events', data, {
-    headers: { 'Content-Type': data instanceof FormData ? 'multipart/form-data' : 'application/json' },
+    headers: { 'Content-Type': data instanceof FormData ? undefined : 'application/json' },
   }),
   update: (id: string, data: EventData | FormData) => api.put(`/events/${id}`, data, {
-    headers: { 'Content-Type': data instanceof FormData ? 'multipart/form-data' : 'application/json' },
+    headers: { 'Content-Type': data instanceof FormData ? undefined : 'application/json' },
   }),
   delete: (id: string) => api.delete(`/events/${id}`),
   register: (slug: string) => api.post(`/events/${slug}/register`),
@@ -264,4 +267,3 @@ export const eventsAPI = {
 };
 
 export default api;
-

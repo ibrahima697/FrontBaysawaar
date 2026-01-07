@@ -91,7 +91,7 @@ const BlogFormModal: React.FC<BlogFormModalProps> = ({
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     if (!formData.title || !formData.content || !formData.author || !formData.category) {
       Swal.fire({
         icon: 'warning',
@@ -104,7 +104,7 @@ const BlogFormModal: React.FC<BlogFormModalProps> = ({
 
     try {
       setIsLoading(true);
-      
+
       const submitData = new FormData();
       submitData.append('title', formData.title);
       submitData.append('content', formData.content);
@@ -115,7 +115,7 @@ const BlogFormModal: React.FC<BlogFormModalProps> = ({
       submitData.append('metaDescription', formData.metaDescription);
       submitData.append('readTime', formData.readTime);
       submitData.append('isPublished', formData.isPublished.toString());
-      
+
       // Ajouter les images
       if (featuredImageFile.length > 0) {
         submitData.append('featuredImage', featuredImageFile[0]);
@@ -310,7 +310,7 @@ const BlogFormModal: React.FC<BlogFormModalProps> = ({
                 Image à la une
               </label>
               <ImageUpload
-                label="Image à la une"
+                label=""
                 name="featuredImage"
                 multiple={false}
                 maxFiles={1}
@@ -326,7 +326,7 @@ const BlogFormModal: React.FC<BlogFormModalProps> = ({
                 Galerie d'images
               </label>
               <ImageUpload
-                label="Galerie d'images"
+                label=""
                 name="gallery"
                 multiple={true}
                 maxFiles={10}
