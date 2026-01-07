@@ -1,10 +1,10 @@
 // src/pages/Events.tsx
 import { useEffect, useState } from 'react';
 import { motion, Variants } from 'framer-motion';
-import { Calendar, MapPin, Users, ArrowRight, Crown, Tag, TrendingUp, Globe, Award, Mail, CheckCircle, Play } from 'lucide-react';
+import { Calendar, MapPin, Users, ArrowRight, TrendingUp, Globe, Award, CheckCircle, Play } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
-import axios from 'axios';
 import Swal from 'sweetalert2';
+import { eventsAPI } from '../services/api';
 
 interface Event {
   _id: string;
@@ -26,24 +26,25 @@ interface Event {
 const Events = () => {
   const [events, setEvents] = useState<Event[]>([]);
   const [loading, setLoading] = useState(true);
-  const { user, token } = useAuth();
+  const { user } = useAuth();
 
   useEffect(() => {
-    axios.get('http://localhost:5005/api/events')
+    eventsAPI.getAll()
       .then(res => {
         setEvents(res.data.events);
         setLoading(false);
       })
-      .catch(() => setLoading(false));
+      .catch((err) => {
+        console.error("Error fetching events:", err);
+        setLoading(false);
+      });
   }, []);
 
   const handleRegister = async (slug: string) => {
     try {
-      await axios.post(`http://localhost:5005/api/events/${slug}/register`, {}, {
-        headers: { Authorization: `Bearer ${token}` }
-      });
+      await eventsAPI.register(slug);
 
-      const { data } = await axios.get('http://localhost:5005/api/events');
+      const { data } = await eventsAPI.getAll();
       setEvents(data.events);
 
       Swal.fire({
@@ -64,7 +65,7 @@ const Events = () => {
           icon: 'info',
           confirmButtonColor: '#16a34a'
         });
-        const { data } = await axios.get('http://localhost:5005/api/events');
+        const { data } = await eventsAPI.getAll();
         setEvents(data.events);
       } else {
         Swal.fire({
@@ -77,28 +78,6 @@ const Events = () => {
     }
   };
 
-  const containerVariants: Variants = {
-    hidden: { opacity: 0 },
-    visible: {
-      opacity: 1,
-      transition: {
-        staggerChildren: 0.1
-      }
-    }
-  };
-
-  const itemVariants: Variants = {
-    hidden: { y: 20, opacity: 0 },
-    visible: {
-      y: 0,
-      opacity: 1,
-      transition: {
-        type: "spring",
-        stiffness: 100
-      }
-    }
-  };
-
   const stats = [
     { icon: Calendar, value: "50+", label: "Événements par an" },
     { icon: Users, value: "10k+", label: "Participants actifs" },
@@ -106,30 +85,13 @@ const Events = () => {
     { icon: Award, value: "98%", label: "Satisfaction" }
   ];
 
-  const benefits = [
-    {
-      icon: TrendingUp,
-      title: "Opportunités de Croissance",
-      description: "Accédez à des marchés inexploités et développez votre réseau professionnel."
-    },
-    {
-      icon: Users,
-      title: "Networking Stratégique",
-      description: "Rencontrez des leaders de l'industrie, des investisseurs et des partenaires potentiels."
-    },
-    {
-      icon: Award,
-      title: "Expertise & Formation",
-      description: "Participez à des ateliers dirigés par des experts reconnus mondialement."
-    }
-  ];
-
-  const galleryImages = [
-    "https://res.cloudinary.com/drxouwbms/image/upload/v1765711581/collection-wooden-sculptures-pottery_tslv8h.jpg",
-    "https://res.cloudinary.com/drxouwbms/image/upload/v1765711599/beautiful-african-woman-monochrome-portrait_ax6et5.jpg",
-    "https://res.cloudinary.com/drxouwbms/image/upload/v1765711685/african-woman-portrait-cultural-decorative-items_yzgwv0.jpg",
-    "https://res.cloudinary.com/drxouwbms/image/upload/v1765711712/photorealistic-portrait-african-woman_mimrxs.jpg"
-  ];
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-[#050505] flex items-center justify-center">
+        <div className="animate-spin rounded-full h-16 w-16 border-t-2 border-b-2 border-green-500"></div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-[#050505] text-white font-sans selection:bg-green-500 selection:text-white pb-20">
@@ -249,83 +211,77 @@ const Events = () => {
             </a>
           </div>
 
-          {loading ? (
-            <div className="flex justify-center py-20">
-              <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-green-500"></div>
-            </div>
-          ) : (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {events.map((event, idx) => (
-                <motion.div
-                  key={event._id}
-                  initial={{ opacity: 0, y: 20 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  transition={{ delay: idx * 0.1 }}
-                  className="group relative h-[500px] overflow-hidden bg-[#101010] border border-white/5 hover:border-green-500/30 transition-all duration-500"
-                >
-                  <div className="absolute inset-0 z-0">
-                    <img
-                      src={event.images?.[0]?.url || "https://images.unsplash.com/photo-1540575467063-178a50c2df87?q=80&w=800&auto=format&fit=crop"}
-                      alt={event.title}
-                      className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110 opacity-60 group-hover:opacity-40"
-                    />
-                    <div className="absolute inset-0 bg-gradient-to-t from-black via-black/50 to-transparent" />
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {events.map((event, idx) => (
+              <motion.div
+                key={event._id}
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                transition={{ delay: idx * 0.1 }}
+                className="group relative h-[500px] overflow-hidden bg-[#101010] border border-white/5 hover:border-green-500/30 transition-all duration-500"
+              >
+                <div className="absolute inset-0 z-0">
+                  <img
+                    src={event.images?.[0]?.url || "https://images.unsplash.com/photo-1540575467063-178a50c2df87?q=80&w=800&auto=format&fit=crop"}
+                    alt={event.title}
+                    className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110 opacity-60 group-hover:opacity-40"
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-black via-black/50 to-transparent" />
+                </div>
+
+                <div className="relative z-10 h-full p-8 flex flex-col justify-between">
+                  <div className="flex justify-between items-start">
+                    <span className="bg-green-600 text-white text-xs font-bold px-3 py-1 uppercase tracking-wider">
+                      {event.type.replace('_', ' ')}
+                    </span>
+                    <span className="text-2xl font-bold text-white/50 group-hover:text-green-400 transition-colors">
+                      {new Date(event.dateStart).getDate().toString().padStart(2, '0')}
+                    </span>
                   </div>
 
-                  <div className="relative z-10 h-full p-8 flex flex-col justify-between">
-                    <div className="flex justify-between items-start">
-                      <span className="bg-green-600 text-white text-xs font-bold px-3 py-1 uppercase tracking-wider">
-                        {event.type.replace('_', ' ')}
-                      </span>
-                      <span className="text-2xl font-bold text-white/50 group-hover:text-green-400 transition-colors">
-                        {new Date(event.dateStart).getDate().toString().padStart(2, '0')}
-                      </span>
+                  <div>
+                    <div className="mb-6">
+                      <p className="flex items-center gap-2 text-green-400 text-sm font-medium mb-2 uppercase tracking-wide">
+                        <Calendar size={14} />
+                        {new Date(event.dateStart).toLocaleDateString('fr-FR', { month: 'long', year: 'numeric' })}
+                      </p>
+                      <h3 className="text-3xl font-bold text-white mb-3 group-hover:underline decoration-green-500 decoration-2 underline-offset-4 leading-tight">
+                        {event.title}
+                      </h3>
+                      <p className="text-gray-400 line-clamp-2 font-light text-sm">
+                        {event.shortDescription}
+                      </p>
                     </div>
 
-                    <div>
-                      <div className="mb-6">
-                        <p className="flex items-center gap-2 text-green-400 text-sm font-medium mb-2 uppercase tracking-wide">
-                          <Calendar size={14} />
-                          {new Date(event.dateStart).toLocaleDateString('fr-FR', { month: 'long', year: 'numeric' })}
-                        </p>
-                        <h3 className="text-3xl font-bold text-white mb-3 group-hover:underline decoration-green-500 decoration-2 underline-offset-4 leading-tight">
-                          {event.title}
-                        </h3>
-                        <p className="text-gray-400 line-clamp-2 font-light text-sm">
-                          {event.shortDescription}
-                        </p>
+                    <div className="flex items-center justify-between pt-6 border-t border-white/10 group-hover:border-white/20 transition-colors">
+                      <div className="flex items-center gap-2 text-gray-400 text-xs uppercase tracking-wide">
+                        <MapPin size={14} className="text-green-500" /> {event.location}
                       </div>
 
-                      <div className="flex items-center justify-between pt-6 border-t border-white/10 group-hover:border-white/20 transition-colors">
-                        <div className="flex items-center gap-2 text-gray-400 text-xs uppercase tracking-wide">
-                          <MapPin size={14} className="text-green-500" /> {event.location}
-                        </div>
-
-                        {user && event.registrations.some(reg => {
-                          if (!reg.user) return false;
-                          const registeredUserId = typeof reg.user === 'string'
-                            ? reg.user
-                            : reg.user._id?.toString() || reg.user.toString();
-                          return registeredUserId === user._id;
-                        }) ? (
-                          <span className="text-green-500 font-bold flex items-center gap-2 text-sm">
-                            <CheckCircle size={16} /> Inscrit
-                          </span>
-                        ) : (
-                          <button
-                            onClick={() => handleRegister(event.slug)}
-                            className="w-10 h-10 rounded-full bg-white text-black flex items-center justify-center hover:bg-green-500 hover:text-white transition-all transform group-hover:scale-110"
-                          >
-                            <ArrowRight size={18} />
-                          </button>
-                        )}
-                      </div>
+                      {user && event.registrations.some(reg => {
+                        if (!reg.user) return false;
+                        const registeredUserId = typeof reg.user === 'string'
+                          ? reg.user
+                          : reg.user._id?.toString() || reg.user.toString();
+                        return registeredUserId === user._id;
+                      }) ? (
+                        <span className="text-green-500 font-bold flex items-center gap-2 text-sm">
+                          <CheckCircle size={16} /> Inscrit
+                        </span>
+                      ) : (
+                        <button
+                          onClick={() => handleRegister(event.slug)}
+                          className="w-10 h-10 rounded-full bg-white text-black flex items-center justify-center hover:bg-green-500 hover:text-white transition-all transform group-hover:scale-110"
+                        >
+                          <ArrowRight size={18} />
+                        </button>
+                      )}
                     </div>
                   </div>
-                </motion.div>
-              ))}
-            </div>
-          )}
+                </div>
+              </motion.div>
+            ))}
+          </div>
         </div>
       </section>
 
