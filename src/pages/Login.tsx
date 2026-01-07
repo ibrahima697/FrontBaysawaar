@@ -255,23 +255,7 @@ const Login = () => {
                     </div>
                   </div>
 
-                  {/* Remember Me & Forgot Password - Refined */}
-                  <div className="flex flex-col gap-2 xs:gap-0 xs:flex-row xs:items-center xs:justify-between pt-1.5 xs:pt-2 space-y-2 xs:space-y-0">
-                    <label className="flex items-center space-x-2 xs:space-x-3 cursor-pointer group justify-center xs:justify-start">
-                      <div className="relative">
-                        <input
-                          type="checkbox"
-                          checked={rememberMe}
-                          onChange={(e) => setRememberMe(e.target.checked)}
-                          className="w-4 h-4 text-green-600 border-slate-300 rounded-md focus:ring-green-500/20 focus:ring-2 transition-all duration-200"
-                        />
-                      </div>
-                      <span className="text-xs xs:text-sm text-slate-600 group-hover:text-slate-800 transition-colors select-none">Se souvenir de moi</span>
-                    </label>
-                    <Link to="/forgot-password" className="text-xs xs:text-sm text-green-600 hover:text-green-700 transition-colors font-medium text-center xs:text-right">
-                      Mot de passe oublié ?
-                    </Link>
-                  </div>
+
 
                   {/* Enhanced Sign In Button */}
                   <motion.button

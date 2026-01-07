@@ -62,11 +62,16 @@ const Navbar = () => {
 
   // Helper for user photo fallback
   const getUserPhoto = () => {
-    console.log('🟢 user:', user);
-    // Priorité à la nouvelle propriété photo (Cloudinary)
+    // Handle potential string format (legacy or direct URL) safety check
+    const photo = user?.photo as any;
+    if (typeof photo === 'string') return photo;
+
+    // Priorité à la nouvelle propriété photo (Cloudinary object)
     if (user?.photo?.url) return user.photo.url;
+
     if (user?.photoURL) return user.photoURL;
     if (user?.avatar) return user.avatar;
+
     // fallback: initials avatar
     if (user?.firstName && user?.lastName) {
       return `https://ui-avatars.com/api/?name=${encodeURIComponent(

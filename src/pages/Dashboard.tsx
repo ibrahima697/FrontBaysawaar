@@ -47,10 +47,16 @@ const Dashboard = () => {
 
   // Helper for user photo fallback
   const getUserPhoto = () => {
+    // Handle potential string format (legacy or direct URL) safety check
+    const photo = user?.photo as any;
+    if (typeof photo === 'string') return photo;
+
     // Priorité à la nouvelle propriété photo (Cloudinary)
     if (user?.photo?.url) return user.photo.url;
+
     if (user?.photoURL) return user.photoURL;
     if (user?.avatar) return user.avatar;
+
     // fallback: initials avatar
     if (user?.firstName && user?.lastName) {
       return `https://ui-avatars.com/api/?name=${encodeURIComponent(
@@ -165,225 +171,298 @@ const Dashboard = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-green-50 relative overflow-hidden">
-      <div className="absolute inset-0 bg-[url('/grid-pattern.svg')] opacity-5" />
-      <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-green-500 via-blue-500 to-purple-500" />
+    <div className="min-h-screen bg-gray-50/50 relative overflow-hidden font-sans text-gray-900">
+      {/* Background Elements */}
+      <div className="fixed inset-0 z-0 pointer-events-none">
+        <div className="absolute top-[-10%] right-[-5%] w-[500px] h-[500px] bg-green-200/20 rounded-full blur-[100px]" />
+        <div className="absolute bottom-[20%] left-[-10%] w-[600px] h-[600px] bg-blue-200/20 rounded-full blur-[120px]" />
+        <div className="absolute top-[40%] left-[20%] w-[300px] h-[300px] bg-purple-200/10 rounded-full blur-[80px]" />
+      </div>
 
-      <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        {/* Header */}
-        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="mb-8">
-          <div className="bg-white/70 backdrop-blur-xl rounded-2xl p-6 sm:p-8 border border-white/20 shadow-xl">
-            <h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold bg-gradient-to-r from-gray-900 to-gray-700 bg-clip-text text-transparent mb-2">
-              Tableau de bord
+      <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
+        {/* Header Section */}
+        <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-10">
+          <motion.div
+            initial={{ opacity: 0, x: -20 }}
+            animate={{ opacity: 1, x: 0 }}
+          >
+            <h1 className="text-4xl font-extrabold tracking-tight text-gray-900 mb-2">
+              Bonjour, <span className="text-green-600">{user?.firstName}</span>
             </h1>
-            <p className="text-gray-600 text-lg">
-              Bienvenue, <span className="font-semibold text-gray-900">{user?.firstName} {user?.lastName}</span>
+            <p className="text-gray-500 text-lg">
+              Heureux de vous revoir. Voici ce qui se passe aujourd'hui.
             </p>
-            {enrollment && (
-              <div className="flex items-center gap-2 mt-3">
-                <span className="text-sm text-gray-600">Statut :</span>
-                <span className={`inline-flex items-center px-3 py-1 rounded-full text-xs font-medium ${getStatusColor(enrollment.status)}`}>
-                  {getStatusIcon(enrollment.status)} {getStatusText(enrollment.status)}
-                </span>
-              </div>
-            )}
-          </div>
-        </motion.div>
+          </motion.div>
 
-        {/* Onglets */}
-        <div className="bg-white/70 backdrop-blur-xl border-b border-white/20 rounded-t-2xl mb-6">
-          <nav className="flex space-x-2 p-2">
+          <motion.div
+            initial={{ opacity: 0, x: 20 }}
+            animate={{ opacity: 1, x: 0 }}
+            className="flex items-center gap-2 bg-white p-1.5 rounded-2xl shadow-sm border border-gray-100"
+          >
             {['dashboard', 'profile'].map(tab => (
               <button
                 key={tab}
                 onClick={() => setActiveTab(tab as any)}
-                className={`flex-1 py-3 px-6 rounded-xl font-medium text-sm transition-all ${activeTab === tab
-                  ? 'bg-green-500 text-white shadow-lg'
-                  : 'text-gray-600 hover:text-gray-900 hover:bg-white/50'
+                className={`px-6 py-2.5 rounded-xl font-medium text-sm transition-all duration-200 ${activeTab === tab
+                    ? 'bg-gray-900 text-white shadow-md'
+                    : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'
                   }`}
               >
-                <div className="flex items-center justify-center space-x-2">
-                  {tab === 'dashboard' ? <TrendingUp className="w-4 h-4" /> : <UserIcon className="w-4 h-4" />}
-                  <span>{tab === 'dashboard' ? 'Tableau de Bord' : 'Mon Profil'}</span>
+                <div className="flex items-center gap-2">
+                  {tab === 'dashboard' ? <TrendingUp size={16} /> : <UserIcon size={16} />}
+                  <span className="capitalize">{tab === 'dashboard' ? 'Aperçu' : 'Mon Profil'}</span>
                 </div>
               </button>
             ))}
-          </nav>
+          </motion.div>
         </div>
 
-        {/* === ONGLET DASHBOARD === */}
-        {activeTab === 'dashboard' && (
-          <div className="space-y-8">
-            {/* Stats */}
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
-              <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }}
-                className="bg-white/60 backdrop-blur-xl rounded-2xl p-6 border border-white/30 shadow-xl hover:shadow-2xl transition-all hover:scale-105">
-                <div className="flex items-center justify-between">
-                  <div>
-                    <p className="text-sm font-medium text-gray-600">Statut</p>
-                    <p className="text-2xl font-bold text-gray-900 capitalize">
-                      {enrollment ? getStatusText(enrollment.status) : 'Non inscrit'}
+        {activeTab === 'dashboard' ? (
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="space-y-10"
+          >
+            {/* Bento Grid Stats */}
+            <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-6">
+              {/* Main Status Card */}
+              <div className="md:col-span-2 bg-white rounded-3xl p-6 shadow-[0_2px_20px_rgb(0,0,0,0.04)] border border-gray-100 relative overflow-hidden group">
+                <div className="absolute right-0 top-0 w-32 h-32 bg-green-50 rounded-bl-full -mr-10 -mt-10 transition-transform group-hover:scale-110 duration-500" />
+                <div className="relative z-10">
+                  <div className="flex justify-between items-start mb-6">
+                    <div>
+                      <h3 className="text-gray-500 font-medium mb-1">Satut d'adhésion</h3>
+                      <div className="flex items-center gap-2">
+                        {enrollment ? (
+                          <>
+                            <span className={`text-3xl font-bold ${enrollment.status === 'approved' ? 'text-green-600' :
+                                enrollment.status === 'rejected' ? 'text-red-600' : 'text-amber-500'
+                              }`}>
+                              {getStatusText(enrollment.status)}
+                            </span>
+                            {getStatusIcon(enrollment.status)}
+                          </>
+                        ) : (
+                          <span className="text-3xl font-bold text-gray-400">Non inscrit</span>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+
+                  {enrollment?.status === 'approved' && (
+                    <div className="inline-flex items-center gap-2 px-4 py-2 bg-green-50 text-green-700 rounded-full text-sm font-medium">
+                      <CheckCircle size={16} />
+                      <span>Membre actif</span>
+                    </div>
+                  )}
+                  {enrollment?.status === 'pending' && (
+                    <p className="text-gray-500 text-sm max-w-md">
+                      Votre dossier est en cours d'examen par notre équipe. Nous vous contacterons bientôt.
                     </p>
-                  </div>
-                  {enrollment && getStatusIcon(enrollment.status)}
+                  )}
                 </div>
-              </motion.div>
+              </div>
 
-              <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }}
-                className="bg-white/60 backdrop-blur-xl rounded-2xl p-6 border border-white/30 shadow-xl hover:shadow-2xl transition-all hover:scale-105">
-                <div className="flex items-center justify-between">
-                  <div>
-                    <p className="text-sm font-medium text-gray-600">Formations suivies</p>
-                    <p className="text-2xl font-bold text-gray-900">{myFormations.length}</p>
+              {/* Stats Card 1: Formations */}
+              <div className="bg-white rounded-3xl p-6 shadow-[0_2px_20px_rgb(0,0,0,0.04)] border border-gray-100 flex flex-col justify-between group hover:border-orange-100 transition-colors">
+                <div className="flex justify-between items-start">
+                  <div className="p-3 bg-orange-50 text-orange-600 rounded-2xl group-hover:bg-orange-100 transition-colors">
+                    <Calendar size={24} />
                   </div>
-                  <Calendar className="w-8 h-8 text-orange-600" />
+                  <span className="text-3xl font-bold text-gray-900">{myFormations.length}</span>
                 </div>
-              </motion.div>
+                <div>
+                  <h3 className="font-semibold text-gray-900 mt-4">Formations</h3>
+                  <p className="text-sm text-gray-500">Inscriptions actives</p>
+                </div>
+              </div>
 
-              <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.3 }}
-                className="bg-white/60 backdrop-blur-xl rounded-2xl p-6 border border-white/30 shadow-xl hover:shadow-2xl transition-all hover:scale-105">
-                <div className="flex items-center justify-between">
-                  <div>
-                    <p className="text-sm font-medium text-gray-600">Intérêts</p>
-                    <p className="text-2xl font-bold text-gray-900">{enrollment?.interests.length || 0}</p>
+              {/* Stats Card 2: Interests */}
+              <div className="bg-white rounded-3xl p-6 shadow-[0_2px_20px_rgb(0,0,0,0.04)] border border-gray-100 flex flex-col justify-between group hover:border-purple-100 transition-colors">
+                <div className="flex justify-between items-start">
+                  <div className="p-3 bg-purple-50 text-purple-600 rounded-2xl group-hover:bg-purple-100 transition-colors">
+                    <Tag size={24} />
                   </div>
-                  <Tag className="w-8 h-8 text-purple-600" />
+                  <span className="text-3xl font-bold text-gray-900">{enrollment?.interests.length || 0}</span>
                 </div>
-              </motion.div>
+                <div>
+                  <h3 className="font-semibold text-gray-900 mt-4">Centres d'intérêt</h3>
+                  <p className="text-sm text-gray-500">Sujets suivis</p>
+                </div>
+              </div>
             </div>
 
-            {/* Mes Formations */}
-            {myFormations.length > 0 && (
-              <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.4 }}>
-                <h2 className="text-xl font-bold text-gray-900 mb-4">Mes Formations</h2>
-                <div className="grid md:grid-cols-2 gap-4">
-                  {myFormations.map(f => {
-                    const myReg = f.registrations?.find(r => String(r.userId) === String(user?.id || user?._id));
-                    return (
-                      <div key={f._id} className="bg-white/60 backdrop-blur-sm rounded-xl p-5 border border-white/40">
-                        <div className="flex justify-between items-start mb-2">
-                          <h3 className="font-semibold text-lg">{f.title}</h3>
+            <div className="grid lg:grid-cols-3 gap-8">
+              {/* Left Column: My Formations */}
+              <div className="lg:col-span-2 space-y-6">
+                <div className="flex items-center justify-between">
+                  <h2 className="text-xl font-bold text-gray-900 flex items-center gap-2">
+                    <Building2 className="text-gray-400" size={20} />
+                    Mes Formations
+                  </h2>
+                </div>
+
+                {myFormations.length > 0 ? (
+                  <div className="grid gap-4">
+                    {myFormations.map(f => {
+                      const myReg = f.registrations?.find(r => String(r.userId) === String(user?.id || user?._id));
+                      return (
+                        <div key={f._id} className="bg-white rounded-2xl p-5 border border-gray-100 shadow-sm hover:shadow-md transition-all flex items-center justify-between group">
+                          <div className="flex gap-4 items-center">
+                            <div className="w-12 h-12 bg-blue-50 text-blue-600 rounded-xl flex items-center justify-center font-bold text-lg group-hover:bg-blue-100 transition-colors">
+                              {new Date(f.date).getDate()}
+                            </div>
+                            <div>
+                              <h3 className="font-bold text-gray-900 group-hover:text-green-700 transition-colors">{f.title}</h3>
+                              <div className="flex items-center gap-3 text-sm text-gray-500 mt-1">
+                                <span className="flex items-center gap-1"><Calendar size={14} /> {new Date(f.date).toLocaleDateString('fr-FR', { month: 'long', year: 'numeric' })}</span>
+                                <span className="w-1 h-1 bg-gray-300 rounded-full" />
+                                <span className="flex items-center gap-1"><MapPin size={14} /> {f.location}</span>
+                              </div>
+                            </div>
+                          </div>
                           {myReg && (
-                            <span className={`px-2 py-1 rounded-full text-xs font-medium flex items-center gap-1 ${getStatusColor(myReg.status)}`}>
-                              {getStatusIcon(myReg.status)} {getStatusText(myReg.status)}
+                            <span className={`px-3 py-1 rounded-full text-xs font-semibold ${getStatusColor(myReg.status)}`}>
+                              {getStatusText(myReg.status)}
                             </span>
                           )}
                         </div>
-                        <p className="text-sm text-gray-600 flex items-center gap-1"><Calendar size={14} /> {new Date(f.date).toLocaleDateString('fr-FR')}</p>
-                        <p className="text-sm text-gray-600 flex items-center gap-1"><MapPin size={14} /> {f.location}</p>
-                      </div>
-                    );
-                  })}
-                </div>
-              </motion.div>
-            )}
-
-            {/* Formations Disponibles */}
-            <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.5 }}>
-              <div className="flex justify-between items-center mb-4">
-                <h2 className="text-xl font-bold text-gray-900">Formations à venir</h2>
-                <a href="/activities" className="text-green-600 hover:underline flex items-center gap-1 text-sm">
-                  Voir tout <ArrowRight size={16} />
-                </a>
-              </div>
-              {formations.filter(f => !f.registrations?.some(r => String(r.userId) === String(user?.id || user?._id))).length === 0 ? (
-                <div className="text-center py-12 bg-white/50 backdrop-blur-sm rounded-2xl border border-dashed border-gray-300">
-                  <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                    <Calendar className="w-8 h-8 text-gray-400" />
+                      );
+                    })}
                   </div>
-                  <h3 className="text-lg font-medium text-gray-900 mb-1">Aucune formation disponible</h3>
-                  <p className="text-gray-500 mb-6">Revenez plus tard pour de nouvelles opportunités.</p>
-                  <a href="/activities" className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-full shadow-sm text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500">
-                    Voir toutes les activités
-                  </a>
-                </div>
-              ) : (
-                <div className="grid md:grid-cols-2 gap-4">
-                  {formations
-                    .filter(f => !f.registrations?.some(r => String(r.userId) === String(user?.id || user?._id)))
-                    .slice(0, 4)
-                    .map(f => (
-                      <div key={f._id} className="bg-white/60 backdrop-blur-sm rounded-xl p-5 border border-white/40 hover:shadow-lg transition">
-                        <h3 className="font-semibold text-lg">{f.title}</h3>
-                        <p className="text-sm text-gray-600 flex items-center gap-1"><Calendar size={14} /> {new Date(f.date).toLocaleDateString('fr-FR')}</p>
-                        <p className="text-sm text-gray-600 flex items-center gap-1"><MapPin size={14} /> {f.location}</p>
-                        <p className="text-xs text-gray-500 mt-2">
-                          Places : {f.maxSeats - f.enrolledUsers.length}/{f.maxSeats}
-                        </p>
-                        {registeredFormationIds.has(f._id) ? (
-                          <button disabled className="bg-gray-400 text-white px-4 py-1.5 rounded-full text-sm">
-                            Inscription envoyée
-                          </button>
-                        ) : (
-                          <button
-                            onClick={() => handleRegister(f._id)}
-                            className="bg-orange-500 text-white px-4 py-1.5 rounded-full text-sm font-medium hover:bg-orange-600"
-                          >
-                            S’inscrire
-                          </button>
-                        )}
-                      </div>
-                    ))}
-                </div>
-              )}
-            </motion.div>
-          </div>
-        )}
-
-        {/* === ONGLET PROFIL === */}
-        {activeTab === 'profile' && (
-          <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="bg-white/70 backdrop-blur-xl rounded-2xl border border-white/30 shadow-xl p-6">
-            <h2 className="text-xl font-bold text-gray-900 mb-6">Mon Profil</h2>
-            <div className="grid md:grid-cols-2 gap-8">
-              <div className="flex flex-col items-center">
-                <div className="w-32 h-32 rounded-full bg-gradient-to-br from-green-400 to-blue-500 flex items-center justify-center shadow-lg overflow-hidden">
-                  <img
-                    src={getUserPhoto()}
-                    alt={`${user?.firstName} ${user?.lastName}`}
-                    className="w-full h-full object-cover"
-                  />
-                </div>
-                <h3 className="mt-4 text-xl font-bold">{user?.firstName} {user?.lastName}</h3>
-                <p className="text-gray-600 capitalize">{user?.role}</p>
-              </div>
-
-              <div className="space-y-4">
-                <div className="grid grid-cols-2 gap-4">
-                  <div>
-                    <p className="text-sm text-gray-600">Email</p>
-                    <p className="font-medium">{user?.email}</p>
-                  </div>
-                  <div>
-                    <p className="text-sm text-gray-600">Téléphone</p>
-                    <p className="font-medium">{user?.phone || '–'}</p>
-                  </div>
-                </div>
-
-                {enrollment?.companyName && (
-                  <div>
-                    <p className="text-sm text-gray-600">Entreprise</p>
-                    <p className="font-medium flex items-center gap-1"><Building2 size={16} /> {enrollment.companyName}</p>
+                ) : (
+                  <div className="bg-white rounded-2xl p-8 text-center border border-dashed border-gray-200">
+                    <div className="w-16 h-16 bg-gray-50 rounded-full flex items-center justify-center mx-auto mb-4">
+                      <Calendar className="text-gray-400" size={32} />
+                    </div>
+                    <h3 className="text-gray-900 font-medium mb-1">Aucune inscription active</h3>
+                    <p className="text-gray-500 text-sm">Inscrivez-vous aux formations à venir pour les voir ici.</p>
                   </div>
                 )}
+              </div>
 
-                {enrollment?.interests.length ? (
+              {/* Right Column: Upcoming (Sidebar style) */}
+              <div className="space-y-6">
+                <div className="flex items-center justify-between">
+                  <h2 className="text-xl font-bold text-gray-900">À la une</h2>
+                  <a href="/activities" className="text-sm font-medium text-green-600 hover:text-green-700">Voir tout</a>
+                </div>
+
+                <div className="bg-white rounded-3xl p-2 shadow-sm border border-gray-100">
+                  {formations
+                    .filter(f => !f.registrations?.some(r => String(r.userId) === String(user?.id || user?._id)))
+                    .slice(0, 3)
+                    .map((f, idx) => (
+                      <div key={f._id} className={`p-4 rounded-2xl transition-colors ${idx !== 0 ? 'mt-2 hover:bg-gray-50' : 'bg-gray-50'}`}>
+                        <div className="flex justify-between items-start mb-2">
+                          <div className="bg-white text-gray-900 text-xs font-bold px-2 py-1 rounded-md shadow-sm border border-gray-100">
+                            {new Date(f.date).toLocaleDateString('fr-FR', { day: 'numeric', month: 'short' })}
+                          </div>
+                          <span className="text-xs font-medium text-green-600 bg-green-50 px-2 py-0.5 rounded-full">Coming soon</span>
+                        </div>
+                        <h3 className="font-bold text-gray-900 mb-1 line-clamp-2">{f.title}</h3>
+                        <p className="text-xs text-gray-500 mb-3 line-clamp-1"><MapPin size={12} className="inline mr-1" /> {f.location}</p>
+
+                        <div className="flex items-center justify-between mt-3">
+                          <div className="text-xs text-gray-500">
+                            <span className="font-semibold text-gray-900">{f.maxSeats - f.enrolledUsers.length}</span> places
+                          </div>
+                          <button
+                            onClick={() => handleRegister(f._id)}
+                            className="text-xs font-semibold bg-gray-900 text-white px-3 py-1.5 rounded-lg hover:bg-gray-800 transition-colors"
+                          >
+                            S'inscrire
+                          </button>
+                        </div>
+                      </div>
+                    ))}
+                  {formations.filter(f => !f.registrations?.some(r => String(r.userId) === String(user?.id || user?._id))).length === 0 && (
+                    <div className="p-8 text-center">
+                      <p className="text-gray-500 text-sm">Aucune nouvelle formation.</p>
+                    </div>
+                  )}
+                </div>
+              </div>
+            </div>
+          </motion.div>
+        ) : (
+          <motion.div
+            initial={{ opacity: 0, scale: 0.95 }}
+            animate={{ opacity: 1, scale: 1 }}
+            className="grid lg:grid-cols-12 gap-8"
+          >
+            {/* Profile Sidebar */}
+            <div className="lg:col-span-4 space-y-6">
+              <div className="bg-white rounded-3xl p-8 shadow-[0_2px_20px_rgb(0,0,0,0.04)] border border-gray-100 text-center relative overflow-hidden">
+                <div className="relative z-10 flex flex-col items-center">
+                  <div className="w-32 h-32 rounded-full p-1 bg-white shadow-lg mb-4">
+                    <img
+                      src={getUserPhoto()}
+                      alt={`${user?.firstName} ${user?.lastName}`}
+                      className="w-full h-full rounded-full object-cover"
+                    />
+                  </div>
+                  <h2 className="text-2xl font-bold text-gray-900">{user?.firstName} {user?.lastName}</h2>
+                  <p className="text-green-600 font-medium bg-green-50 px-3 py-1 rounded-full text-sm mt-2 capitalize">{user?.role}</p>
+
+                  <div className="mt-6 flex flex-col w-full gap-3">
+                    <button className="w-full py-2.5 rounded-xl border border-gray-200 font-medium text-gray-600 hover:bg-gray-50 hover:text-gray-900 transition-colors text-sm">
+                      Modifier le profil
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Profile Details */}
+            <div className="lg:col-span-8">
+              <div className="bg-white rounded-3xl shadow-[0_2px_20px_rgb(0,0,0,0.04)] border border-gray-100 overflow-hidden">
+                <div className="p-6 border-b border-gray-100">
+                  <h3 className="font-bold text-lg text-gray-900">Informations personnelles</h3>
+                </div>
+                <div className="p-8 grid md:grid-cols-2 gap-y-8 gap-x-12">
                   <div>
-                    <p className="text-sm text-gray-600 mb-2">Intérêts</p>
-                    <div className="flex flex-wrap gap-2">
-                      {enrollment.interests.map(i => (
-                        <span key={i} className="bg-purple-100 text-purple-800 px-3 py-1 rounded-full text-xs">
-                          {i}
-                        </span>
-                      ))}
+                    <label className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1 block">Email</label>
+                    <p className="text-gray-900 font-medium text-lg">{user?.email}</p>
+                  </div>
+                  <div>
+                    <label className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1 block">Téléphone</label>
+                    <p className="text-gray-900 font-medium text-lg">{user?.phone || '–'}</p>
+                  </div>
+
+                  {enrollment?.companyName && (
+                    <div className="md:col-span-2">
+                      <label className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1 block">Entreprise</label>
+                      <div className="flex items-center gap-2 text-gray-900 font-medium text-lg">
+                        <Building2 className="text-gray-400" size={20} />
+                        {enrollment.companyName}
+                      </div>
+                    </div>
+                  )}
+
+                  <div className="md:col-span-2">
+                    <label className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-3 block">Centres d'intérêt</label>
+                    {enrollment?.interests.length ? (
+                      <div className="flex flex-wrap gap-2">
+                        {enrollment.interests.map(i => (
+                          <span key={i} className="px-4 py-2 bg-gray-50 rounded-lg text-gray-700 font-medium text-sm border border-gray-200">
+                            {i}
+                          </span>
+                        ))}
+                      </div>
+                    ) : (
+                      <span className="text-gray-400 italic">Aucun intérêt renseigné</span>
+                    )}
+                  </div>
+
+                  <div className="md:col-span-2 pt-6 border-t border-gray-100 flex justify-between items-center">
+                    <div>
+                      <label className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1 block">Membre depuis</label>
+                      <p className="text-gray-700 font-medium">
+                        {enrollment ? new Date(enrollment.createdAt).toLocaleDateString('fr-FR', { dateStyle: 'long' }) : '–'}
+                      </p>
                     </div>
                   </div>
-                ) : null}
-
-                <div>
-                  <p className="text-sm text-gray-600">Membre depuis</p>
-                  <p className="font-medium">
-                    {enrollment ? new Date(enrollment.createdAt).toLocaleDateString('fr-FR') : '–'}
-                  </p>
                 </div>
               </div>
             </div>
