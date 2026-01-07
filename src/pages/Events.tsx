@@ -107,7 +107,7 @@ const Events = () => {
               animate={{ scale: 1 }}
               transition={{ duration: 10, ease: "easeOut" }}
               src="https://res.cloudinary.com/drxouwbms/image/upload/v1765733341/african-kid-marketplace_zwl4xj.jpg"
-              alt="FIPA 2025"
+              alt="FIPA 2026"
               className="w-full h-full object-cover grayscale-[30%]"
             />
           </div>
@@ -125,7 +125,7 @@ const Events = () => {
               </div>
 
               <h1 className="text-7xl md:text-9xl font-black tracking-tight leading-[0.9] mb-8 text-white">
-                FIPA <span className="text-transparent bg-clip-text bg-gradient-to-r from-green-500 to-green-700">2025</span>
+                FIPA <span className="text-transparent bg-clip-text bg-gradient-to-r from-green-500 to-green-700">2026</span>
               </h1>
 
               <p className="text-xl md:text-2xl text-gray-300 max-w-2xl font-light mb-12 leading-relaxed">
@@ -135,7 +135,7 @@ const Events = () => {
 
               <div className="flex flex-wrap gap-6">
                 <motion.a
-                  href="/fipa-2025"
+                  href="/fipa-2026"
                   whileHover={{ scale: 1.02 }}
                   whileTap={{ scale: 0.98 }}
                   className="bg-white text-black px-10 py-5 rounded-none text-lg font-bold tracking-wide hover:bg-green-500 hover:text-white transition-all duration-300 flex items-center gap-3"

@@ -1,8 +1,12 @@
 import { motion } from 'framer-motion';
-import { Link } from 'react-router-dom';
-import { Globe, ShoppingCart, BookOpen, Facebook, Instagram, Linkedin, ExternalLink, Users, TrendingUp, Shield, Zap, Youtube } from 'lucide-react';
+import { Link, useNavigate } from 'react-router-dom';
+import { Globe, ShoppingCart, BookOpen, Facebook, Instagram, Linkedin, ExternalLink, Users, TrendingUp, Shield, Zap, Youtube, X } from 'lucide-react';
+import { useState } from 'react';
 
 const Platforms = () => {
+  const [showComingSoon, setShowComingSoon] = useState(false);
+  const navigate = useNavigate();
+
   const platforms = [
     {
       id: 'fipa',
@@ -25,7 +29,8 @@ const Platforms = () => {
         { label: 'Pays', value: '25' },
         { label: 'Visiteurs mensuels', value: '50K+' }
       ],
-      link: '#'
+      link: '/events',
+      action: 'navigate'
     },
     {
       id: 'ecommerce',
@@ -48,7 +53,8 @@ const Platforms = () => {
         { label: 'Taux de réussite', value: '99,8%' },
         { label: 'Note de satisfaction', value: '4,9/5' }
       ],
-      link: '#'
+      link: '#',
+      action: 'coming-soon'
     },
     {
       id: 'blog',
@@ -71,9 +77,18 @@ const Platforms = () => {
         { label: 'Contributeurs experts', value: '50+' },
         { label: 'Sujets couverts', value: '100+' }
       ],
-      link: '/blog'
+      link: '/blog',
+      action: 'navigate'
     }
   ];
+
+  const handlePlatformClick = (platform: typeof platforms[0]) => {
+    if (platform.action === 'coming-soon') {
+      setShowComingSoon(true);
+    } else {
+      navigate(platform.link);
+    }
+  };
 
   const socialPlatforms = [
     {
@@ -221,13 +236,13 @@ const Platforms = () => {
                       </div>
 
                       <div className="flex flex-col sm:flex-row gap-3 sm:gap-4">
-                        <Link
-                          to={platform.link}
+                        <button
+                          onClick={() => handlePlatformClick(platform)}
                           className="bg-white text-gray-900 px-4 sm:px-6 py-2.5 sm:py-3 rounded-full font-semibold hover:bg-gray-100 transition-colors duration-200 flex items-center justify-center space-x-2 w-full sm:w-auto text-sm sm:text-base"
                         >
                           <span>Explorer la plateforme</span>
                           <ExternalLink size={14} className="sm:w-4 sm:h-4" />
-                        </Link>
+                        </button>
                         <Link
                           to="/enrollments"
                           className="border border-white/30 text-white px-4 sm:px-6 py-2.5 sm:py-3 rounded-full font-semibold hover:bg-white/10 transition-colors duration-200 text-center w-full sm:w-auto text-sm sm:text-base"

@@ -165,21 +165,46 @@ const Contact = () => {
               </div>
             </div>
 
-            {/* Map Preview (Small) */}
-            <div className="bg-white rounded-3xl shadow-xl overflow-hidden h-64 border border-gray-100 relative group cursor-pointer">
-              <iframe
-                title="Mini Map"
-                src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3858.893964479836!2d-17.48489382492419!3d14.74085778579259!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0xec172e2e2b1b6b1%3A0x6e2e1b2e1b2e1b2e!2sOuakam%20Cit%C3%A9%20Avion%2C%20Dakar%2C%20S%C3%A9n%C3%A9gal!5e0!3m2!1sfr!2ssn!4v1718030000000!5m2!1sfr!2ssn"
-                width="100%"
-                height="100%"
-                style={{ border: 0 }}
-                allowFullScreen={false}
-                loading="lazy"
-                className="opacity-80 group-hover:opacity-100 transition-opacity duration-300"
-              ></iframe>
-              <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent pointer-events-none"></div>
-              <div className="absolute bottom-4 left-4 text-white font-bold pointer-events-none">
-                <MapPin size={16} className="inline mr-1" /> Voir sur la carte
+            {/* FAQ Quick Access */}
+            <div className="bg-gradient-to-br from-green-600 via-green-500 to-emerald-400 rounded-3xl shadow-xl overflow-hidden border border-green-400/20 relative group">
+              <div className="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjAiIGhlaWdodD0iNjAiIHZpZXdCb3g9IjAgMCA2MCA2MCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48ZyBmaWxsPSJub25lIiBmaWxsLXJ1bGU9ImV2ZW5vZGQiPjxnIGZpbGw9IiNmZmZmZmYiIGZpbGwtb3BhY2l0eT0iMC4wNSI+PHBhdGggZD0iTTM2IDM0djItSDI0di0yaDEyek0zNiAzMHYySDI0di0yaDEyek0zNiAyNnYySDI0di0yaDEyeiIvPjwvZz48L2c+PC9zdmc+')] opacity-50"></div>
+              <div className="relative p-6">
+                <div className="flex items-center gap-3 mb-4">
+                  <div className="w-10 h-10 bg-white/20 backdrop-blur-sm rounded-xl flex items-center justify-center">
+                    <svg className="w-5 h-5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
+                  </div>
+                  <h3 className="font-bold text-white text-lg">Questions Fréquentes</h3>
+                </div>
+
+                <div className="space-y-2">
+                  {[
+                    { q: "Comment devenir membre ?", a: "Remplissez le formulaire d'adhésion sur notre site." },
+                    { q: "Quels sont vos délais de réponse ?", a: "Nous répondons sous 24-48h ouvrables." },
+                    { q: "Proposez-vous des formations ?", a: "Oui, consultez notre page Formations." }
+                  ].map((faq, idx) => (
+                    <motion.div
+                      key={idx}
+                      initial={{ opacity: 0, x: -10 }}
+                      animate={{ opacity: 1, x: 0 }}
+                      transition={{ delay: 0.5 + idx * 0.1 }}
+                      className="bg-white/10 backdrop-blur-sm rounded-xl p-3 hover:bg-white/20 transition-all cursor-pointer group/faq"
+                    >
+                      <p className="text-white/90 text-sm font-medium flex items-center gap-2">
+                        <span className="w-5 h-5 bg-white/20 rounded-full flex items-center justify-center text-xs font-bold">{idx + 1}</span>
+                        {faq.q}
+                      </p>
+                      <p className="text-white/60 text-xs mt-1 pl-7 group-hover/faq:text-white/80 transition-colors">{faq.a}</p>
+                    </motion.div>
+                  ))}
+                </div>
+
+                <div className="mt-4 pt-3 border-t border-white/10">
+                  <p className="text-white/70 text-xs text-center">
+                    💡 Plus de questions ? Écrivez-nous !
+                  </p>
+                </div>
               </div>
             </div>
           </motion.div>
@@ -207,8 +232,8 @@ const Contact = () => {
                       setFormData(prev => ({ ...prev, category: category.id }));
                     }}
                     className={`flex flex-col items-center justify-center p-4 rounded-xl border transition-all duration-200 ${activeTab === category.id
-                        ? 'bg-green-50 border-green-500 text-green-700 shadow-sm'
-                        : 'bg-white border-gray-200 text-gray-600 hover:border-green-200 hover:bg-gray-50'
+                      ? 'bg-green-50 border-green-500 text-green-700 shadow-sm'
+                      : 'bg-white border-gray-200 text-gray-600 hover:border-green-200 hover:bg-gray-50'
                       }`}
                   >
                     <span className="font-bold text-sm mb-1">{category.title}</span>
