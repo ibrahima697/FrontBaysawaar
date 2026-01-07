@@ -10,10 +10,10 @@ import Swal from 'sweetalert2';
 
 
 import { Enrollment, Formation } from '../types';
+import { getUserPhoto } from '../utils/userUtils';
 
 const Dashboard = () => {
   const { user } = useAuth();
-  console.log('Dashboard User Object:', user); // DEBUG: Check user data structure
   const [activeTab, setActiveTab] = useState<'dashboard' | 'profile'>('dashboard');
   const [enrollment, setEnrollment] = useState<Enrollment | null>(null);
   const [formations, setFormations] = useState<Formation[]>([]);
@@ -48,26 +48,6 @@ const Dashboard = () => {
         status === 'rejected' ? 'Rejeté' : status;
   };
 
-  // Helper for user photo fallback
-  const getUserPhoto = () => {
-    // Handle potential string format (legacy or direct URL) safety check
-    const photo = user?.photo as any;
-    if (typeof photo === 'string') return photo;
-
-    // Priorité à la nouvelle propriété photo (Cloudinary)
-    if (user?.photo?.url) return user.photo.url;
-
-    if (user?.photoURL) return user.photoURL;
-    if (user?.avatar) return user.avatar;
-
-    // fallback: initials avatar
-    if (user?.firstName && user?.lastName) {
-      return `https://ui-avatars.com/api/?name=${encodeURIComponent(
-        `${user.firstName} ${user.lastName}`
-      )}&background=16a34a&color=fff&bold=true`;
-    }
-    return 'https://ui-avatars.com/api/?name=U&background=16a34a&color=fff&bold=true';
-  };
   const { isLoading: authLoading } = useAuth();
   const [registeredFormationIds, setRegisteredFormationIds] = useState<Set<string>>(new Set());
 
@@ -457,7 +437,7 @@ const Dashboard = () => {
                 <div className="relative z-10 flex flex-col items-center">
                   <div className="w-32 h-32 rounded-full p-1 bg-white shadow-lg mb-4">
                     <img
-                      src={getUserPhoto()}
+                      src={getUserPhoto(user)}
                       alt={`${user?.firstName} ${user?.lastName}`}
                       className="w-full h-full rounded-full object-cover"
                     />

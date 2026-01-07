@@ -99,21 +99,17 @@ const BlogModal: React.FC<BlogModalProps> = ({
 
     try {
       const formDataToSend = new FormData();
-      
+
       // Ajouter les données du formulaire
       Object.entries(formData).forEach(([key, value]) => {
-        if (key === 'isPublished') {
-          formDataToSend.append(key, value.toString());
-        } else {
-          formDataToSend.append(key, value);
-        }
+        formDataToSend.append(key, value.toString());
       });
 
       // Ajouter les images
       if (featuredImageFile.length > 0) {
         formDataToSend.append('featuredImage', featuredImageFile[0]);
       }
-      
+
       galleryFiles.forEach((file) => {
         formDataToSend.append('gallery', file);
       });

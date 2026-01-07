@@ -4,6 +4,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { Menu, X, LogOut, User, ChevronDown } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import LogoutModal from './LogoutModal';
+import { getUserPhoto, getUserDisplayName } from '../utils/userUtils';
 
 const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -58,41 +59,6 @@ const Navbar = () => {
   const confirmLogout = () => {
     logout();
     setShowLogoutModal(false);
-  };
-
-  // Helper for user photo fallback
-  const getUserPhoto = () => {
-    // Handle potential string format (legacy or direct URL) safety check
-    const photo = user?.photo as any;
-    if (typeof photo === 'string') return photo;
-
-    // Priorité à la nouvelle propriété photo (Cloudinary object)
-    if (user?.photo?.url) return user.photo.url;
-
-    if (user?.photoURL) return user.photoURL;
-    if (user?.avatar) return user.avatar;
-
-    // fallback: initials avatar
-    if (user?.firstName && user?.lastName) {
-      return `https://ui-avatars.com/api/?name=${encodeURIComponent(
-        `${user.firstName} ${user.lastName}`
-      )}&background=16a34a&color=fff&bold=true`;
-    }
-    return 'https://ui-avatars.com/api/?name=U&background=16a34a&color=fff&bold=true';
-  };
-
-  // Helper for user display name
-  const getUserDisplayName = () => {
-    if (user?.firstName && user?.lastName) {
-      return `${user.firstName} ${user.lastName}`;
-    }
-    if (user?.firstName) {
-      return user.firstName;
-    }
-    if (user?.email) {
-      return user.email.split('@')[0];
-    }
-    return 'Utilisateur';
   };
 
   // Helper for nav item active state
@@ -193,8 +159,8 @@ const Navbar = () => {
                       aria-expanded={dropdownOpen}
                     >
                       <img
-                        src={getUserPhoto()}
-                        alt={getUserDisplayName()}
+                        src={getUserPhoto(user)}
+                        alt={getUserDisplayName(user)}
                         className="w-9 h-9 rounded-full object-cover border-2 border-green-600"
                       />
                       <ChevronDown
@@ -214,13 +180,13 @@ const Navbar = () => {
                         >
                           <div className="px-4 py-4 flex items-center space-x-3 border-b border-gray-100">
                             <img
-                              src={getUserPhoto()}
-                              alt={getUserDisplayName()}
+                              src={getUserPhoto(user)}
+                              alt={getUserDisplayName(user)}
                               className="w-12 h-12 rounded-full object-cover border-2 border-green-600"
                             />
                             <div>
                               <div className="font-semibold text-gray-900 text-base truncate max-w-[120px]">
-                                {getUserDisplayName()}
+                                {getUserDisplayName(user)}
                               </div>
                               {user.role && (
                                 <span className="inline-block mt-1 px-2 py-0.5 text-xs font-semibold rounded bg-green-100 text-green-700">
@@ -297,13 +263,13 @@ const Navbar = () => {
                 <div className="flex flex-col gap-2 px-2">
                   <div className="flex items-center gap-3 px-2 py-2 rounded-lg bg-gray-50">
                     <img
-                      src={getUserPhoto()}
-                      alt={getUserDisplayName()}
+                      src={getUserPhoto(user)}
+                      alt={getUserDisplayName(user)}
                       className="w-10 h-10 rounded-full object-cover border-2 border-green-600"
                     />
                     <div>
                       <div className="font-semibold text-gray-900 text-base truncate max-w-[120px]">
-                        {getUserDisplayName()}
+                        {getUserDisplayName(user)}
                       </div>
                       {user.role && (
                         <span className="inline-block mt-0.5 px-2 py-0.5 text-xs font-semibold rounded bg-green-100 text-green-700">

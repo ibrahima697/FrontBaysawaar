@@ -16,6 +16,7 @@ const Activities = () => {
   const [loading, setLoading] = useState(true);
   const [registeredFormationIds, setRegisteredFormationIds] = useState<Set<string>>(new Set());
   const [approvedFormationIds, setApprovedFormationIds] = useState<Set<string>>(new Set());
+  const [rejectedFormationIds, setRejectedFormationIds] = useState<Set<string>>(new Set());
   const [formationsCurrentPage, setFormationsCurrentPage] = useState(1);
   const [formationsPerPage] = useState(3); // Most likely 3 or 4 for activities
   const navigate = useNavigate();
@@ -36,6 +37,7 @@ const Activities = () => {
         // On recalcule proprement les états
         const registered = new Set<string>();
         const approved = new Set<string>();
+        const rejected = new Set<string>();
 
         allFormations.forEach(f => {
           const userReg = f.registrations?.find(r => String(r.userId) === String(userId));
@@ -43,12 +45,15 @@ const Activities = () => {
             registered.add(f._id);
             if (userReg.status === 'approved') {
               approved.add(f._id);
+            } else if (userReg.status === 'rejected') {
+              rejected.add(f._id);
             }
           }
         });
 
         setRegisteredFormationIds(registered);
         setApprovedFormationIds(approved);
+        setRejectedFormationIds(rejected);
       } catch (err) {
         console.error("Erreur chargement formations :", err);
       } finally {
@@ -76,18 +81,21 @@ const Activities = () => {
       const userId = user!._id || user!.id;
       const registered = new Set<string>();
       const approved = new Set<string>();
+      const rejected = new Set<string>();
 
       allFormations.forEach((f) => {
         f.registrations?.forEach((r) => {
           if (String(r.userId) === String(userId)) {
             registered.add(f._id);
             if (r.status === 'approved') approved.add(f._id);
+            else if (r.status === 'rejected') rejected.add(f._id);
           }
         });
       });
 
       setRegisteredFormationIds(registered);
       setApprovedFormationIds(approved);
+      setRejectedFormationIds(rejected);
 
       Swal.fire('Succès', 'Inscription envoyée !', 'success');
     } catch (err: any) {
@@ -168,9 +176,13 @@ const Activities = () => {
                             {registeredFormationIds.has(formation._id) ? (
                               <button
                                 disabled
-                                className="px-6 py-2 bg-white/20 text-white/60 font-bold rounded-full cursor-not-allowed border border-white/20"
+                                className={`px-6 py-2 font-bold rounded-full cursor-not-allowed border ${rejectedFormationIds.has(formation._id)
+                                  ? 'bg-red-500/20 text-red-200 border-red-500/30'
+                                  : 'bg-white/20 text-white/60 border-white/20'
+                                  }`}
                               >
-                                {approvedFormationIds.has(formation._id) ? 'Inscrit (Validé)' : 'Déjà inscrit'}
+                                {approvedFormationIds.has(formation._id) ? 'Inscrit (Validé)' :
+                                  rejectedFormationIds.has(formation._id) ? 'Demande rejetée' : 'En attente'}
                               </button>
                             ) : (
                               <button

@@ -41,6 +41,39 @@ const Events = () => {
   }, []);
 
   const handleRegister = async (slug: string) => {
+    if (!user) {
+      Swal.fire({
+        title: 'Connexion requise',
+        text: 'Vous devez être membre de Baysawaar pour vous inscrire à un événement.',
+        icon: 'info',
+        confirmButtonColor: '#16a34a'
+      });
+      return;
+    }
+
+    if (user.role === 'admin') {
+      Swal.fire({
+        title: 'Accès restreint',
+        text: 'Les administrateurs ne peuvent pas s\'inscrire aux événements.',
+        icon: 'warning',
+        confirmButtonColor: '#16a34a'
+      });
+      return;
+    }
+
+    const result = await Swal.fire({
+      title: 'Confirmer l\'inscription',
+      text: 'Voulez-vous vraiment vous inscrire à cet événement ?',
+      icon: 'question',
+      showCancelButton: true,
+      confirmButtonText: 'Oui, m\'inscrire',
+      cancelButtonText: 'Annuler',
+      confirmButtonColor: '#16a34a',
+      cancelButtonColor: '#d33'
+    });
+
+    if (!result.isConfirmed) return;
+
     try {
       await eventsAPI.register(slug);
 
