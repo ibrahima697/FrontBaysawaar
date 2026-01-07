@@ -1,25 +1,8 @@
 import { motion, AnimatePresence } from 'framer-motion';
 import { X, Tag, Package } from 'lucide-react';
+import { Product } from '../types';
 
-interface Product {
-  _id: string;
-  name: string;
-  description: string;
-  price: number;
-  category: string;
-  brand: string;
-  stock: number;
-  specifications: { name: string; value: string }[] | Record<string, any>;
-  tags: string[];
-  images: Array<{
-    publicId: string;
-    url: string;
-    alt: string;
-  }>;
-  isActive: boolean;
-  createdAt: string;
-  updatedAt: string;
-}
+
 
 interface ProductModalProps {
   product: Product | null;

@@ -29,7 +29,7 @@ import BlogFormModal from '../components/BlogFormModal';
 import FormationFormModal from '../components/FormationFormModal';
 import FormationModal from '../components/FormationModal';
 import EventFormModal from '../components/EventFormModal';
-import { EventData } from '../types';
+import { EventData, Product } from '../types';
 
 interface AdminStats {
   totalUsers: number;
@@ -84,25 +84,7 @@ interface Formation {
   createdAt: string;
 }
 
-interface Product {
-  _id: string;
-  name: string;
-  description: string;
-  price: number;
-  stock: number;
-  category: string;
-  brand: string;
-  images: Array<{
-    publicId: string;
-    url: string;
-    alt: string;
-  }>;
-  specifications: Record<string, any>;
-  tags: string[];
-  isActive: boolean;
-  createdAt: string;
-  updatedAt: string;
-}
+
 
 interface BlogPost {
   _id: string;
@@ -986,59 +968,93 @@ const AdminDashboard = () => {
               </button>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
               {events.map(event => (
                 <motion.div
                   key={event._id}
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
-                  className="bg-white/70 backdrop-blur-xl rounded-2xl border border-white/30 shadow-xl p-6 flex flex-col justify-between"
+                  className="bg-white/80 backdrop-blur-xl rounded-2xl border border-white/50 shadow-xl overflow-hidden group hover:shadow-2xl transition-all duration-300 flex flex-col"
                 >
-                  <div>
-                    <div className="flex justify-between items-start mb-4">
-                      <h3 className="text-xl font-bold text-gray-900">{event.title}</h3>
-                      <span className={`px-2 py-1 text-xs rounded-full ${event.isFeatured ? 'bg-yellow-100 text-yellow-800' : 'bg-gray-100 text-gray-600'}`}>
-                        {event.isFeatured ? 'Featured' : 'Standard'}
+                  <div className="relative h-48 sm:h-56 w-full overflow-hidden bg-gray-100">
+                    {event.images && event.images.length > 0 ? (
+                      <img
+                        src={event.images[0].url}
+                        alt={event.title}
+                        className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
+                      />
+                    ) : (
+                      <div className="w-full h-full flex items-center justify-center bg-gray-200 text-gray-400">
+                        <Calendar className="w-12 h-12 opacity-50" />
+                      </div>
+                    )}
+                    <div className="absolute top-4 right-4">
+                      <span className={`px-3 py-1 text-xs font-bold uppercase tracking-wider rounded-full shadow-md ${event.isFeatured ? 'bg-yellow-400 text-yellow-900' : 'bg-gray-200 text-gray-700'}`}>
+                        {event.isFeatured ? 'Mise en avant' : 'Standard'}
                       </span>
                     </div>
-
-                    <p className="text-sm text-gray-600 mb-4 line-clamp-3">{event.description}</p>
-
-                    <div className="space-y-2 text-sm text-gray-600">
-                      <div className="flex items-center gap-2">
-                        <Calendar className="w-4 h-4 text-green-600" />
-                        <span>{new Date(event.dateStart).toLocaleDateString()} - {new Date(event.dateEnd).toLocaleDateString()}</span>
-                      </div>
-                      <div className="flex items-center gap-2">
-                        <MapPin className="w-4 h-4 text-green-600" />
-                        <span>{event.location}</span>
-                      </div>
-                      <div className="flex items-center gap-2">
-                        <Users className="w-4 h-4 text-green-600" />
-                        <span>{event.maxParticipants} max</span>
-                      </div>
+                    <div className="absolute bottom-4 left-4">
+                      <span className="px-3 py-1 text-xs font-bold uppercase tracking-wider rounded-full shadow-md bg-white/90 text-gray-800 backdrop-blur-sm">
+                        {event.type || 'Événement'}
+                      </span>
                     </div>
                   </div>
 
-                  <div className="mt-6 flex justify-end gap-2">
-                    <button
-                      onClick={() => handleEditEvent(event)}
-                      className="p-2 bg-blue-100 text-blue-600 rounded-lg hover:bg-blue-200"
-                    >
-                      <Pencil className="w-4 h-4" />
-                    </button>
-                    <button
-                      onClick={() => handleDeleteEvent(event._id!)}
-                      className="p-2 bg-red-100 text-red-600 rounded-lg hover:bg-red-200"
-                    >
-                      <Trash2 className="w-4 h-4" />
-                    </button>
+                  <div className="p-6 flex-1 flex flex-col">
+                    <div className="mb-4">
+                      <h3 className="text-xl sm:text-2xl font-bold text-gray-900 mb-2 leading-tight">{event.title}</h3>
+                      <p className="text-sm text-gray-600 line-clamp-3 leading-relaxed">{event.description}</p>
+                    </div>
+
+                    <div className="mt-auto space-y-3 pt-4 border-t border-gray-100">
+                      <div className="flex items-center gap-3 text-sm text-gray-600">
+                        <div className="p-2 bg-green-50 rounded-lg text-green-600"><Calendar className="w-4 h-4" /></div>
+                        <span className="font-medium">{new Date(event.dateStart).toLocaleDateString('fr-FR')} - {new Date(event.dateEnd).toLocaleDateString('fr-FR')}</span>
+                      </div>
+                      <div className="flex items-center gap-3 text-sm text-gray-600">
+                        <div className="p-2 bg-blue-50 rounded-lg text-blue-600"><MapPin className="w-4 h-4" /></div>
+                        <span className="font-medium">{event.location}</span>
+                      </div>
+                      <div className="flex items-center gap-3 text-sm text-gray-600">
+                        <div className="p-2 bg-purple-50 rounded-lg text-purple-600"><Users className="w-4 h-4" /></div>
+                        <span className="font-medium">{event.maxParticipants} participants max</span>
+                      </div>
+                    </div>
+
+                    <div className="mt-6 flex gap-3">
+                      <button
+                        onClick={() => handleEditEvent(event)}
+                        className="flex-1 flex items-center justify-center gap-2 py-2.5 bg-gray-100 text-gray-700 rounded-xl hover:bg-gray-200 transition-colors font-medium text-sm"
+                      >
+                        <Pencil className="w-4 h-4" /> Éditer
+                      </button>
+                      <button
+                        onClick={() => event._id && handleDeleteEvent(event._id)}
+                        className="flex-1 flex items-center justify-center gap-2 py-2.5 bg-red-50 text-red-600 rounded-xl hover:bg-red-100 transition-colors font-medium text-sm"
+                      >
+                        <Trash2 className="w-4 h-4" /> Supprimer
+                      </button>
+                    </div>
                   </div>
                 </motion.div>
               ))}
               {events.length === 0 && (
-                <div className="col-span-full text-center py-10 text-gray-500">
-                  Aucun événement trouvé.
+                <div className="col-span-full py-16 text-center">
+                  <div className="inline-flex items-center justify-center w-20 h-20 rounded-full bg-gray-100 mb-6">
+                    <Calendar className="w-10 h-10 text-gray-400" />
+                  </div>
+                  <h3 className="text-xl font-semibold text-gray-900 mb-2">Aucun événement</h3>
+                  <p className="text-gray-500 max-w-sm mx-auto mb-6">Commencez par créer votre premier événement pour le voir apparaître ici.</p>
+                  <button
+                    onClick={() => {
+                      setEditingEvent(null);
+                      setShowEventFormModal(true);
+                    }}
+                    className="inline-flex items-center space-x-2 bg-green-600 text-white px-6 py-3 rounded-xl hover:bg-green-700 transition shadow-lg"
+                  >
+                    <PlusIcon className="w-5 h-5" />
+                    <span className="font-medium">Créer un événement</span>
+                  </button>
                 </div>
               )}
             </div>
@@ -1067,77 +1083,97 @@ const AdminDashboard = () => {
               </button>
             </div>
 
-            <div className="bg-white/70 backdrop-blur-xl rounded-2xl border border-white/30 shadow-xl p-6">
+            <div className="bg-white/80 backdrop-blur-xl rounded-2xl border border-white/40 shadow-xl overflow-hidden">
               <div className="overflow-x-auto">
-                <table className="min-w-full divide-y divide-white/20">
-                  <thead className="bg-white/50 backdrop-blur-sm">
+                <table className="min-w-full divide-y divide-gray-100">
+                  <thead className="bg-gray-50/50">
                     <tr>
-                      <th className="px-4 sm:px-6 py-3 sm:py-4 text-left text-xs sm:text-sm font-semibold text-gray-700 uppercase tracking-wider">
+                      <th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">
                         Produit
                       </th>
-                      <th className="px-4 sm:px-6 py-3 sm:py-4 text-left text-xs sm:text-sm font-semibold text-gray-700 uppercase tracking-wider">
+                      <th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">
                         Prix
                       </th>
-                      <th className="px-4 sm:px-6 py-3 sm:py-4 text-left text-xs sm:text-sm font-semibold text-gray-700 uppercase tracking-wider">
+                      <th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">
                         Stock
                       </th>
-                      <th className="px-4 sm:px-6 py-3 sm:py-4 text-left text-xs sm:text-sm font-semibold text-gray-700 uppercase tracking-wider">
+                      <th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">
                         Catégorie
                       </th>
-                      <th className="px-4 sm:px-6 py-3 sm:py-4 text-left text-xs sm:text-sm font-semibold text-gray-700 uppercase tracking-wider">
+                      <th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">
                         Statut
                       </th>
-                      <th className="px-4 sm:px-6 py-3 sm:py-4 text-left text-xs sm:text-sm font-semibold text-gray-700 uppercase tracking-wider">
+                      <th className="px-6 py-4 text-right text-xs font-semibold text-gray-500 uppercase tracking-wider">
                         Actions
                       </th>
                     </tr>
                   </thead>
-                  <tbody className="bg-white/30 backdrop-blur-sm divide-y divide-white/20">
+                  <tbody className="divide-y divide-gray-100 bg-white/40">
                     {products
                       .slice((productsCurrentPage - 1) * productsPerPage, productsCurrentPage * productsPerPage)
                       .map((product) => (
-                        <tr key={product._id} className="hover:bg-white/50 transition-all duration-300">
-                          <td className="px-4 sm:px-6 py-4 whitespace-nowrap">
-                            <div className="flex items-center space-x-3">
-                              {product.images && product.images.length > 0 && (
-                                <img
-                                  src={product.images[0].url}
-                                  alt={product.images[0].alt}
-                                  className="h-12 w-12 sm:h-14 sm:w-14 rounded-xl object-cover shadow-md"
-                                />
-                              )}
+                        <tr key={product._id} className="hover:bg-white/80 transition-colors duration-200">
+                          <td className="px-6 py-4 whitespace-nowrap">
+                            <div className="flex items-center space-x-4">
+                              <div className="flex-shrink-0 h-12 w-12 rounded-xl bg-gray-100 overflow-hidden shadow-sm border border-white">
+                                {product.images && product.images.length > 0 ? (
+                                  <img
+                                    src={product.images[0].url}
+                                    alt={product.images[0].alt}
+                                    className="h-full w-full object-cover"
+                                  />
+                                ) : (
+                                  <div className="w-full h-full flex items-center justify-center text-gray-300">
+                                    <Package className="w-6 h-6" />
+                                  </div>
+                                )}
+                              </div>
                               <div>
-                                <div className="text-sm sm:text-base font-semibold text-gray-900">{product.name}</div>
-                                <div className="text-xs sm:text-sm text-gray-600">{product.brand}</div>
+                                <div className="text-sm font-bold text-gray-900">{product.name}</div>
+                                <div className="text-xs text-gray-500 mt-0.5">{product.brand}</div>
                               </div>
                             </div>
                           </td>
-                          <td className="px-4 sm:px-6 py-4 whitespace-nowrap text-sm sm:text-base font-semibold text-gray-900">
-                            {product.price.toFixed(2)} €
-                          </td>
-                          <td className="px-4 sm:px-6 py-4 whitespace-nowrap text-sm sm:text-base text-gray-900">
-                            {product.stock}
-                          </td>
-                          <td className="px-4 sm:px-6 py-4 whitespace-nowrap text-sm sm:text-base text-gray-900">
-                            {product.category}
-                          </td>
-                          <td className="px-4 sm:px-6 py-4 whitespace-nowrap">
-                            <span className={`inline-flex px-3 py-1 text-xs font-semibold rounded-full ${product.isActive ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'
-                              }`}>
-                              {product.isActive ? 'Actif' : 'Inactif'}
+                          <td className="px-6 py-4 whitespace-nowrap">
+                            <span className="text-sm font-semibold text-gray-900 bg-green-50 text-green-700 px-2 py-1 rounded-lg">
+                              {product.price.toFixed(2)} €
                             </span>
                           </td>
-                          <td className="px-4 sm:px-6 py-4 whitespace-nowrap text-sm font-medium">
-                            <div className="flex space-x-2">
+                          <td className="px-6 py-4 whitespace-nowrap">
+                            <div className="flex items-center">
+                              <span className={`text-sm font-medium ${product.stock < 10 ? 'text-red-600' : 'text-gray-700'}`}>
+                                {product.stock}
+                              </span>
+                              <span className="ml-1 text-xs text-gray-400">unités</span>
+                            </div>
+                          </td>
+                          <td className="px-6 py-4 whitespace-nowrap">
+                            <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-50 text-blue-700">
+                              {product.category}
+                            </span>
+                          </td>
+                          <td className="px-6 py-4 whitespace-nowrap">
+                            <span className={`inline-flex items-center space-x-1.5 px-3 py-1 rounded-full text-xs font-medium border ${product.isActive
+                              ? 'bg-green-50 text-green-700 border-green-200'
+                              : 'bg-gray-50 text-gray-600 border-gray-200'
+                              }`}>
+                              <span className={`w-1.5 h-1.5 rounded-full ${product.isActive ? 'bg-green-500' : 'bg-gray-400'}`}></span>
+                              <span>{product.isActive ? 'Actif' : 'Inactif'}</span>
+                            </span>
+                          </td>
+                          <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                            <div className="flex justify-end space-x-2">
                               <button
                                 onClick={() => handleEditProduct(product)}
-                                className="p-2 bg-blue-100 text-blue-600 rounded-lg hover:bg-blue-200 transition-colors"
+                                className="p-2 text-gray-400 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-all"
+                                title="Modifier"
                               >
                                 <PencilIcon className="w-4 h-4" />
                               </button>
                               <button
                                 onClick={() => handleDeleteProduct(product._id)}
-                                className="p-2 bg-red-100 text-red-600 rounded-lg hover:bg-red-200 transition-colors"
+                                className="p-2 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-all"
+                                title="Supprimer"
                               >
                                 <Trash2 className="w-4 h-4" />
                               </button>
@@ -1148,52 +1184,59 @@ const AdminDashboard = () => {
                   </tbody>
                 </table>
                 {products.length === 0 && (
-                  <div className="text-center py-8 text-gray-500">
-                    Aucun produit trouvé
+                  <div className="flex flex-col items-center justify-center py-16 text-center">
+                    <div className="w-16 h-16 bg-gray-50 rounded-full flex items-center justify-center mb-4">
+                      <Package className="w-8 h-8 text-gray-300" />
+                    </div>
+                    <h3 className="text-lg font-medium text-gray-900">Aucun produit</h3>
+                    <p className="text-gray-500 mt-1 max-w-sm">Créez votre premier produit pour commencer à vendre.</p>
                   </div>
                 )}
               </div>
 
-              {/* Pagination pour les produits */}
+              {/* Pagination Styled */}
               {products.length > 0 && (
-                <div className="mt-6">
-                  {/* Info sur la pagination */}
-                  <div className="text-center mb-4 text-sm text-gray-600">
-                    Affichage de {Math.min((productsCurrentPage - 1) * productsPerPage + 1, products.length)} à {Math.min(productsCurrentPage * productsPerPage, products.length)} sur {products.length} produits
+                <div className="px-6 py-4 border-t border-gray-100 bg-gray-50/50 flex flex-col sm:flex-row items-center justify-between gap-4">
+                  <div className="text-sm text-gray-500 font-medium">
+                    Affichage de <span className="font-semibold text-gray-900">{Math.min((productsCurrentPage - 1) * productsPerPage + 1, products.length)}</span> à <span className="font-semibold text-gray-900">{Math.min(productsCurrentPage * productsPerPage, products.length)}</span> sur <span className="font-semibold text-gray-900">{products.length}</span> résultats
                   </div>
 
-                  <div className="flex justify-center">
-                    <nav className="flex items-center space-x-2">
-                      <button
-                        onClick={() => setProductsCurrentPage(productsCurrentPage - 1)}
-                        disabled={productsCurrentPage === 1}
-                        className="px-3 py-2 rounded-lg border border-gray-300 text-gray-500 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
-                      >
-                        <ChevronLeft size={20} />
-                      </button>
+                  <nav className="flex items-center space-x-1">
+                    <button
+                      onClick={() => setProductsCurrentPage(productsCurrentPage - 1)}
+                      disabled={productsCurrentPage === 1}
+                      className="p-2 rounded-lg border border-gray-200 bg-white text-gray-500 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed shadow-sm transition-all"
+                    >
+                      <ChevronLeft className="w-4 h-4" />
+                    </button>
 
-                      {Array.from({ length: Math.ceil(products.length / productsPerPage) }, (_, i) => i + 1).map((pageNumber) => (
-                        <button
-                          key={pageNumber}
-                          onClick={() => setProductsCurrentPage(pageNumber)}
-                          className={`px-4 py-2 rounded-lg border ${productsCurrentPage === pageNumber
-                            ? 'bg-green-600 text-white border-green-600'
-                            : 'border-gray-300 text-gray-700 hover:bg-gray-50'
-                            }`}
-                        >
-                          {pageNumber}
-                        </button>
-                      ))}
+                    <div className="flex items-center space-x-1 px-2">
+                      {Array.from({ length: Math.min(5, Math.ceil(products.length / productsPerPage)) }, (_, i) => {
+                        let pageNum = i + 1;
+                        // Simple logic to show current page surroundings could be improved but sufficient for now
+                        return (
+                          <button
+                            key={pageNum}
+                            onClick={() => setProductsCurrentPage(pageNum)}
+                            className={`w-8 h-8 flex items-center justify-center rounded-lg text-sm font-medium transition-all ${productsCurrentPage === pageNum
+                              ? 'bg-green-600 text-white shadow-md shadow-green-200'
+                              : 'bg-white text-gray-600 border border-gray-200 hover:bg-gray-50'
+                              }`}
+                          >
+                            {pageNum}
+                          </button>
+                        )
+                      })}
+                    </div>
 
-                      <button
-                        onClick={() => setProductsCurrentPage(productsCurrentPage + 1)}
-                        disabled={productsCurrentPage === Math.ceil(products.length / productsPerPage)}
-                        className="px-3 py-2 rounded-lg border border-gray-300 text-gray-500 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
-                      >
-                        <ChevronRight size={20} />
-                      </button>
-                    </nav>
-                  </div>
+                    <button
+                      onClick={() => setProductsCurrentPage(productsCurrentPage + 1)}
+                      disabled={productsCurrentPage === Math.ceil(products.length / productsPerPage)}
+                      className="p-2 rounded-lg border border-gray-200 bg-white text-gray-500 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed shadow-sm transition-all"
+                    >
+                      <ChevronRight className="w-4 h-4" />
+                    </button>
+                  </nav>
                 </div>
               )}
             </div>
@@ -1220,77 +1263,95 @@ const AdminDashboard = () => {
               </button>
             </div>
 
-            <div className="bg-white/70 backdrop-blur-xl rounded-2xl border border-white/30 shadow-xl p-6">
+            <div className="bg-white/80 backdrop-blur-xl rounded-2xl border border-white/40 shadow-xl overflow-hidden">
               <div className="overflow-x-auto">
-                <table className="min-w-full divide-y divide-white/20">
-                  <thead className="bg-white/50 backdrop-blur-sm">
+                <table className="min-w-full divide-y divide-gray-100">
+                  <thead className="bg-gray-50/50">
                     <tr>
-                      <th className="px-4 sm:px-6 py-3 sm:py-4 text-left text-xs sm:text-sm font-semibold text-gray-700 uppercase tracking-wider">
+                      <th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">
                         Article
                       </th>
-                      <th className="px-4 sm:px-6 py-3 sm:py-4 text-left text-xs sm:text-sm font-semibold text-gray-700 uppercase tracking-wider">
+                      <th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">
                         Auteur
                       </th>
-                      <th className="px-4 sm:px-6 py-3 sm:py-4 text-left text-xs sm:text-sm font-semibold text-gray-700 uppercase tracking-wider">
+                      <th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">
                         Catégorie
                       </th>
-                      <th className="px-4 sm:px-6 py-3 sm:py-4 text-left text-xs sm:text-sm font-semibold text-gray-700 uppercase tracking-wider">
+                      <th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">
                         Statut
                       </th>
-                      <th className="px-4 sm:px-6 py-3 sm:py-4 text-left text-xs sm:text-sm font-semibold text-gray-700 uppercase tracking-wider">
+                      <th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">
                         Date
                       </th>
-                      <th className="px-4 sm:px-6 py-3 sm:py-4 text-left text-xs sm:text-sm font-semibold text-gray-700 uppercase tracking-wider">
+                      <th className="px-6 py-4 text-right text-xs font-semibold text-gray-500 uppercase tracking-wider">
                         Actions
                       </th>
                     </tr>
                   </thead>
-                  <tbody className="bg-white/30 backdrop-blur-sm divide-y divide-white/20">
+                  <tbody className="divide-y divide-gray-100 bg-white/40">
                     {blogs
                       .slice((blogsCurrentPage - 1) * blogsPerPage, blogsCurrentPage * blogsPerPage)
                       .map((blog) => (
-                        <tr key={blog._id} className="hover:bg-white/50 transition-all duration-300">
-                          <td className="px-4 sm:px-6 py-4 whitespace-nowrap">
-                            <div className="flex items-center space-x-3">
-                              {blog.featuredImage && (
-                                <img
-                                  src={blog.featuredImage.url}
-                                  alt={blog.featuredImage.alt}
-                                  className="h-12 w-12 sm:h-14 sm:w-14 rounded-xl object-cover shadow-md"
-                                />
-                              )}
-                              <div>
-                                <div className="text-sm sm:text-base font-semibold text-gray-900">{blog.title}</div>
-                                <div className="text-xs sm:text-sm text-gray-600">{blog.readTime}</div>
+                        <tr key={blog._id} className="hover:bg-white/80 transition-colors duration-200">
+                          <td className="px-6 py-4 whitespace-nowrap">
+                            <div className="flex items-center space-x-4">
+                              <div className="flex-shrink-0 h-12 w-12 rounded-xl bg-gray-100 overflow-hidden shadow-sm border border-white">
+                                {blog.featuredImage ? (
+                                  <img
+                                    src={blog.featuredImage.url}
+                                    alt={blog.featuredImage.alt}
+                                    className="h-full w-full object-cover"
+                                  />
+                                ) : (
+                                  <div className="w-full h-full flex items-center justify-center text-gray-300">
+                                    <BookOpen className="w-6 h-6" />
+                                  </div>
+                                )}
+                              </div>
+                              <div className="min-w-0 max-w-xs">
+                                <div className="text-sm font-bold text-gray-900 truncate">{blog.title}</div>
+                                <div className="text-xs text-gray-500 mt-0.5">{blog.readTime} min de lecture</div>
                               </div>
                             </div>
                           </td>
-                          <td className="px-4 sm:px-6 py-4 whitespace-nowrap text-sm sm:text-base text-gray-900">
-                            {blog.author}
+                          <td className="px-6 py-4 whitespace-nowrap">
+                            <div className="flex items-center">
+                              <div className="h-6 w-6 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center text-xs font-bold mr-2">
+                                {blog.author.charAt(0)}
+                              </div>
+                              <span className="text-sm text-gray-700">{blog.author}</span>
+                            </div>
                           </td>
-                          <td className="px-4 sm:px-6 py-4 whitespace-nowrap text-sm sm:text-base text-gray-900">
-                            {blog.category}
-                          </td>
-                          <td className="px-4 sm:px-6 py-4 whitespace-nowrap">
-                            <span className={`inline-flex px-3 py-1 text-xs font-semibold rounded-full ${blog.isPublished ? 'bg-green-100 text-green-800' : 'bg-yellow-100 text-yellow-800'
-                              }`}>
-                              {blog.isPublished ? 'Publié' : 'Brouillon'}
+                          <td className="px-6 py-4 whitespace-nowrap">
+                            <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-purple-50 text-purple-700">
+                              {blog.category}
                             </span>
                           </td>
-                          <td className="px-4 sm:px-6 py-4 whitespace-nowrap text-sm sm:text-base text-gray-900">
-                            {new Date(blog.createdAt).toLocaleDateString('fr-FR')}
+                          <td className="px-6 py-4 whitespace-nowrap">
+                            <span className={`inline-flex items-center space-x-1.5 px-3 py-1 rounded-full text-xs font-medium border ${blog.isPublished
+                              ? 'bg-green-50 text-green-700 border-green-200'
+                              : 'bg-yellow-50 text-yellow-700 border-yellow-200'
+                              }`}>
+                              <span className={`w-1.5 h-1.5 rounded-full ${blog.isPublished ? 'bg-green-500' : 'bg-yellow-500'}`}></span>
+                              <span>{blog.isPublished ? 'Publié' : 'Brouillon'}</span>
+                            </span>
                           </td>
-                          <td className="px-4 sm:px-6 py-4 whitespace-nowrap text-sm font-medium">
-                            <div className="flex space-x-2">
+                          <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                            {new Date(blog.createdAt).toLocaleDateString('fr-FR', { day: 'numeric', month: 'short', year: 'numeric' })}
+                          </td>
+                          <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                            <div className="flex justify-end space-x-2">
                               <button
                                 onClick={() => handleEditBlog(blog)}
-                                className="p-2 bg-blue-100 text-blue-600 rounded-lg hover:bg-blue-200 transition-colors"
+                                className="p-2 text-gray-400 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-all"
+                                title="Modifier"
                               >
                                 <PencilIcon className="w-4 h-4" />
                               </button>
                               <button
                                 onClick={() => handleDeleteBlog(blog._id)}
-                                className="p-2 bg-red-100 text-red-600 rounded-lg hover:bg-red-200 transition-colors"
+                                className="p-2 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-all"
+                                title="Supprimer"
                               >
                                 <Trash2 className="w-4 h-4" />
                               </button>
@@ -1301,52 +1362,58 @@ const AdminDashboard = () => {
                   </tbody>
                 </table>
                 {blogs.length === 0 && (
-                  <div className="text-center py-8 text-gray-500">
-                    Aucun article trouvé
+                  <div className="flex flex-col items-center justify-center py-16 text-center">
+                    <div className="w-16 h-16 bg-gray-50 rounded-full flex items-center justify-center mb-4">
+                      <BookOpen className="w-8 h-8 text-gray-300" />
+                    </div>
+                    <h3 className="text-lg font-medium text-gray-900">Aucun article</h3>
+                    <p className="text-gray-500 mt-1 max-w-sm">Rédigez votre premier article de blog pour partager vos actualités.</p>
                   </div>
                 )}
               </div>
 
-              {/* Pagination pour les blogs */}
+              {/* Pagination Styled */}
               {blogs.length > 0 && (
-                <div className="mt-6">
-                  {/* Info sur la pagination */}
-                  <div className="text-center mb-4 text-sm text-gray-600">
-                    Affichage de {Math.min((blogsCurrentPage - 1) * blogsPerPage + 1, blogs.length)} à {Math.min(blogsCurrentPage * blogsPerPage, blogs.length)} sur {blogs.length} articles
+                <div className="px-6 py-4 border-t border-gray-100 bg-gray-50/50 flex flex-col sm:flex-row items-center justify-between gap-4">
+                  <div className="text-sm text-gray-500 font-medium">
+                    Affichage de <span className="font-semibold text-gray-900">{Math.min((blogsCurrentPage - 1) * blogsPerPage + 1, blogs.length)}</span> à <span className="font-semibold text-gray-900">{Math.min(blogsCurrentPage * blogsPerPage, blogs.length)}</span> sur <span className="font-semibold text-gray-900">{blogs.length}</span> résultats
                   </div>
 
-                  <div className="flex justify-center">
-                    <nav className="flex items-center space-x-2">
-                      <button
-                        onClick={() => setBlogsCurrentPage(blogsCurrentPage - 1)}
-                        disabled={blogsCurrentPage === 1}
-                        className="px-3 py-2 rounded-lg border border-gray-300 text-gray-500 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
-                      >
-                        <ChevronLeft size={20} />
-                      </button>
+                  <nav className="flex items-center space-x-1">
+                    <button
+                      onClick={() => setBlogsCurrentPage(blogsCurrentPage - 1)}
+                      disabled={blogsCurrentPage === 1}
+                      className="p-2 rounded-lg border border-gray-200 bg-white text-gray-500 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed shadow-sm transition-all"
+                    >
+                      <ChevronLeft className="w-4 h-4" />
+                    </button>
 
-                      {Array.from({ length: Math.ceil(blogs.length / blogsPerPage) }, (_, i) => i + 1).map((pageNumber) => (
-                        <button
-                          key={pageNumber}
-                          onClick={() => setBlogsCurrentPage(pageNumber)}
-                          className={`px-4 py-2 rounded-lg border ${blogsCurrentPage === pageNumber
-                            ? 'bg-green-600 text-white border-green-600'
-                            : 'border-gray-300 text-gray-700 hover:bg-gray-50'
-                            }`}
-                        >
-                          {pageNumber}
-                        </button>
-                      ))}
+                    <div className="flex items-center space-x-1 px-2">
+                      {Array.from({ length: Math.min(5, Math.ceil(blogs.length / blogsPerPage)) }, (_, i) => {
+                        let pageNum = i + 1;
+                        return (
+                          <button
+                            key={pageNum}
+                            onClick={() => setBlogsCurrentPage(pageNum)}
+                            className={`w-8 h-8 flex items-center justify-center rounded-lg text-sm font-medium transition-all ${blogsCurrentPage === pageNum
+                              ? 'bg-green-600 text-white shadow-md shadow-green-200'
+                              : 'bg-white text-gray-600 border border-gray-200 hover:bg-gray-50'
+                              }`}
+                          >
+                            {pageNum}
+                          </button>
+                        )
+                      })}
+                    </div>
 
-                      <button
-                        onClick={() => setBlogsCurrentPage(blogsCurrentPage + 1)}
-                        disabled={blogsCurrentPage === Math.ceil(blogs.length / blogsPerPage)}
-                        className="px-3 py-2 rounded-lg border border-gray-300 text-gray-500 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
-                      >
-                        <ChevronRight size={20} />
-                      </button>
-                    </nav>
-                  </div>
+                    <button
+                      onClick={() => setBlogsCurrentPage(blogsCurrentPage + 1)}
+                      disabled={blogsCurrentPage === Math.ceil(blogs.length / blogsPerPage)}
+                      className="p-2 rounded-lg border border-gray-200 bg-white text-gray-500 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed shadow-sm transition-all"
+                    >
+                      <ChevronRight className="w-4 h-4" />
+                    </button>
+                  </nav>
                 </div>
               )}
             </div>

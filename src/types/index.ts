@@ -77,6 +77,31 @@ export interface EventData {
     slug?: string;
     type?: 'seminar' | 'business_trip' | 'fair' | 'conference' | 'training' | 'networking';
     registrations?: { user: User; status: string }[];
+    images?: Array<{
+        publicId: string;
+        url: string;
+        alt: string;
+    }>;
+}
+
+export interface Product {
+    _id: string;
+    name: string;
+    description: string;
+    price: number;
+    stock: number;
+    category: string;
+    brand: string;
+    images: Array<{
+        publicId: string;
+        url: string;
+        alt: string;
+    }>;
+    specifications: Record<string, any> | { name: string; value: string }[];
+    tags: string[];
+    isActive: boolean;
+    createdAt: string;
+    updatedAt: string;
 }
 
 export interface ProductData {

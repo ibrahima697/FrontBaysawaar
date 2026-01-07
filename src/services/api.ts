@@ -4,7 +4,7 @@ import axios, { AxiosResponse } from 'axios';
 const api = axios.create({
   baseURL: import.meta.env.DEV
     ? 'http://localhost:5005/api'
-    : 'https://bayysawaarback-production.up.railway.app/api',
+    : 'https://backbaysawar.onrender.com/api',
   timeout: 60000, // 60 secondes pour les uploads
   headers: {
     'Content-Type': 'application/json',
@@ -252,8 +252,12 @@ export const eventsAPI = {
   // Admin & public utilisent la même route
   getAll: () => api.get('/events'), // Admin verra tout, public verra seulement upcoming/ongoing
 
-  create: (data: EventData) => api.post('/events', data),
-  update: (id: string, data: EventData) => api.put(`/events/${id}`, data),
+  create: (data: EventData | FormData) => api.post('/events', data, {
+    headers: { 'Content-Type': data instanceof FormData ? 'multipart/form-data' : 'application/json' },
+  }),
+  update: (id: string, data: EventData | FormData) => api.put(`/events/${id}`, data, {
+    headers: { 'Content-Type': data instanceof FormData ? 'multipart/form-data' : 'application/json' },
+  }),
   delete: (id: string) => api.delete(`/events/${id}`),
   register: (slug: string) => api.post(`/events/${slug}/register`),
   registerToEvent: (slug: string) => api.post(`/events/${slug}/register`),

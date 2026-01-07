@@ -2,27 +2,10 @@ import React, { useState, useEffect } from 'react';
 import { X, Plus, Trash2 } from 'lucide-react';
 import ImageUpload from './ImageUpload';
 import { productsAPI } from '../services/api';
+import { Product } from '../types';
 import Swal from 'sweetalert2';
 
-interface Product {
-  _id: string;
-  name: string;
-  description: string;
-  price: number;
-  category: string;
-  brand: string;
-  stock: number;
-  specifications: { name: string; value: string }[];
-  tags: string[];
-  images: Array<{
-    publicId: string;
-    url: string;
-    alt: string;
-  }>;
-  isActive: boolean;
-  createdAt: string;
-  updatedAt: string;
-}
+
 
 interface ProductFormModalProps {
   isOpen: boolean;
