@@ -508,7 +508,7 @@ const AdminDashboard = () => {
       className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-green-50 relative overflow-hidden"
     >
       {/* Background Pattern */}
-      <div className="absolute inset-0 bg-[url('/grid-pattern.svg')] opacity-5" />
+      <div className="absolute inset-0 bg-[url('/grid-pattern.svg')] opacity-5 pointer-events-none" />
       <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-green-500 via-blue-500 to-purple-500" />
       {/* Header */}
       <div
@@ -542,7 +542,7 @@ const AdminDashboard = () => {
       </div>
 
       {/* Navigation par onglets */}
-      <div className="bg-white/70 backdrop-blur-xl border-b border-white/20">
+      <div className="bg-white/70 backdrop-blur-xl border-b border-white/20 relative z-20">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <nav className="flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-2">
             <button
@@ -610,7 +610,7 @@ const AdminDashboard = () => {
         </div>
       </div>
 
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 relative z-10 w-full">
         {/* Contenu des onglets */}
         {activeTab === 'dashboard' && (
           <>
@@ -621,15 +621,15 @@ const AdminDashboard = () => {
                   initial={{ y: 20, opacity: 0 }}
                   animate={{ y: 0, opacity: 1 }}
                   transition={{ delay: 0.1 }}
-                  className="bg-white/60 backdrop-blur-xl rounded-2xl p-4 sm:p-6 border border-white/30 shadow-xl hover:shadow-2xl transition-all duration-300 hover:scale-105"
+                  className="bg-white/80 backdrop-blur-xl rounded-2xl p-6 border border-white/40 shadow-xl hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-1"
                 >
-                  <div className="flex flex-col sm:flex-row items-start sm:items-center space-y-3 sm:space-y-0 sm:space-x-4">
-                    <div className="p-3 bg-gradient-to-br from-blue-500 to-blue-600 rounded-xl shadow-lg">
-                      <Users className="w-6 h-6 text-white" />
+                  <div className="flex items-center space-x-4">
+                    <div className="p-4 bg-gradient-to-br from-blue-500 to-blue-600 rounded-2xl shadow-lg shadow-blue-500/20">
+                      <Users className="w-8 h-8 text-white" />
                     </div>
-                    <div className="flex-1">
-                      <p className="text-sm font-medium text-gray-600 mb-1">Total Utilisateurs</p>
-                      <p className="text-2xl sm:text-3xl font-bold text-gray-900">{stats.totalUsers}</p>
+                    <div>
+                      <p className="text-sm font-medium text-gray-500 mb-1">Total Utilisateurs</p>
+                      <h3 className="text-3xl font-bold text-gray-900">{stats.totalUsers}</h3>
                     </div>
                   </div>
                 </motion.div>
@@ -638,15 +638,15 @@ const AdminDashboard = () => {
                   initial={{ y: 20, opacity: 0 }}
                   animate={{ y: 0, opacity: 1 }}
                   transition={{ delay: 0.2 }}
-                  className="bg-white/60 backdrop-blur-xl rounded-2xl p-4 sm:p-6 border border-white/30 shadow-xl hover:shadow-2xl transition-all duration-300 hover:scale-105"
+                  className="bg-white/80 backdrop-blur-xl rounded-2xl p-6 border border-white/40 shadow-xl hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-1"
                 >
-                  <div className="flex flex-col sm:flex-row items-start sm:items-center space-y-3 sm:space-y-0 sm:space-x-4">
-                    <div className="p-3 bg-gradient-to-br from-yellow-500 to-orange-500 rounded-xl shadow-lg">
-                      <Clock className="w-6 h-6 text-white" />
+                  <div className="flex items-center space-x-4">
+                    <div className="p-4 bg-gradient-to-br from-yellow-500 to-orange-500 rounded-2xl shadow-lg shadow-orange-500/20">
+                      <Clock className="w-8 h-8 text-white" />
                     </div>
-                    <div className="flex-1">
-                      <p className="text-sm font-medium text-gray-600 mb-1">Enrôlements en Attente</p>
-                      <p className="text-2xl sm:text-3xl font-bold text-gray-900">{stats.pendingEnrollments}</p>
+                    <div>
+                      <p className="text-sm font-medium text-gray-500 mb-1">En Attente</p>
+                      <h3 className="text-3xl font-bold text-gray-900">{stats.pendingEnrollments}</h3>
                     </div>
                   </div>
                 </motion.div>
@@ -655,15 +655,15 @@ const AdminDashboard = () => {
                   initial={{ y: 20, opacity: 0 }}
                   animate={{ y: 0, opacity: 1 }}
                   transition={{ delay: 0.3 }}
-                  className="bg-white/60 backdrop-blur-xl rounded-2xl p-4 sm:p-6 border border-white/30 shadow-xl hover:shadow-2xl transition-all duration-300 hover:scale-105"
+                  className="bg-white/80 backdrop-blur-xl rounded-2xl p-6 border border-white/40 shadow-xl hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-1"
                 >
-                  <div className="flex flex-col sm:flex-row items-start sm:items-center space-y-3 sm:space-y-0 sm:space-x-4">
-                    <div className="p-3 bg-gradient-to-br from-green-500 to-emerald-600 rounded-xl shadow-lg">
-                      <CheckCircle className="w-6 h-6 text-white" />
+                  <div className="flex items-center space-x-4">
+                    <div className="p-4 bg-gradient-to-br from-green-500 to-emerald-600 rounded-2xl shadow-lg shadow-green-500/20">
+                      <CheckCircle className="w-8 h-8 text-white" />
                     </div>
-                    <div className="flex-1">
-                      <p className="text-sm font-medium text-gray-600 mb-1">Enrôlements Approuvés</p>
-                      <p className="text-2xl sm:text-3xl font-bold text-gray-900">{stats.approvedEnrollments}</p>
+                    <div>
+                      <p className="text-sm font-medium text-gray-500 mb-1">Approuvés</p>
+                      <h3 className="text-3xl font-bold text-gray-900">{stats.approvedEnrollments}</h3>
                     </div>
                   </div>
                 </motion.div>
@@ -672,15 +672,15 @@ const AdminDashboard = () => {
                   initial={{ y: 20, opacity: 0 }}
                   animate={{ y: 0, opacity: 1 }}
                   transition={{ delay: 0.4 }}
-                  className="bg-white/60 backdrop-blur-xl rounded-2xl p-4 sm:p-6 border border-white/30 shadow-xl hover:shadow-2xl transition-all duration-300 hover:scale-105"
+                  className="bg-white/80 backdrop-blur-xl rounded-2xl p-6 border border-white/40 shadow-xl hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-1"
                 >
-                  <div className="flex flex-col sm:flex-row items-start sm:items-center space-y-3 sm:space-y-0 sm:space-x-4">
-                    <div className="p-3 bg-gradient-to-br from-purple-500 to-indigo-600 rounded-xl shadow-lg">
-                      <Package className="w-6 h-6 text-white" />
+                  <div className="flex items-center space-x-4">
+                    <div className="p-4 bg-gradient-to-br from-purple-500 to-indigo-600 rounded-2xl shadow-lg shadow-purple-500/20">
+                      <Package className="w-8 h-8 text-white" />
                     </div>
-                    <div className="flex-1">
-                      <p className="text-sm font-medium text-gray-600 mb-1">Total Produits</p>
-                      <p className="text-2xl sm:text-3xl font-bold text-gray-900">{stats.totalProducts}</p>
+                    <div>
+                      <p className="text-sm font-medium text-gray-500 mb-1">Produits</p>
+                      <h3 className="text-3xl font-bold text-gray-900">{stats.totalProducts}</h3>
                     </div>
                   </div>
                 </motion.div>
@@ -688,197 +688,124 @@ const AdminDashboard = () => {
             )}
 
             {/* Filtres et Liste des Enrôlements */}
-            <div className="bg-white/70 backdrop-blur-xl rounded-2xl border border-white/30 shadow-xl">
-              <div className="p-4 sm:p-6 border-b border-white/20">
+            <div className="bg-white/80 backdrop-blur-xl rounded-2xl border border-white/40 shadow-xl overflow-hidden">
+              <div className="p-6 border-b border-gray-100 bg-gray-50/50">
                 <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between space-y-4 sm:space-y-0">
                   <div>
-                    <h2 className="text-xl sm:text-2xl font-bold text-gray-900">Demandes d'Enrôlement</h2>
-                    <p className="text-gray-600 mt-1">Gérez les demandes d'enrôlement des utilisateurs</p>
+                    <h2 className="text-2xl font-bold text-gray-900">Demandes d'Enrôlement</h2>
+                    <p className="text-gray-500 mt-1">Gérez et suivez les demandes d'inscription</p>
                   </div>
-                  <div className="flex flex-wrap gap-2">
-                    <button
-                      onClick={() => setFilter('all')}
-                      className={`px-4 py-2 rounded-xl text-sm font-medium transition-all duration-300 ${filter === 'all'
-                        ? 'bg-green-500 text-white shadow-lg'
-                        : 'bg-white/60 text-gray-600 hover:bg-white/80 border border-white/40'
-                        }`}
-                    >
-                      Tous
-                    </button>
-                    <button
-                      onClick={() => setFilter('pending')}
-                      className={`px-4 py-2 rounded-xl text-sm font-medium transition-all duration-300 ${filter === 'pending'
-                        ? 'bg-yellow-500 text-white shadow-lg'
-                        : 'bg-white/60 text-gray-600 hover:bg-white/80 border border-white/40'
-                        }`}
-                    >
-                      En Attente
-                    </button>
-                    <button
-                      onClick={() => setFilter('approved')}
-                      className={`px-4 py-2 rounded-xl text-sm font-medium transition-all duration-300 ${filter === 'approved'
-                        ? 'bg-green-500 text-white shadow-lg'
-                        : 'bg-white/60 text-gray-600 hover:bg-white/80 border border-white/40'
-                        }`}
-                    >
-                      Approuvés
-                    </button>
-                    <button
-                      onClick={() => setFilter('rejected')}
-                      className={`px-4 py-2 rounded-xl text-sm font-medium transition-all duration-300 ${filter === 'rejected'
-                        ? 'bg-red-500 text-white shadow-lg'
-                        : 'bg-white/60 text-gray-600 hover:bg-white/80 border border-white/40'
-                        }`}
-                    >
-                      Rejetés
-                    </button>
+                  <div className="flex bg-gray-100 p-1 rounded-xl">
+                    {['all', 'pending', 'approved', 'rejected'].map((status) => (
+                      <button
+                        key={status}
+                        onClick={() => setFilter(status as any)}
+                        className={`px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 capitalize ${filter === status
+                          ? 'bg-white text-gray-900 shadow-sm'
+                          : 'text-gray-500 hover:text-gray-700'
+                          }`}
+                      >
+                        {status === 'all' ? 'Tous' :
+                          status === 'pending' ? 'En attente' :
+                            status === 'approved' ? 'Approuvés' : 'Rejetés'}
+                      </button>
+                    ))}
                   </div>
                 </div>
               </div>
 
               <div className="p-6">
                 {enrollmentsLoading ? (
-                  <div className="text-center py-8">
-                    <RefreshCw className="w-6 h-6 animate-spin text-green-600 mx-auto mb-2" />
-                    <p className="text-gray-600">Chargement des enrôlements...</p>
+                  <div className="flex flex-col items-center justify-center py-12">
+                    <div className="w-12 h-12 border-4 border-green-200 border-t-green-600 rounded-full animate-spin mb-4" />
+                    <p className="text-gray-500 font-medium">Chargement des données...</p>
                   </div>
                 ) : enrollments.length === 0 ? (
-                  <div className="text-center py-8">
-                    <BookOpen className="w-12 h-12 text-gray-400 mx-auto mb-4" />
-                    <p className="text-gray-600">Aucune demande d'enrôlement trouvée</p>
+                  <div className="text-center py-12">
+                    <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-gray-100 mb-4">
+                      <BookOpen className="w-8 h-8 text-gray-400" />
+                    </div>
+                    <h3 className="text-lg font-medium text-gray-900">Aucune demande trouvée</h3>
+                    <p className="text-gray-500 mt-1">Essayez de modifier vos filtres</p>
                   </div>
                 ) : (
-                  <>
-                    <div className="space-y-4">
-                      {enrollments
-                        .slice((enrollmentsCurrentPage - 1) * enrollmentsPerPage, enrollmentsCurrentPage * enrollmentsPerPage)
-                        .map((enrollment) => (
-                          <motion.div
-                            key={enrollment._id}
-                            initial={{ opacity: 0, y: 20 }}
-                            animate={{ opacity: 1, y: 0 }}
-                            className="bg-white/60 backdrop-blur-sm rounded-xl p-4 sm:p-6 border border-white/40 hover:bg-white/80 transition-all duration-300 hover:shadow-lg"
-                          >
-                            <div className="flex items-start justify-between">
-                              <div className="flex-1">
-                                <div className="flex items-center space-x-3 mb-4">
-                                  <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${getTypeColor(enrollment.type)}`}>
-                                    {enrollment.type === 'partner' ? 'Partenaire' : 'Membre'}
-                                  </span>
-                                  <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${getStatusColor(enrollment.status)}`}>
-                                    {getStatusIcon(enrollment.status)}
-                                    <span className="ml-1">
-                                      {enrollment.status === 'pending' ? 'En Attente' :
-                                        enrollment.status === 'approved' ? 'Approuvé' : 'Rejeté'}
-                                    </span>
-                                  </span>
-                                </div>
-
-                                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-                                  <div>
-                                    <p className="text-sm font-medium text-gray-600">Nom</p>
-                                    <p className="text-gray-900">{enrollment.firstName} {enrollment.lastName}</p>
-                                  </div>
-                                  <div>
-                                    <p className="text-sm font-medium text-gray-600">Email</p>
-                                    <p className="text-gray-900">{enrollment.email}</p>
-                                  </div>
-                                  <div>
-                                    <p className="text-sm font-medium text-gray-600">Téléphone</p>
-                                    <p className="text-gray-900">{enrollment.phone}</p>
-                                  </div>
-                                  <div>
-                                    <p className="text-sm font-medium text-gray-600">Entreprise</p>
-                                    <p className="text-gray-900">{enrollment.companyName}</p>
-                                  </div>
-                                  <div>
-                                    <p className="text-sm font-medium text-gray-600">Pays</p>
-                                    <p className="text-gray-900">{enrollment.country}</p>
-                                  </div>
-                                  <div>
-                                    <p className="text-sm font-medium text-gray-600">Date</p>
-                                    <p className="text-gray-900">
-                                      {new Date(enrollment.createdAt).toLocaleDateString('fr-FR')}
-                                    </p>
-                                  </div>
-                                </div>
+                  <div className="space-y-4">
+                    {enrollments
+                      .slice((enrollmentsCurrentPage - 1) * enrollmentsPerPage, enrollmentsCurrentPage * enrollmentsPerPage)
+                      .map((enrollment) => (
+                        <motion.div
+                          key={enrollment._id}
+                          initial={{ opacity: 0, y: 10 }}
+                          animate={{ opacity: 1, y: 0 }}
+                          className="bg-white rounded-xl border border-gray-100 p-5 hover:border-green-200 hover:shadow-md transition-all duration-300"
+                        >
+                          <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-6">
+                            {/* User Info */}
+                            <div className="flex-1">
+                              <div className="flex items-center justify-between lg:justify-start gap-4 mb-4">
+                                <span className={`inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold uppercase tracking-wide ${getTypeColor(enrollment.type)}`}>
+                                  {enrollment.type === 'partner' ? 'Partenaire' : 'Membre'}
+                                </span>
+                                <span className={`inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold uppercase tracking-wide ${getStatusColor(enrollment.status)}`}>
+                                  {enrollment.status === 'pending' ? 'En Attente' :
+                                    enrollment.status === 'approved' ? 'Approuvé' : 'Rejeté'}
+                                </span>
                               </div>
 
-                              <div className="flex flex-col sm:flex-row items-stretch sm:items-center space-y-2 sm:space-y-0 sm:space-x-2 ml-4">
-                                {enrollment.status === 'pending' && (
-                                  <>
-                                    <button
-                                      onClick={() => handleEnrollmentAction(enrollment._id, 'approve')}
-                                      className="flex items-center justify-center space-x-1 bg-gradient-to-r from-green-500 to-green-600 text-white px-4 py-2 rounded-xl hover:from-green-600 hover:to-green-700 transition-all duration-300 shadow-lg hover:shadow-xl"
-                                    >
-                                      <CheckCircle className="w-4 h-4" />
-                                      <span className="text-sm font-medium">Approuver</span>
-                                    </button>
-                                    <button
-                                      onClick={() => handleEnrollmentAction(enrollment._id, 'reject')}
-                                      className="flex items-center justify-center space-x-1 bg-gradient-to-r from-red-500 to-red-600 text-white px-4 py-2 rounded-xl hover:from-red-600 hover:to-red-700 transition-all duration-300 shadow-lg hover:shadow-xl"
-                                    >
-                                      <XCircle className="w-4 h-4" />
-                                      <span className="text-sm font-medium">Rejeter</span>
-                                    </button>
-                                  </>
-                                )}
-                                <button
-                                  onClick={() => handleDeleteEnrollment(enrollment._id)}
-                                  className="flex items-center justify-center space-x-1 bg-gradient-to-r from-gray-500 to-gray-600 text-white px-4 py-2 rounded-xl hover:from-gray-600 hover:to-gray-700 transition-all duration-300 shadow-lg hover:shadow-xl"
-                                >
-                                  <Trash2 className="w-4 h-4" />
-                                  <span className="text-sm font-medium">Supprimer</span>
-                                </button>
+                              <div className="grid md:grid-cols-2 xl:grid-cols-4 gap-6">
+                                <div>
+                                  <label className="text-xs font-semibold text-gray-400 uppercase tracking-wider">Demandeur</label>
+                                  <p className="font-semibold text-gray-900 mt-1">{enrollment.firstName} {enrollment.lastName}</p>
+                                  <p className="text-sm text-gray-500">{enrollment.email}</p>
+                                </div>
+                                <div>
+                                  <label className="text-xs font-semibold text-gray-400 uppercase tracking-wider">Entreprise</label>
+                                  <p className="font-medium text-gray-900 mt-1">{enrollment.companyName || '-'}</p>
+                                  <p className="text-sm text-gray-500">{enrollment.country}</p>
+                                </div>
+                                <div>
+                                  <label className="text-xs font-semibold text-gray-400 uppercase tracking-wider">Contact</label>
+                                  <p className="font-medium text-gray-900 mt-1">{enrollment.phone}</p>
+                                </div>
+                                <div>
+                                  <label className="text-xs font-semibold text-gray-400 uppercase tracking-wider">Date</label>
+                                  <p className="font-medium text-gray-900 mt-1">{new Date(enrollment.createdAt).toLocaleDateString('fr-FR', { day: 'numeric', month: 'short', year: 'numeric' })}</p>
+                                </div>
                               </div>
                             </div>
-                          </motion.div>
-                        ))}
-                    </div>
 
-                    {/* Pagination pour les enrôlements */}
-                    {enrollments.length > 0 && (
-                      <div className="mt-6">
-                        {/* Info sur la pagination */}
-                        <div className="text-center mb-4 text-sm text-gray-600">
-                          Affichage de {Math.min((enrollmentsCurrentPage - 1) * enrollmentsPerPage + 1, enrollments.length)} à {Math.min(enrollmentsCurrentPage * enrollmentsPerPage, enrollments.length)} sur {enrollments.length} enrôlements
-                        </div>
-
-                        <div className="flex justify-center">
-                          <nav className="flex items-center space-x-2">
-                            <button
-                              onClick={() => setEnrollmentsCurrentPage(enrollmentsCurrentPage - 1)}
-                              disabled={enrollmentsCurrentPage === 1}
-                              className="px-3 py-2 rounded-lg border border-gray-300 text-gray-500 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
-                            >
-                              <ChevronLeft size={20} />
-                            </button>
-
-                            {Array.from({ length: Math.ceil(enrollments.length / enrollmentsPerPage) }, (_, i) => i + 1).map((pageNumber) => (
+                            {/* Actions */}
+                            <div className="flex items-center gap-2 border-t lg:border-t-0 lg:border-l border-gray-100 pt-4 lg:pt-0 lg:pl-6">
+                              {enrollment.status === 'pending' && (
+                                <>
+                                  <button
+                                    onClick={() => handleEnrollmentAction(enrollment._id, 'approve')}
+                                    className="p-2 bg-green-50 text-green-600 rounded-lg hover:bg-green-100 transition-colors tooltip"
+                                    title="Approuver"
+                                  >
+                                    <CheckCircle className="w-5 h-5" />
+                                  </button>
+                                  <button
+                                    onClick={() => handleEnrollmentAction(enrollment._id, 'reject')}
+                                    className="p-2 bg-red-50 text-red-600 rounded-lg hover:bg-red-100 transition-colors tooltip"
+                                    title="Rejeter"
+                                  >
+                                    <XCircle className="w-5 h-5" />
+                                  </button>
+                                </>
+                              )}
                               <button
-                                key={pageNumber}
-                                onClick={() => setEnrollmentsCurrentPage(pageNumber)}
-                                className={`px-4 py-2 rounded-lg border ${enrollmentsCurrentPage === pageNumber
-                                  ? 'bg-green-600 text-white border-green-600'
-                                  : 'border-gray-300 text-gray-700 hover:bg-gray-50'
-                                  }`}
+                                onClick={() => handleDeleteEnrollment(enrollment._id)}
+                                className="p-2 bg-gray-50 text-gray-500 rounded-lg hover:bg-gray-100 transition-colors tooltip"
+                                title="Supprimer"
                               >
-                                {pageNumber}
+                                <Trash2 className="w-5 h-5" />
                               </button>
-                            ))}
-
-                            <button
-                              onClick={() => setEnrollmentsCurrentPage(enrollmentsCurrentPage + 1)}
-                              disabled={enrollmentsCurrentPage === Math.ceil(enrollments.length / enrollmentsPerPage)}
-                              className="px-3 py-2 rounded-lg border border-gray-300 text-gray-500 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
-                            >
-                              <ChevronRight size={20} />
-                            </button>
-                          </nav>
-                        </div>
-                      </div>
-                    )}
-                  </>
+                            </div>
+                          </div>
+                        </motion.div>
+                      ))}
+                  </div>
                 )}
               </div>
             </div>
@@ -888,63 +815,116 @@ const AdminDashboard = () => {
         {/** Section Formations */}
         {activeTab === 'formations' && (
           <div>
-            <div className="flex justify-between items-center mb-6">
-              <h2 className="text-3xl font-bold">Formations</h2>
+            <div className="flex justify-between items-center mb-8">
+              <div>
+                <h2 className="text-3xl font-bold text-gray-900">Formations</h2>
+                <p className="text-gray-500 mt-2">Gérez vos sessions de formation et les inscriptions</p>
+              </div>
               <button
                 onClick={() => {
                   setEditingFormation(null);
                   setShowFormationFormModal(true);
 
                 }}
-                className="flex items-center space-x-2 bg-gradient-to-r from-green-500 to-green-600 text-white px-6 py-3 rounded-xl hover:from-green-600 hover:to-green-700 transition-all duration-300 shadow-lg hover:shadow-xl cursor-pointer relative z-50"
+                className="flex items-center space-x-2 bg-gradient-to-r from-green-500 to-green-600 text-white px-6 py-3 rounded-xl hover:from-green-600 hover:to-green-700 transition-all duration-300 shadow-lg hover:shadow-xl hover:-translate-y-0.5"
               >
                 <PlusIcon className="w-5 h-5" />
                 <span className="font-medium">Créer une formation</span>
               </button>
             </div>
 
-            <div className="space-y-6">
+            <div className="grid grid-cols-1 gap-6">
               {formations.map(form => (
-                <motion.div key={form._id} initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}
-                  className="bg-white/70 backdrop-blur-xl rounded-2xl border border-white/30 shadow-xl p-6">
-                  <div className="flex justify-between items-start mb-4">
-                    <div>
-                      <h3 className="text-xl font-bold">{form.title}</h3>
-                      <p className="text-sm text-gray-600 flex items-center gap-1"><Calendar className="w-4 h-4" /> {new Date(form.date).toLocaleDateString('fr-FR')}</p>
-                      <p className="text-sm text-gray-600 flex items-center gap-1"><MapPin className="w-4 h-4" /> {form.location}</p>
-                      <p className="text-sm text-gray-600 mt-2">Places : {form.enrolledUsers.length}/{form.maxSeats}</p>
-                    </div>
-                    <button onClick={() => { setEditingFormation(form); setShowFormationFormModal(true); }}
-                      className="p-2 bg-blue-100 text-blue-600 rounded-lg hover:bg-blue-200">
-                      <Pencil className="w-4 h-4" />
-                    </button>
-                  </div>
-
-                  {form.registrations?.filter(r => r.status === 'pending').length > 0 && (
-                    <div className="mt-4 border-t pt-4">
-                      <p className="font-medium mb-2">Inscriptions en attente :</p>
-                      <div className="space-y-2">
-                        {form.registrations.filter(r => r.status === 'pending').map(reg => (
-                          <div key={reg._id} className="flex items-center justify-between bg-white/50 rounded-lg p-3">
-                            <div>
-                              <p className="font-medium">{reg.userName}</p>
-                              <p className="text-sm text-gray-600">{reg.userEmail}</p>
-                            </div>
-                            <div className="flex gap-2">
-                              <button onClick={() => handleRegistrationAction(form._id, reg._id, 'approve')}
-                                className="p-2 bg-green-100 text-green-600 rounded-lg hover:bg-green-200">
-                                <UserCheck className="w-4 h-4" />
-                              </button>
-                              <button onClick={() => handleRegistrationAction(form._id, reg._id, 'reject')}
-                                className="p-2 bg-red-100 text-red-600 rounded-lg hover:bg-red-200">
-                                <UserX className="w-4 h-4" />
-                              </button>
-                            </div>
+                <motion.div
+                  key={form._id}
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  className="bg-white rounded-2xl border border-gray-100 p-6 shadow-sm hover:shadow-md transition-all duration-300"
+                >
+                  <div className="flex flex-col lg:flex-row gap-6">
+                    {/* Formation Info */}
+                    <div className="flex-1">
+                      <div className="flex items-start justify-between">
+                        <div>
+                          <h3 className="text-xl font-bold text-gray-900 mb-2">{form.title}</h3>
+                          <div className="flex flex-wrap gap-4 text-sm text-gray-600 mb-4">
+                            <span className="flex items-center gap-1.5"><Calendar className="w-4 h-4 text-blue-500" /> {new Date(form.date).toLocaleDateString('fr-FR', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' })}</span>
+                            <span className="flex items-center gap-1.5"><MapPin className="w-4 h-4 text-red-500" /> {form.location}</span>
                           </div>
-                        ))}
+                          <p className="text-gray-600 leading-relaxed mb-4">{form.description}</p>
+                        </div>
+                        <button
+                          onClick={() => { setEditingFormation(form); setShowFormationFormModal(true); }}
+                          className="p-2 text-gray-400 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
+                        >
+                          <Pencil className="w-5 h-5" />
+                        </button>
+                      </div>
+
+                      {/* Progress Bar for Seats */}
+                      <div className="mb-6">
+                        <div className="flex justify-between text-sm mb-1.5">
+                          <span className="font-medium text-gray-700">Participants</span>
+                          <span className="font-medium text-gray-900">{form.enrolledUsers.length} / {form.maxSeats}</span>
+                        </div>
+                        <div className="w-full bg-gray-100 rounded-full h-2.5 overflow-hidden">
+                          <div
+                            className="bg-green-500 h-2.5 rounded-full transition-all duration-500 ease-out"
+                            style={{ width: `${Math.min((form.enrolledUsers.length / form.maxSeats) * 100, 100)}%` }}
+                          />
+                        </div>
                       </div>
                     </div>
-                  )}
+
+                    {/* Registrations List Section - Right Side on large screens */}
+                    <div className="lg:w-96 lg:border-l lg:border-gray-100 lg:pl-6">
+                      <h4 className="font-semibold text-gray-900 mb-4 flex items-center gap-2">
+                        <UserCheck className="w-4 h-4 text-gray-400" />
+                        Inscriptions en attente
+                        {form.registrations?.filter(r => r.status === 'pending').length > 0 && (
+                          <span className="bg-orange-100 text-orange-600 text-xs px-2 py-0.5 rounded-full font-bold">
+                            {form.registrations.filter(r => r.status === 'pending').length}
+                          </span>
+                        )}
+                      </h4>
+
+                      {form.registrations && form.registrations.filter(r => r.status === 'pending').length > 0 ? (
+                        <div className="space-y-3 max-h-60 overflow-y-auto pr-2 custom-scrollbar">
+                          {form.registrations.filter(r => r.status === 'pending').map(reg => (
+                            <div key={reg._id} className="bg-gray-50 rounded-xl p-3 border border-gray-100">
+                              <div className="flex justify-between items-start mb-2">
+                                <div>
+                                  <p className="text-sm font-semibold text-gray-900">{reg.userName}</p>
+                                  <p className="text-xs text-gray-500 truncate max-w-[150px]">{reg.userEmail}</p>
+                                </div>
+                                <div className="text-xs text-gray-400 top-0.5 relative">
+                                  {new Date(reg.registeredAt).toLocaleDateString('fr-FR')}
+                                </div>
+                              </div>
+                              <div className="flex gap-2 mt-3">
+                                <button
+                                  onClick={() => handleRegistrationAction(form._id, reg._id, 'approve')}
+                                  className="flex-1 py-1.5 bg-green-500 text-white text-xs font-medium rounded-lg hover:bg-green-600 transition-colors"
+                                >
+                                  Valider
+                                </button>
+                                <button
+                                  onClick={() => handleRegistrationAction(form._id, reg._id, 'reject')}
+                                  className="flex-1 py-1.5 bg-white border border-gray-200 text-gray-600 text-xs font-medium rounded-lg hover:bg-gray-50 hover:text-red-500 transition-colors"
+                                >
+                                  Refuser
+                                </button>
+                              </div>
+                            </div>
+                          ))}
+                        </div>
+                      ) : (
+                        <div className="text-center py-8 bg-gray-50/50 rounded-xl border border-dashed border-gray-200">
+                          <p className="text-sm text-gray-400">Aucune demande en attente</p>
+                        </div>
+                      )}
+                    </div>
+                  </div>
                 </motion.div>
               ))}
             </div>
@@ -961,7 +941,7 @@ const AdminDashboard = () => {
                   setEditingEvent(null);
                   setShowEventFormModal(true);
                 }}
-                className="flex items-center space-x-2 bg-gradient-to-r from-green-500 to-green-600 text-white px-6 py-3 rounded-xl hover:from-green-600 hover:to-green-700 transition-all duration-300 shadow-lg hover:shadow-xl cursor-pointer relative z-50"
+                className="flex items-center space-x-2 bg-gradient-to-r from-green-500 to-green-600 text-white px-6 py-3 rounded-xl hover:from-green-600 hover:to-green-700 transition-all duration-300 shadow-lg hover:shadow-xl cursor-pointer"
               >
                 <PlusIcon className="w-5 h-5" />
                 <span className="font-medium">Créer un événement</span>
@@ -976,7 +956,7 @@ const AdminDashboard = () => {
                   animate={{ opacity: 1, y: 0 }}
                   className="bg-white/80 backdrop-blur-xl rounded-2xl border border-white/50 shadow-xl overflow-hidden group hover:shadow-2xl transition-all duration-300 flex flex-col"
                 >
-                  <div className="relative h-48 sm:h-56 w-full overflow-hidden bg-gray-100">
+                  <div className="relative h-40 w-full overflow-hidden bg-gray-100">
                     {event.images && event.images.length > 0 ? (
                       <img
                         src={event.images[0].url}
@@ -1002,21 +982,21 @@ const AdminDashboard = () => {
 
                   <div className="p-6 flex-1 flex flex-col">
                     <div className="mb-4">
-                      <h3 className="text-xl sm:text-2xl font-bold text-gray-900 mb-2 leading-tight">{event.title}</h3>
-                      <p className="text-sm text-gray-600 line-clamp-3 leading-relaxed">{event.description}</p>
+                      <h3 className="text-xl font-bold text-gray-900 mb-2 leading-tight line-clamp-1">{event.title}</h3>
+                      <p className="text-sm text-gray-600 line-clamp-2 leading-relaxed">{event.description}</p>
                     </div>
 
                     <div className="mt-auto space-y-3 pt-4 border-t border-gray-100">
                       <div className="flex items-center gap-3 text-sm text-gray-600">
-                        <div className="p-2 bg-green-50 rounded-lg text-green-600"><Calendar className="w-4 h-4" /></div>
-                        <span className="font-medium">{new Date(event.dateStart).toLocaleDateString('fr-FR')} - {new Date(event.dateEnd).toLocaleDateString('fr-FR')}</span>
+                        <div className="p-2 bg-green-50 rounded-lg text-green-600 flex-shrink-0"><Calendar className="w-4 h-4" /></div>
+                        <span className="font-medium truncate">{new Date(event.dateStart).toLocaleDateString('fr-FR')} - {new Date(event.dateEnd).toLocaleDateString('fr-FR')}</span>
                       </div>
                       <div className="flex items-center gap-3 text-sm text-gray-600">
-                        <div className="p-2 bg-blue-50 rounded-lg text-blue-600"><MapPin className="w-4 h-4" /></div>
-                        <span className="font-medium">{event.location}</span>
+                        <div className="p-2 bg-blue-50 rounded-lg text-blue-600 flex-shrink-0"><MapPin className="w-4 h-4" /></div>
+                        <span className="font-medium truncate">{event.location}</span>
                       </div>
                       <div className="flex items-center gap-3 text-sm text-gray-600">
-                        <div className="p-2 bg-purple-50 rounded-lg text-purple-600"><Users className="w-4 h-4" /></div>
+                        <div className="p-2 bg-purple-50 rounded-lg text-purple-600 flex-shrink-0"><Users className="w-4 h-4" /></div>
                         <span className="font-medium">{event.maxParticipants} participants max</span>
                       </div>
                     </div>
