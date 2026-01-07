@@ -238,7 +238,7 @@ const Activities = () => {
       </section>
 
       {/* Bandeau FIPA */}
-      <section className="bg-gradient-to-r from-yellow-400 to-red-500 text-white py-8">
+      {/* <section className="bg-gradient-to-r from-yellow-400 to-red-500 text-white py-8">
         <div className="max-w-7xl mx-auto px-4 text-center">
           <h3 className="text-2xl font-bold mb-2">Découvrez FIPA 2025</h3>
           <p className="mb-4">Foire Internationale des Produits Africains – Organisé par Fabira Trading</p>
@@ -251,7 +251,7 @@ const Activities = () => {
             Visiter FIPA <ExternalLink size={16} />
           </a>
         </div>
-      </section>
+      </section> */}
     </motion.div>
   );
 };

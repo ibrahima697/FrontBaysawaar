@@ -204,8 +204,8 @@ const Dashboard = () => {
                 key={tab}
                 onClick={() => setActiveTab(tab as any)}
                 className={`px-6 py-2.5 rounded-xl font-medium text-sm transition-all duration-200 ${activeTab === tab
-                    ? 'bg-gray-900 text-white shadow-md'
-                    : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'
+                  ? 'bg-gray-900 text-white shadow-md'
+                  : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'
                   }`}
               >
                 <div className="flex items-center gap-2">
@@ -236,7 +236,7 @@ const Dashboard = () => {
                         {enrollment ? (
                           <>
                             <span className={`text-3xl font-bold ${enrollment.status === 'approved' ? 'text-green-600' :
-                                enrollment.status === 'rejected' ? 'text-red-600' : 'text-amber-500'
+                              enrollment.status === 'rejected' ? 'text-red-600' : 'text-amber-500'
                               }`}>
                               {getStatusText(enrollment.status)}
                             </span>

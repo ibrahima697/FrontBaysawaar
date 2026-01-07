@@ -136,10 +136,12 @@ const AdminDashboard = () => {
   const [productsCurrentPage, setProductsCurrentPage] = useState(1);
   const [productsPerPage] = useState(5);
   const [blogsCurrentPage, setBlogsCurrentPage] = useState(1);
-  //const [formationsPage, setFormationsPage] = useState(1);
-  const [showFormationModal, setShowFormationModal] = useState(false);
   const [blogsPerPage] = useState(5);
-  //const [formationsPerPage] = useState(5);
+  const [formationsCurrentPage, setFormationsCurrentPage] = useState(1);
+  const [formationsPerPage] = useState(5);
+  const [eventsCurrentPage, setEventsCurrentPage] = useState(1);
+  const [eventsPerPage] = useState(6);
+  const [showFormationModal, setShowFormationModal] = useState(false);
   const [events, setEvents] = useState<EventData[]>([]);
   const [showEventFormModal, setShowEventFormModal] = useState(false);
   const [editingEvent, setEditingEvent] = useState<EventData | null>(null);
@@ -877,100 +879,144 @@ const AdminDashboard = () => {
             </div>
 
             <div className="grid grid-cols-1 gap-6">
-              {formations.map(form => (
-                <motion.div
-                  key={form._id}
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  className="bg-white rounded-2xl border border-gray-100 p-6 shadow-sm hover:shadow-md transition-all duration-300"
-                >
-                  <div className="flex flex-col lg:flex-row gap-6">
-                    {/* Formation Info */}
-                    <div className="flex-1">
-                      <div className="flex items-start justify-between">
-                        <div>
-                          <h3 className="text-xl font-bold text-gray-900 mb-2">{form.title}</h3>
-                          <div className="flex flex-wrap gap-4 text-sm text-gray-600 mb-4">
-                            <span className="flex items-center gap-1.5"><Calendar className="w-4 h-4 text-blue-500" /> {new Date(form.date).toLocaleDateString('fr-FR', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' })}</span>
-                            <span className="flex items-center gap-1.5"><MapPin className="w-4 h-4 text-red-500" /> {form.location}</span>
-                          </div>
-                          <p className="text-gray-600 leading-relaxed mb-4">{form.description}</p>
-                        </div>
-                        <button
-                          onClick={() => { setEditingFormation(form); setShowFormationFormModal(true); }}
-                          className="p-2 text-gray-400 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
-                        >
-                          <Pencil className="w-5 h-5" />
-                        </button>
-                      </div>
-
-                      {/* Progress Bar for Seats */}
-                      <div className="mb-6">
-                        <div className="flex justify-between text-sm mb-1.5">
-                          <span className="font-medium text-gray-700">Participants</span>
-                          <span className="font-medium text-gray-900">{form.enrolledUsers.length} / {form.maxSeats}</span>
-                        </div>
-                        <div className="w-full bg-gray-100 rounded-full h-2.5 overflow-hidden">
-                          <div
-                            className="bg-green-500 h-2.5 rounded-full transition-all duration-500 ease-out"
-                            style={{ width: `${Math.min((form.enrolledUsers.length / form.maxSeats) * 100, 100)}%` }}
-                          />
-                        </div>
-                      </div>
-                    </div>
-
-                    {/* Registrations List Section - Right Side on large screens */}
-                    <div className="lg:w-96 lg:border-l lg:border-gray-100 lg:pl-6">
-                      <h4 className="font-semibold text-gray-900 mb-4 flex items-center gap-2">
-                        <UserCheck className="w-4 h-4 text-gray-400" />
-                        Inscriptions en attente
-                        {form.registrations?.filter(r => r.status === 'pending').length > 0 && (
-                          <span className="bg-orange-100 text-orange-600 text-xs px-2 py-0.5 rounded-full font-bold">
-                            {form.registrations.filter(r => r.status === 'pending').length}
-                          </span>
-                        )}
-                      </h4>
-
-                      {form.registrations && form.registrations.filter(r => r.status === 'pending').length > 0 ? (
-                        <div className="space-y-3 max-h-60 overflow-y-auto pr-2 custom-scrollbar">
-                          {form.registrations.filter(r => r.status === 'pending').map(reg => (
-                            <div key={reg._id} className="bg-gray-50 rounded-xl p-3 border border-gray-100">
-                              <div className="flex justify-between items-start mb-2">
-                                <div>
-                                  <p className="text-sm font-semibold text-gray-900">{reg.userName}</p>
-                                  <p className="text-xs text-gray-500 truncate max-w-[150px]">{reg.userEmail}</p>
-                                </div>
-                                <div className="text-xs text-gray-400 top-0.5 relative">
-                                  {new Date(reg.registeredAt).toLocaleDateString('fr-FR')}
-                                </div>
-                              </div>
-                              <div className="flex gap-2 mt-3">
-                                <button
-                                  onClick={() => handleRegistrationAction(form._id, reg._id, 'approve')}
-                                  className="flex-1 py-1.5 bg-green-500 text-white text-xs font-medium rounded-lg hover:bg-green-600 transition-colors"
-                                >
-                                  Valider
-                                </button>
-                                <button
-                                  onClick={() => handleRegistrationAction(form._id, reg._id, 'reject')}
-                                  className="flex-1 py-1.5 bg-white border border-gray-200 text-gray-600 text-xs font-medium rounded-lg hover:bg-gray-50 hover:text-red-500 transition-colors"
-                                >
-                                  Refuser
-                                </button>
-                              </div>
+              {formations
+                .slice((formationsCurrentPage - 1) * formationsPerPage, formationsCurrentPage * formationsPerPage)
+                .map(form => (
+                  <motion.div
+                    key={form._id}
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    className="bg-white rounded-2xl border border-gray-100 p-6 shadow-sm hover:shadow-md transition-all duration-300"
+                  >
+                    <div className="flex flex-col lg:flex-row gap-6">
+                      {/* Formation Info */}
+                      <div className="flex-1">
+                        <div className="flex items-start justify-between">
+                          <div>
+                            <h3 className="text-xl font-bold text-gray-900 mb-2">{form.title}</h3>
+                            <div className="flex flex-wrap gap-4 text-sm text-gray-600 mb-4">
+                              <span className="flex items-center gap-1.5"><Calendar className="w-4 h-4 text-blue-500" /> {new Date(form.date).toLocaleDateString('fr-FR', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' })}</span>
+                              <span className="flex items-center gap-1.5"><MapPin className="w-4 h-4 text-red-500" /> {form.location}</span>
                             </div>
-                          ))}
+                            <p className="text-gray-600 leading-relaxed mb-4">{form.description}</p>
+                          </div>
+                          <button
+                            onClick={() => { setEditingFormation(form); setShowFormationFormModal(true); }}
+                            className="p-2 text-gray-400 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
+                          >
+                            <Pencil className="w-5 h-5" />
+                          </button>
                         </div>
-                      ) : (
-                        <div className="text-center py-8 bg-gray-50/50 rounded-xl border border-dashed border-gray-200">
-                          <p className="text-sm text-gray-400">Aucune demande en attente</p>
+
+                        {/* Progress Bar for Seats */}
+                        <div className="mb-6">
+                          <div className="flex justify-between text-sm mb-1.5">
+                            <span className="font-medium text-gray-700">Participants</span>
+                            <span className="font-medium text-gray-900">{form.enrolledUsers.length} / {form.maxSeats}</span>
+                          </div>
+                          <div className="w-full bg-gray-100 rounded-full h-2.5 overflow-hidden">
+                            <div
+                              className="bg-green-500 h-2.5 rounded-full transition-all duration-500 ease-out"
+                              style={{ width: `${Math.min((form.enrolledUsers.length / form.maxSeats) * 100, 100)}%` }}
+                            />
+                          </div>
                         </div>
-                      )}
+                      </div>
+
+                      {/* Registrations List Section - Right Side on large screens */}
+                      <div className="lg:w-96 lg:border-l lg:border-gray-100 lg:pl-6">
+                        <h4 className="font-semibold text-gray-900 mb-4 flex items-center gap-2">
+                          <UserCheck className="w-4 h-4 text-gray-400" />
+                          Inscriptions en attente
+                          {form.registrations?.filter(r => r.status === 'pending').length > 0 && (
+                            <span className="bg-orange-100 text-orange-600 text-xs px-2 py-0.5 rounded-full font-bold">
+                              {form.registrations.filter(r => r.status === 'pending').length}
+                            </span>
+                          )}
+                        </h4>
+
+                        {form.registrations && form.registrations.filter(r => r.status === 'pending').length > 0 ? (
+                          <div className="space-y-3 max-h-60 overflow-y-auto pr-2 custom-scrollbar">
+                            {form.registrations.filter(r => r.status === 'pending').map(reg => (
+                              <div key={reg._id} className="bg-gray-50 rounded-xl p-3 border border-gray-100">
+                                <div className="flex justify-between items-start mb-2">
+                                  <div>
+                                    <p className="text-sm font-semibold text-gray-900">{reg.userName}</p>
+                                    <p className="text-xs text-gray-500 truncate max-w-[150px]">{reg.userEmail}</p>
+                                  </div>
+                                  <div className="text-xs text-gray-400 top-0.5 relative">
+                                    {new Date(reg.registeredAt).toLocaleDateString('fr-FR')}
+                                  </div>
+                                </div>
+                                <div className="flex gap-2 mt-3">
+                                  <button
+                                    onClick={() => handleRegistrationAction(form._id, reg._id, 'approve')}
+                                    className="flex-1 py-1.5 bg-green-500 text-white text-xs font-medium rounded-lg hover:bg-green-600 transition-colors"
+                                  >
+                                    Valider
+                                  </button>
+                                  <button
+                                    onClick={() => handleRegistrationAction(form._id, reg._id, 'reject')}
+                                    className="flex-1 py-1.5 bg-white border border-gray-200 text-gray-600 text-xs font-medium rounded-lg hover:bg-gray-50 hover:text-red-500 transition-colors"
+                                  >
+                                    Refuser
+                                  </button>
+                                </div>
+                              </div>
+                            ))}
+                          </div>
+                        ) : (
+                          <div className="text-center py-8 bg-gray-50/50 rounded-xl border border-dashed border-gray-200">
+                            <p className="text-sm text-gray-400">Aucune demande en attente</p>
+                          </div>
+                        )}
+                      </div>
                     </div>
-                  </div>
-                </motion.div>
-              ))}
+                  </motion.div>
+                ))}
             </div>
+
+            {/* Pagination for Formations */}
+            {formations.length > 0 && (
+              <div className="mt-8 flex flex-col sm:flex-row items-center justify-between gap-4 bg-white/50 backdrop-blur-sm p-4 rounded-xl border border-gray-100">
+                <div className="text-sm text-gray-500 font-medium">
+                  Affichage de <span className="font-semibold text-gray-900">{Math.min((formationsCurrentPage - 1) * formationsPerPage + 1, formations.length)}</span> à <span className="font-semibold text-gray-900">{Math.min(formationsCurrentPage * formationsPerPage, formations.length)}</span> sur <span className="font-semibold text-gray-900">{formations.length}</span> formations
+                </div>
+
+                <nav className="flex items-center space-x-1">
+                  <button
+                    onClick={() => setFormationsCurrentPage(formationsCurrentPage - 1)}
+                    disabled={formationsCurrentPage === 1}
+                    className="p-2 rounded-lg border border-gray-200 bg-white text-gray-500 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed shadow-sm transition-all"
+                  >
+                    <ChevronLeft className="w-4 h-4" />
+                  </button>
+
+                  <div className="flex items-center space-x-1 px-2">
+                    {Array.from({ length: Math.ceil(formations.length / formationsPerPage) }, (_, i) => i + 1).map((pageNum) => (
+                      <button
+                        key={pageNum}
+                        onClick={() => setFormationsCurrentPage(pageNum)}
+                        className={`w-8 h-8 flex items-center justify-center rounded-lg text-sm font-medium transition-all ${formationsCurrentPage === pageNum
+                          ? 'bg-green-600 text-white shadow-md shadow-green-200'
+                          : 'bg-white text-gray-600 border border-gray-200 hover:bg-gray-50'
+                          }`}
+                      >
+                        {pageNum}
+                      </button>
+                    ))}
+                  </div>
+
+                  <button
+                    onClick={() => setFormationsCurrentPage(formationsCurrentPage + 1)}
+                    disabled={formationsCurrentPage === Math.ceil(formations.length / formationsPerPage)}
+                    className="p-2 rounded-lg border border-gray-200 bg-white text-gray-500 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed shadow-sm transition-all"
+                  >
+                    <ChevronRight className="w-4 h-4" />
+                  </button>
+                </nav>
+              </div>
+            )}
           </div>
         )}
 
@@ -992,95 +1038,139 @@ const AdminDashboard = () => {
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-              {events.map(event => (
-                <motion.div
-                  key={event._id}
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  className="bg-white/80 backdrop-blur-xl rounded-2xl border border-white/50 shadow-xl overflow-hidden group hover:shadow-2xl transition-all duration-300 flex flex-col"
-                >
-                  <div className="relative h-40 w-full overflow-hidden bg-gray-100">
-                    {event.images && event.images.length > 0 ? (
-                      <img
-                        src={event.images[0].url}
-                        alt={event.title}
-                        className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
-                      />
-                    ) : (
-                      <div className="w-full h-full flex items-center justify-center bg-gray-200 text-gray-400">
-                        <Calendar className="w-12 h-12 opacity-50" />
-                      </div>
-                    )}
-                    <div className="absolute top-4 right-4">
-                      <span className={`px-3 py-1 text-xs font-bold uppercase tracking-wider rounded-full shadow-md ${event.isFeatured ? 'bg-yellow-400 text-yellow-900' : 'bg-gray-200 text-gray-700'}`}>
-                        {event.isFeatured ? 'Mise en avant' : 'Standard'}
-                      </span>
-                    </div>
-                    <div className="absolute bottom-4 left-4">
-                      <span className="px-3 py-1 text-xs font-bold uppercase tracking-wider rounded-full shadow-md bg-white/90 text-gray-800 backdrop-blur-sm">
-                        {event.type || 'Événement'}
-                      </span>
-                    </div>
-                  </div>
-
-                  <div className="p-6 flex-1 flex flex-col">
-                    <div className="mb-4">
-                      <h3 className="text-xl font-bold text-gray-900 mb-2 leading-tight line-clamp-1">{event.title}</h3>
-                      <p className="text-sm text-gray-600 line-clamp-2 leading-relaxed">{event.description}</p>
-                    </div>
-
-                    <div className="mt-auto space-y-3 pt-4 border-t border-gray-100">
-                      <div className="flex items-center gap-3 text-sm text-gray-600">
-                        <div className="p-2 bg-green-50 rounded-lg text-green-600 flex-shrink-0"><Calendar className="w-4 h-4" /></div>
-                        <span className="font-medium truncate">{new Date(event.dateStart).toLocaleDateString('fr-FR')} - {new Date(event.dateEnd).toLocaleDateString('fr-FR')}</span>
-                      </div>
-                      <div className="flex items-center gap-3 text-sm text-gray-600">
-                        <div className="p-2 bg-blue-50 rounded-lg text-blue-600 flex-shrink-0"><MapPin className="w-4 h-4" /></div>
-                        <span className="font-medium truncate">{event.location}</span>
-                      </div>
-                      <div className="flex items-center gap-3 text-sm text-gray-600">
-                        <div className="p-2 bg-purple-50 rounded-lg text-purple-600 flex-shrink-0"><Users className="w-4 h-4" /></div>
-                        <span className="font-medium">{event.maxParticipants} participants max</span>
-                      </div>
-                    </div>
-
-                    <div className="mt-6 flex gap-3">
-                      <button
-                        onClick={() => handleEditEvent(event)}
-                        className="flex-1 flex items-center justify-center gap-2 py-2.5 bg-gray-100 text-gray-700 rounded-xl hover:bg-gray-200 transition-colors font-medium text-sm"
-                      >
-                        <Pencil className="w-4 h-4" /> Éditer
-                      </button>
-                      <button
-                        onClick={() => event._id && handleDeleteEvent(event._id)}
-                        className="flex-1 flex items-center justify-center gap-2 py-2.5 bg-red-50 text-red-600 rounded-xl hover:bg-red-100 transition-colors font-medium text-sm"
-                      >
-                        <Trash2 className="w-4 h-4" /> Supprimer
-                      </button>
-                    </div>
-                  </div>
-                </motion.div>
-              ))}
-              {events.length === 0 && (
-                <div className="col-span-full py-16 text-center">
-                  <div className="inline-flex items-center justify-center w-20 h-20 rounded-full bg-gray-100 mb-6">
-                    <Calendar className="w-10 h-10 text-gray-400" />
-                  </div>
-                  <h3 className="text-xl font-semibold text-gray-900 mb-2">Aucun événement</h3>
-                  <p className="text-gray-500 max-w-sm mx-auto mb-6">Commencez par créer votre premier événement pour le voir apparaître ici.</p>
-                  <button
-                    onClick={() => {
-                      setEditingEvent(null);
-                      setShowEventFormModal(true);
-                    }}
-                    className="inline-flex items-center space-x-2 bg-green-600 text-white px-6 py-3 rounded-xl hover:bg-green-700 transition shadow-lg"
+              {events
+                .slice((eventsCurrentPage - 1) * eventsPerPage, eventsCurrentPage * eventsPerPage)
+                .map(event => (
+                  <motion.div
+                    key={event._id}
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    className="bg-white/80 backdrop-blur-xl rounded-2xl border border-white/50 shadow-xl overflow-hidden group hover:shadow-2xl transition-all duration-300 flex flex-col"
                   >
-                    <PlusIcon className="w-5 h-5" />
-                    <span className="font-medium">Créer un événement</span>
-                  </button>
-                </div>
-              )}
+                    <div className="relative h-40 w-full overflow-hidden bg-gray-100">
+                      {event.images && event.images.length > 0 ? (
+                        <img
+                          src={event.images[0].url}
+                          alt={event.title}
+                          className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
+                        />
+                      ) : (
+                        <div className="w-full h-full flex items-center justify-center bg-gray-200 text-gray-400">
+                          <Calendar className="w-12 h-12 opacity-50" />
+                        </div>
+                      )}
+                      <div className="absolute top-4 right-4">
+                        <span className={`px-3 py-1 text-xs font-bold uppercase tracking-wider rounded-full shadow-md ${event.isFeatured ? 'bg-yellow-400 text-yellow-900' : 'bg-gray-200 text-gray-700'}`}>
+                          {event.isFeatured ? 'Mise en avant' : 'Standard'}
+                        </span>
+                      </div>
+                      <div className="absolute bottom-4 left-4">
+                        <span className="px-3 py-1 text-xs font-bold uppercase tracking-wider rounded-full shadow-md bg-white/90 text-gray-800 backdrop-blur-sm">
+                          {event.type || 'Événement'}
+                        </span>
+                      </div>
+                    </div>
+
+                    <div className="p-6 flex-1 flex flex-col">
+                      <div className="mb-4">
+                        <h3 className="text-xl font-bold text-gray-900 mb-2 leading-tight line-clamp-1">{event.title}</h3>
+                        <p className="text-sm text-gray-600 line-clamp-2 leading-relaxed">{event.description}</p>
+                      </div>
+
+                      <div className="mt-auto space-y-3 pt-4 border-t border-gray-100">
+                        <div className="flex items-center gap-3 text-sm text-gray-600">
+                          <div className="p-2 bg-green-50 rounded-lg text-green-600 flex-shrink-0"><Calendar className="w-4 h-4" /></div>
+                          <span className="font-medium truncate">{new Date(event.dateStart).toLocaleDateString('fr-FR')} - {new Date(event.dateEnd).toLocaleDateString('fr-FR')}</span>
+                        </div>
+                        <div className="flex items-center gap-3 text-sm text-gray-600">
+                          <div className="p-2 bg-blue-50 rounded-lg text-blue-600 flex-shrink-0"><MapPin className="w-4 h-4" /></div>
+                          <span className="font-medium truncate">{event.location}</span>
+                        </div>
+                        <div className="flex items-center gap-3 text-sm text-gray-600">
+                          <div className="p-2 bg-purple-50 rounded-lg text-purple-600 flex-shrink-0"><Users className="w-4 h-4" /></div>
+                          <span className="font-medium">{event.maxParticipants} participants max</span>
+                        </div>
+                      </div>
+
+                      <div className="mt-6 flex gap-3">
+                        <button
+                          onClick={() => handleEditEvent(event)}
+                          className="flex-1 flex items-center justify-center gap-2 py-2.5 bg-gray-100 text-gray-700 rounded-xl hover:bg-gray-200 transition-colors font-medium text-sm"
+                        >
+                          <Pencil className="w-4 h-4" /> Éditer
+                        </button>
+                        <button
+                          onClick={() => event._id && handleDeleteEvent(event._id)}
+                          className="flex-1 flex items-center justify-center gap-2 py-2.5 bg-red-50 text-red-600 rounded-xl hover:bg-red-100 transition-colors font-medium text-sm"
+                        >
+                          <Trash2 className="w-4 h-4" /> Supprimer
+                        </button>
+                      </div>
+                    </div>
+                  </motion.div>
+                ))}
             </div>
+
+            {/* Pagination for Events */}
+            {events.length > 0 && (
+              <div className="mt-8 flex flex-col sm:flex-row items-center justify-between gap-4 bg-white/50 backdrop-blur-sm p-4 rounded-xl border border-gray-100">
+                <div className="text-sm text-gray-500 font-medium">
+                  Affichage de <span className="font-semibold text-gray-900">{Math.min((eventsCurrentPage - 1) * eventsPerPage + 1, events.length)}</span> à <span className="font-semibold text-gray-900">{Math.min(eventsCurrentPage * eventsPerPage, events.length)}</span> sur <span className="font-semibold text-gray-900">{events.length}</span> événements
+                </div>
+
+                <nav className="flex items-center space-x-1">
+                  <button
+                    onClick={() => setEventsCurrentPage(eventsCurrentPage - 1)}
+                    disabled={eventsCurrentPage === 1}
+                    className="p-2 rounded-lg border border-gray-200 bg-white text-gray-500 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed shadow-sm transition-all"
+                  >
+                    <ChevronLeft className="w-4 h-4" />
+                  </button>
+
+                  <div className="flex items-center space-x-1 px-2">
+                    {Array.from({ length: Math.ceil(events.length / eventsPerPage) }, (_, i) => i + 1).map((pageNum) => (
+                      <button
+                        key={pageNum}
+                        onClick={() => setEventsCurrentPage(pageNum)}
+                        className={`w-8 h-8 flex items-center justify-center rounded-lg text-sm font-medium transition-all ${eventsCurrentPage === pageNum
+                          ? 'bg-green-600 text-white shadow-md shadow-green-200'
+                          : 'bg-white text-gray-600 border border-gray-200 hover:bg-gray-50'
+                          }`}
+                      >
+                        {pageNum}
+                      </button>
+                    ))}
+                  </div>
+
+                  <button
+                    onClick={() => setEventsCurrentPage(eventsCurrentPage + 1)}
+                    disabled={eventsCurrentPage === Math.ceil(events.length / eventsPerPage)}
+                    className="p-2 rounded-lg border border-gray-200 bg-white text-gray-500 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed shadow-sm transition-all"
+                  >
+                    <ChevronRight className="w-4 h-4" />
+                  </button>
+                </nav>
+              </div>
+            )}
+            {events.length === 0 && (
+              <div className="col-span-full py-16 text-center">
+                <div className="inline-flex items-center justify-center w-20 h-20 rounded-full bg-gray-100 mb-6">
+                  <Calendar className="w-10 h-10 text-gray-400" />
+                </div>
+                <h3 className="text-xl font-semibold text-gray-900 mb-2">Aucun événement</h3>
+                <p className="text-gray-500 max-w-sm mx-auto mb-6">Commencez par créer votre premier événement pour le voir apparaître ici.</p>
+                <button
+                  onClick={() => {
+                    setEditingEvent(null);
+                    setShowEventFormModal(true);
+                  }}
+                  className="inline-flex items-center space-x-2 bg-green-600 text-white px-6 py-3 rounded-xl hover:bg-green-700 transition shadow-lg"
+                >
+                  <PlusIcon className="w-5 h-5" />
+                  <span className="font-medium">Créer un événement</span>
+                </button>
+              </div>
+            )}
           </div>
         )}
 
@@ -1234,22 +1324,18 @@ const AdminDashboard = () => {
                     </button>
 
                     <div className="flex items-center space-x-1 px-2">
-                      {Array.from({ length: Math.min(5, Math.ceil(products.length / productsPerPage)) }, (_, i) => {
-                        let pageNum = i + 1;
-                        // Simple logic to show current page surroundings could be improved but sufficient for now
-                        return (
-                          <button
-                            key={pageNum}
-                            onClick={() => setProductsCurrentPage(pageNum)}
-                            className={`w-8 h-8 flex items-center justify-center rounded-lg text-sm font-medium transition-all ${productsCurrentPage === pageNum
-                              ? 'bg-green-600 text-white shadow-md shadow-green-200'
-                              : 'bg-white text-gray-600 border border-gray-200 hover:bg-gray-50'
-                              }`}
-                          >
-                            {pageNum}
-                          </button>
-                        )
-                      })}
+                      {Array.from({ length: Math.ceil(products.length / productsPerPage) }, (_, i) => i + 1).map((pageNum) => (
+                        <button
+                          key={pageNum}
+                          onClick={() => setProductsCurrentPage(pageNum)}
+                          className={`w-8 h-8 flex items-center justify-center rounded-lg text-sm font-medium transition-all ${productsCurrentPage === pageNum
+                            ? 'bg-green-600 text-white shadow-md shadow-green-200'
+                            : 'bg-white text-gray-600 border border-gray-200 hover:bg-gray-50'
+                            }`}
+                        >
+                          {pageNum}
+                        </button>
+                      ))}
                     </div>
 
                     <button
@@ -1512,7 +1598,7 @@ const AdminDashboard = () => {
         event={editingEvent}
         onEventSaved={handleEventSaved}
       />
-    </motion.div>
+    </motion.div >
   );
 };
 
