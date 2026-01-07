@@ -10,15 +10,15 @@ import {
   TrendingUp,
   Package,
   BookOpen,
-  PlusIcon,
-  PencilIcon,
+  Plus as PlusIcon,
+  Pencil as PencilIcon,
   ChevronLeft,
   ChevronRight,
   Calendar,
   MapPin,
   Pencil,
   UserCheck,
-  UserX
+  Loader2
 } from 'lucide-react';
 import { adminAPI, productsAPI, blogsAPI, formationsAPI, eventsAPI } from '../services/api';
 import Swal from 'sweetalert2';
@@ -145,6 +145,19 @@ const AdminDashboard = () => {
   const [events, setEvents] = useState<EventData[]>([]);
   const [showEventFormModal, setShowEventFormModal] = useState(false);
   const [editingEvent, setEditingEvent] = useState<EventData | null>(null);
+  const [processingIds, setProcessingIds] = useState<Set<string>>(new Set());
+
+  const addProcessingId = (id: string) => {
+    setProcessingIds(prev => new Set(prev).add(id));
+  };
+
+  const removeProcessingId = (id: string) => {
+    setProcessingIds(prev => {
+      const next = new Set(prev);
+      next.delete(id);
+      return next;
+    });
+  };
 
 
   useEffect(() => {
@@ -257,23 +270,26 @@ const AdminDashboard = () => {
 
   const handleDeleteEvent = async (id: string) => {
     const result = await Swal.fire({
-      title: 'Êtes-vous sûr de vouloir supprimer cet événement ?',
-      text: "Cette action ne peut pas être annulée.",
+      title: 'Êtes-vous sûr ?',
+      text: "Cette action supprimera définitivement l'événement.",
       icon: 'warning',
       showCancelButton: true,
-      confirmButtonColor: '#dc2626',
-      cancelButtonColor: '#6b7280',
-      confirmButtonText: 'Oui, supprimer',
-      cancelButtonText: 'Annuler'
+      confirmButtonColor: '#d33',
+      cancelButtonColor: '#3085d6',
+      confirmButtonText: 'Oui, supprimer'
     });
 
     if (result.isConfirmed) {
       try {
+        addProcessingId(id);
         await eventsAPI.delete(id);
-        Swal.fire('Succès!', 'Événement supprimé avec succès', 'success');
+        Swal.fire('Supprimé!', "L'événement a été supprimé.", 'success');
         fetchEvents();
-      } catch (error: any) {
-        Swal.fire('Erreur!', error.response?.data?.error || 'Une erreur est survenue', 'error');
+      } catch (error) {
+        console.error('Erreur lors de la suppression:', error);
+        Swal.fire('Erreur', 'Impossible de supprimer l\'événement', 'error');
+      } finally {
+        removeProcessingId(id);
       }
     }
   };
@@ -296,6 +312,7 @@ const AdminDashboard = () => {
 
     if (result.isConfirmed) {
       try {
+        addProcessingId(id);
         await adminAPI.updateEnrollment(id, { status: action === 'approve' ? 'approved' : 'rejected' });
 
         Swal.fire({
@@ -313,9 +330,11 @@ const AdminDashboard = () => {
         Swal.fire({
           icon: 'error',
           title: 'Erreur',
-          text: `Impossible de ${actionText} la demande`,
+          text: 'Une erreur est survenue lors du traitement de la demande',
           confirmButtonColor: '#dc2626',
         });
+      } finally {
+        removeProcessingId(id);
       }
     }
   };
@@ -330,6 +349,7 @@ const AdminDashboard = () => {
 
     if (result.isConfirmed) {
       try {
+        addProcessingId(regId);
         await formationsAPI.updateRegistration(formationId, regId, {
           status: action === 'approve' ? 'approved' : 'rejected'
         });
@@ -337,6 +357,8 @@ const AdminDashboard = () => {
         fetchFormations(); // Rafraîchit immédiatement
       } catch (error) {
         Swal.fire('Erreur', 'Action impossible', 'error');
+      } finally {
+        removeProcessingId(regId);
       }
     }
   };
@@ -355,6 +377,7 @@ const AdminDashboard = () => {
 
     if (result.isConfirmed) {
       try {
+        addProcessingId(id);
         await adminAPI.deleteEnrollment(id);
 
         Swal.fire({
@@ -375,6 +398,8 @@ const AdminDashboard = () => {
           text: 'Impossible de supprimer la demande',
           confirmButtonColor: '#dc2626',
         });
+      } finally {
+        removeProcessingId(id);
       }
     }
   };
@@ -399,11 +424,14 @@ const AdminDashboard = () => {
 
     if (result.isConfirmed) {
       try {
+        addProcessingId(id);
         await productsAPI.deleteProduct(id);
         Swal.fire('Succès!', 'Produit supprimé avec succès', 'success');
         fetchProducts();
       } catch (error: any) {
         Swal.fire('Erreur!', error.response?.data?.error || 'Une erreur est survenue', 'error');
+      } finally {
+        removeProcessingId(id);
       }
     }
   };
@@ -434,11 +462,14 @@ const AdminDashboard = () => {
 
     if (result.isConfirmed) {
       try {
+        addProcessingId(id);
         await blogsAPI.deleteBlog(id);
         Swal.fire('Succès!', 'Article supprimé avec succès', 'success');
         fetchBlogs();
       } catch (error: any) {
         Swal.fire('Erreur!', error.response?.data?.error || 'Une erreur est survenue', 'error');
+      } finally {
+        removeProcessingId(id);
       }
     }
   };
@@ -534,9 +565,10 @@ const AdminDashboard = () => {
                 fetchEnrollments();
                 fetchFormations();
               }}
-              className="flex items-center space-x-2 bg-white/20 backdrop-blur-xl text-white px-6 py-3 rounded-xl border border-white/30 hover:bg-white/30 transition-all duration-300 hover:scale-105 shadow-lg"
+              disabled={loading}
+              className="flex items-center space-x-2 bg-white/20 backdrop-blur-xl text-white px-6 py-3 rounded-xl border border-white/30 hover:bg-white/30 transition-all duration-300 hover:scale-105 shadow-lg disabled:opacity-50"
             >
-              <RefreshCw className="w-5 h-5" />
+              <RefreshCw className={`w-5 h-5 ${loading ? 'animate-spin' : ''}`} />
               <span className="font-medium">Actualiser</span>
             </button>
           </div>
@@ -782,26 +814,41 @@ const AdminDashboard = () => {
                                 <>
                                   <button
                                     onClick={() => handleEnrollmentAction(enrollment._id, 'approve')}
-                                    className="p-2 bg-green-50 text-green-600 rounded-lg hover:bg-green-100 transition-colors tooltip"
+                                    disabled={processingIds.has(enrollment._id)}
+                                    className="p-2 bg-green-50 text-green-600 rounded-lg hover:bg-green-100 transition-colors tooltip disabled:opacity-50 disabled:cursor-not-allowed"
                                     title="Approuver"
                                   >
-                                    <CheckCircle className="w-5 h-5" />
+                                    {processingIds.has(enrollment._id) ? (
+                                      <Loader2 className="w-5 h-5 animate-spin" />
+                                    ) : (
+                                      <CheckCircle className="w-5 h-5" />
+                                    )}
                                   </button>
                                   <button
                                     onClick={() => handleEnrollmentAction(enrollment._id, 'reject')}
-                                    className="p-2 bg-red-50 text-red-600 rounded-lg hover:bg-red-100 transition-colors tooltip"
+                                    disabled={processingIds.has(enrollment._id)}
+                                    className="p-2 bg-red-50 text-red-600 rounded-lg hover:bg-red-100 transition-colors tooltip disabled:opacity-50 disabled:cursor-not-allowed"
                                     title="Rejeter"
                                   >
-                                    <XCircle className="w-5 h-5" />
+                                    {processingIds.has(enrollment._id) ? (
+                                      <Loader2 className="w-5 h-5 animate-spin" />
+                                    ) : (
+                                      <XCircle className="w-5 h-5" />
+                                    )}
                                   </button>
                                 </>
                               )}
                               <button
                                 onClick={() => handleDeleteEnrollment(enrollment._id)}
-                                className="p-2 bg-gray-50 text-gray-500 rounded-lg hover:bg-gray-100 transition-colors tooltip"
+                                disabled={processingIds.has(enrollment._id)}
+                                className="p-2 bg-gray-50 text-gray-500 rounded-lg hover:bg-gray-100 transition-colors tooltip disabled:opacity-50 disabled:cursor-not-allowed"
                                 title="Supprimer"
                               >
-                                <Trash2 className="w-5 h-5" />
+                                {processingIds.has(enrollment._id) ? (
+                                  <Loader2 className="w-5 h-5 animate-spin" />
+                                ) : (
+                                  <Trash2 className="w-5 h-5" />
+                                )}
                               </button>
                             </div>
                           </div>
@@ -951,14 +998,22 @@ const AdminDashboard = () => {
                                 <div className="flex gap-2 mt-3">
                                   <button
                                     onClick={() => handleRegistrationAction(form._id, reg._id, 'approve')}
-                                    className="flex-1 py-1.5 bg-green-500 text-white text-xs font-medium rounded-lg hover:bg-green-600 transition-colors"
+                                    disabled={processingIds.has(reg._id)}
+                                    className="flex-1 py-1.5 bg-green-500 text-white text-xs font-medium rounded-lg hover:bg-green-600 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center"
                                   >
+                                    {processingIds.has(reg._id) ? (
+                                      <Loader2 className="w-3 h-3 animate-spin mr-1" />
+                                    ) : null}
                                     Valider
                                   </button>
                                   <button
                                     onClick={() => handleRegistrationAction(form._id, reg._id, 'reject')}
-                                    className="flex-1 py-1.5 bg-white border border-gray-200 text-gray-600 text-xs font-medium rounded-lg hover:bg-gray-50 hover:text-red-500 transition-colors"
+                                    disabled={processingIds.has(reg._id)}
+                                    className="flex-1 py-1.5 bg-white border border-gray-200 text-gray-600 text-xs font-medium rounded-lg hover:bg-gray-50 hover:text-red-500 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center"
                                   >
+                                    {processingIds.has(reg._id) ? (
+                                      <Loader2 className="w-3 h-3 animate-spin mr-1" />
+                                    ) : null}
                                     Refuser
                                   </button>
                                 </div>
@@ -1101,9 +1156,15 @@ const AdminDashboard = () => {
                         </button>
                         <button
                           onClick={() => event._id && handleDeleteEvent(event._id)}
-                          className="flex-1 flex items-center justify-center gap-2 py-2.5 bg-red-50 text-red-600 rounded-xl hover:bg-red-100 transition-colors font-medium text-sm"
+                          disabled={event._id ? processingIds.has(event._id) : false}
+                          className="flex-1 flex items-center justify-center gap-2 py-2.5 bg-red-50 text-red-600 rounded-xl hover:bg-red-100 transition-colors font-medium text-sm disabled:opacity-50 disabled:cursor-not-allowed"
                         >
-                          <Trash2 className="w-4 h-4" /> Supprimer
+                          {event._id && processingIds.has(event._id) ? (
+                            <Loader2 className="w-4 h-4 animate-spin" />
+                          ) : (
+                            <Trash2 className="w-4 h-4" />
+                          )}
+                          Supprimer
                         </button>
                       </div>
                     </div>
@@ -1285,10 +1346,15 @@ const AdminDashboard = () => {
                               </button>
                               <button
                                 onClick={() => handleDeleteProduct(product._id)}
-                                className="p-2 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-all"
+                                disabled={processingIds.has(product._id)}
+                                className="p-2 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-all disabled:opacity-50 disabled:cursor-not-allowed"
                                 title="Supprimer"
                               >
-                                <Trash2 className="w-4 h-4" />
+                                {processingIds.has(product._id) ? (
+                                  <Loader2 className="w-4 h-4 animate-spin" />
+                                ) : (
+                                  <Trash2 className="w-4 h-4" />
+                                )}
                               </button>
                             </div>
                           </td>
@@ -1459,10 +1525,15 @@ const AdminDashboard = () => {
                               </button>
                               <button
                                 onClick={() => handleDeleteBlog(blog._id)}
-                                className="p-2 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-all"
+                                disabled={processingIds.has(blog._id)}
+                                className="p-2 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-all disabled:opacity-50 disabled:cursor-not-allowed"
                                 title="Supprimer"
                               >
-                                <Trash2 className="w-4 h-4" />
+                                {processingIds.has(blog._id) ? (
+                                  <Loader2 className="w-4 h-4 animate-spin" />
+                                ) : (
+                                  <Trash2 className="w-4 h-4" />
+                                )}
                               </button>
                             </div>
                           </td>

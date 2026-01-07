@@ -1,6 +1,6 @@
 import { motion } from 'framer-motion';
 
-import { BookOpen, Users, FileText, Calendar, MapPin, ExternalLink } from 'lucide-react';
+import { BookOpen, Users, FileText, Calendar, MapPin, ExternalLink, ChevronLeft, ChevronRight } from 'lucide-react';
 import ActivityCard from '../components/ActivityCard';
 import { useEffect, useState } from 'react';
 import { useAuth } from '../context/AuthContext';
@@ -16,6 +16,8 @@ const Activities = () => {
   const [loading, setLoading] = useState(true);
   const [registeredFormationIds, setRegisteredFormationIds] = useState<Set<string>>(new Set());
   const [approvedFormationIds, setApprovedFormationIds] = useState<Set<string>>(new Set());
+  const [formationsCurrentPage, setFormationsCurrentPage] = useState(1);
+  const [formationsPerPage] = useState(3); // Most likely 3 or 4 for activities
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -142,44 +144,89 @@ const Activities = () => {
           ) : formations.length === 0 ? (
             <p className="text-white/80">Aucune formation prévue pour le moment.</p>
           ) : (
-            <div className="space-y-4">
-              {formations.map(formation => (
-                <div key={formation._id} className="bg-white/20 backdrop-blur-sm p-4 rounded-xl">
-                  <h4 className="font-bold text-lg">{formation.title}</h4>
-                  <div className="flex flex-wrap gap-3 text-sm mt-2">
-                    <span className="flex items-center gap-1">
-                      <Calendar size={14} /> {new Date(formation.date).toLocaleDateString('fr-FR')}
-                    </span>
-                    <span className="flex items-center gap-1">
-                      <MapPin size={14} /> {formation.location}
-                    </span>
-                  </div>
-                  <div className="mt-3 flex items-center justify-between">
-                    <span className="text-sm">
-                      Places restantes : {formation.maxSeats - formation.enrolledUsers.length}
-                    </span>
-                    {user?.role !== 'admin' && (
-                      <>
-                        {registeredFormationIds.has(formation._id) ? (
-                          <button
-                            disabled
-                            className="px-6 py-3 bg-gray-300 text-gray-600 font-bold rounded-full cursor-not-allowed"
-                          >
-                            {approvedFormationIds.has(formation._id) ? 'Déjà inscrit (Validé)' : 'Déjà inscrit'}
-                          </button>
-                        ) : (
-                          <button
-                            onClick={() => handleRegister(formation._id)}
-                            className="px-6 py-3 bg-white text-green-600 font-bold rounded-full hover:bg-green-50 transition shadow-md"
-                          >
-                            S’inscrire
-                          </button>
+            <div className="space-y-6">
+              <div className="space-y-4">
+                {formations
+                  .slice((formationsCurrentPage - 1) * formationsPerPage, formationsCurrentPage * formationsPerPage)
+                  .map(formation => (
+                    <div key={formation._id} className="bg-white/20 backdrop-blur-sm p-4 rounded-xl border border-white/10 hover:bg-white/30 transition-all duration-300">
+                      <h4 className="font-bold text-lg">{formation.title}</h4>
+                      <div className="flex flex-wrap gap-3 text-sm mt-2 text-white/90">
+                        <span className="flex items-center gap-1">
+                          <Calendar size={14} /> {new Date(formation.date).toLocaleDateString('fr-FR')}
+                        </span>
+                        <span className="flex items-center gap-1">
+                          <MapPin size={14} /> {formation.location}
+                        </span>
+                      </div>
+                      <div className="mt-3 flex items-center justify-between">
+                        <span className="text-sm text-white/80">
+                          Places restantes : {formation.maxSeats - formation.enrolledUsers.length}
+                        </span>
+                        {user?.role !== 'admin' && (
+                          <>
+                            {registeredFormationIds.has(formation._id) ? (
+                              <button
+                                disabled
+                                className="px-6 py-2 bg-white/20 text-white/60 font-bold rounded-full cursor-not-allowed border border-white/20"
+                              >
+                                {approvedFormationIds.has(formation._id) ? 'Inscrit (Validé)' : 'Déjà inscrit'}
+                              </button>
+                            ) : (
+                              <button
+                                onClick={() => handleRegister(formation._id)}
+                                className="px-6 py-2 bg-white text-green-600 font-bold rounded-full hover:bg-green-50 transition shadow-md hover:scale-105"
+                              >
+                                S’inscrire
+                              </button>
+                            )}
+                          </>
                         )}
-                      </>
-                    )}
-                  </div>
+                      </div>
+                    </div>
+                  ))}
+              </div>
+
+              {/* Pagination UI */}
+              {formations.length > formationsPerPage && (
+                <div className="pt-4 flex flex-col sm:flex-row items-center justify-between gap-4 border-t border-white/10">
+                  <span className="text-sm text-white/70">
+                    Page <span className="font-bold text-white">{formationsCurrentPage}</span> sur {Math.ceil(formations.length / formationsPerPage)}
+                  </span>
+                  <nav className="flex items-center space-x-1">
+                    <button
+                      onClick={() => setFormationsCurrentPage(formationsCurrentPage - 1)}
+                      disabled={formationsCurrentPage === 1}
+                      className="p-2 rounded-lg bg-white/10 text-white hover:bg-white/20 disabled:opacity-30 disabled:cursor-not-allowed transition-all"
+                    >
+                      <ChevronLeft className="w-4 h-4" />
+                    </button>
+
+                    <div className="flex items-center space-x-1 px-1">
+                      {Array.from({ length: Math.ceil(formations.length / formationsPerPage) }, (_, i) => i + 1).map((pageNum) => (
+                        <button
+                          key={pageNum}
+                          onClick={() => setFormationsCurrentPage(pageNum)}
+                          className={`w-8 h-8 flex items-center justify-center rounded-lg text-xs font-bold transition-all ${formationsCurrentPage === pageNum
+                            ? 'bg-white text-green-600 shadow-lg'
+                            : 'bg-white/10 text-white hover:bg-white/20'
+                            }`}
+                        >
+                          {pageNum}
+                        </button>
+                      ))}
+                    </div>
+
+                    <button
+                      onClick={() => setFormationsCurrentPage(formationsCurrentPage + 1)}
+                      disabled={formationsCurrentPage === Math.ceil(formations.length / formationsPerPage)}
+                      className="p-2 rounded-lg bg-white/10 text-white hover:bg-white/20 disabled:opacity-30 disabled:cursor-not-allowed transition-all"
+                    >
+                      <ChevronRight className="w-4 h-4" />
+                    </button>
+                  </nav>
                 </div>
-              ))}
+              )}
             </div>
           )}
         </ActivityCard>

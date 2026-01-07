@@ -4,7 +4,7 @@ import { useAuth } from '../context/AuthContext';
 import { enrollmentsAPI, formationsAPI } from '../services/api';
 import {
   Building2, Clock, CheckCircle, XCircle, AlertCircle,
-  User as UserIcon, TrendingUp, Calendar, MapPin, ArrowRight, Tag
+  User as UserIcon, TrendingUp, Calendar, MapPin, ArrowRight, Tag, Loader2, ChevronLeft, ChevronRight
 } from 'lucide-react';
 import Swal from 'sweetalert2';
 
@@ -20,6 +20,9 @@ const Dashboard = () => {
   const [myFormations, setMyFormations] = useState<Formation[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState('');
+  const [myFormationsCurrentPage, setMyFormationsCurrentPage] = useState(1);
+  const [myFormationsPerPage] = useState(5);
+  const [registeringId, setRegisteringId] = useState<string | null>(null);
 
   const getStatusIcon = (status: string) => {
     switch (status) {
@@ -108,6 +111,7 @@ const Dashboard = () => {
 
   const handleRegister = async (formationId: string) => {
     try {
+      setRegisteringId(formationId);
       await formationsAPI.register(formationId);
 
       const res = await formationsAPI.getAll();
@@ -123,6 +127,8 @@ const Dashboard = () => {
       Swal.fire('Succès', 'Inscription envoyée !', 'success');
     } catch (err: any) {
       Swal.fire('Erreur', err.response?.data?.message || 'Échec', 'error');
+    } finally {
+      setRegisteringId(null);
     }
   };
   // Skeleton Loader Component
@@ -303,32 +309,82 @@ const Dashboard = () => {
                 </div>
 
                 {myFormations.length > 0 ? (
-                  <div className="grid gap-4">
-                    {myFormations.map(f => {
-                      const myReg = f.registrations?.find(r => String(r.userId) === String(user?.id || user?._id));
-                      return (
-                        <div key={f._id} className="bg-white rounded-2xl p-5 border border-gray-100 shadow-sm hover:shadow-md transition-all flex items-center justify-between group">
-                          <div className="flex gap-4 items-center">
-                            <div className="w-12 h-12 bg-blue-50 text-blue-600 rounded-xl flex items-center justify-center font-bold text-lg group-hover:bg-blue-100 transition-colors">
-                              {new Date(f.date).getDate()}
-                            </div>
-                            <div>
-                              <h3 className="font-bold text-gray-900 group-hover:text-green-700 transition-colors">{f.title}</h3>
-                              <div className="flex items-center gap-3 text-sm text-gray-500 mt-1">
-                                <span className="flex items-center gap-1"><Calendar size={14} /> {new Date(f.date).toLocaleDateString('fr-FR', { month: 'long', year: 'numeric' })}</span>
-                                <span className="w-1 h-1 bg-gray-300 rounded-full" />
-                                <span className="flex items-center gap-1"><MapPin size={14} /> {f.location}</span>
+                  <div className="space-y-4">
+                    <div className="grid gap-4">
+                      {myFormations
+                        .slice((myFormationsCurrentPage - 1) * myFormationsPerPage, myFormationsCurrentPage * myFormationsPerPage)
+                        .map(f => {
+                          const myReg = f.registrations?.find(r => String(r.userId) === String(user?.id || user?._id));
+                          return (
+                            <motion.div
+                              key={f._id}
+                              initial={{ opacity: 0, x: -10 }}
+                              animate={{ opacity: 1, x: 0 }}
+                              className="bg-white rounded-2xl p-5 border border-gray-100 shadow-sm hover:shadow-md transition-all flex items-center justify-between group"
+                            >
+                              <div className="flex gap-4 items-center">
+                                <div className="w-12 h-12 bg-blue-50 text-blue-600 rounded-xl flex items-center justify-center font-bold text-lg group-hover:bg-blue-100 transition-colors">
+                                  {new Date(f.date).getDate()}
+                                </div>
+                                <div>
+                                  <h3 className="font-bold text-gray-900 group-hover:text-green-700 transition-colors">{f.title}</h3>
+                                  <div className="flex items-center gap-3 text-sm text-gray-500 mt-1">
+                                    <span className="flex items-center gap-1"><Calendar size={14} /> {new Date(f.date).toLocaleDateString('fr-FR', { month: 'long', year: 'numeric' })}</span>
+                                    <span className="w-1 h-1 bg-gray-300 rounded-full" />
+                                    <span className="flex items-center gap-1"><MapPin size={14} /> {f.location}</span>
+                                  </div>
+                                </div>
                               </div>
-                            </div>
+                              {myReg && (
+                                <span className={`px-3 py-1 rounded-full text-xs font-semibold ${getStatusColor(myReg.status)}`}>
+                                  {getStatusText(myReg.status)}
+                                </span>
+                              )}
+                            </motion.div>
+                          );
+                        })}
+                    </div>
+
+                    {/* Pagination for myFormations */}
+                    {myFormations.length > myFormationsPerPage && (
+                      <div className="flex items-center justify-between pt-4">
+                        <p className="text-sm text-gray-500">
+                          Affichage de <span className="font-semibold text-gray-900">{Math.min((myFormationsCurrentPage - 1) * myFormationsPerPage + 1, myFormations.length)}</span> à <span className="font-semibold text-gray-900">{Math.min(myFormationsCurrentPage * myFormationsPerPage, myFormations.length)}</span> sur <span className="font-semibold text-gray-900">{myFormations.length}</span>
+                        </p>
+                        <nav className="flex items-center space-x-1">
+                          <button
+                            onClick={() => setMyFormationsCurrentPage(myFormationsCurrentPage - 1)}
+                            disabled={myFormationsCurrentPage === 1}
+                            className="p-2 rounded-lg border border-gray-200 bg-white text-gray-500 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed shadow-sm transition-all"
+                          >
+                            <ChevronLeft className="w-4 h-4" />
+                          </button>
+
+                          <div className="flex items-center space-x-1 px-1">
+                            {Array.from({ length: Math.ceil(myFormations.length / myFormationsPerPage) }, (_, i) => i + 1).map((pageNum) => (
+                              <button
+                                key={pageNum}
+                                onClick={() => setMyFormationsCurrentPage(pageNum)}
+                                className={`w-8 h-8 flex items-center justify-center rounded-lg text-sm font-medium transition-all ${myFormationsCurrentPage === pageNum
+                                  ? 'bg-green-600 text-white shadow-md shadow-green-200'
+                                  : 'bg-white text-gray-600 border border-gray-200 hover:bg-gray-50'
+                                  }`}
+                              >
+                                {pageNum}
+                              </button>
+                            ))}
                           </div>
-                          {myReg && (
-                            <span className={`px-3 py-1 rounded-full text-xs font-semibold ${getStatusColor(myReg.status)}`}>
-                              {getStatusText(myReg.status)}
-                            </span>
-                          )}
-                        </div>
-                      );
-                    })}
+
+                          <button
+                            onClick={() => setMyFormationsCurrentPage(myFormationsCurrentPage + 1)}
+                            disabled={myFormationsCurrentPage === Math.ceil(myFormations.length / myFormationsPerPage)}
+                            className="p-2 rounded-lg border border-gray-200 bg-white text-gray-500 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed shadow-sm transition-all"
+                          >
+                            <ChevronRight className="w-4 h-4" />
+                          </button>
+                        </nav>
+                      </div>
+                    )}
                   </div>
                 ) : (
                   <div className="bg-white rounded-2xl p-8 text-center border border-dashed border-gray-200">
@@ -369,8 +425,12 @@ const Dashboard = () => {
                           </div>
                           <button
                             onClick={() => handleRegister(f._id)}
-                            className="text-xs font-semibold bg-gray-900 text-white px-3 py-1.5 rounded-lg hover:bg-gray-800 transition-colors"
+                            disabled={registeringId === f._id}
+                            className="text-xs font-semibold bg-gray-900 text-white px-3 py-1.5 rounded-lg hover:bg-gray-800 transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-1.5"
                           >
+                            {registeringId === f._id ? (
+                              <Loader2 className="w-3 h-3 animate-spin" />
+                            ) : null}
                             S'inscrire
                           </button>
                         </div>
