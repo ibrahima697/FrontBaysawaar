@@ -1,4 +1,4 @@
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 import { Link, useNavigate } from 'react-router-dom';
 import { Globe, ShoppingCart, BookOpen, Facebook, Instagram, Linkedin, ExternalLink, Users, TrendingUp, Shield, Zap, Youtube, X } from 'lucide-react';
 import { useState } from 'react';
@@ -352,6 +352,89 @@ const Platforms = () => {
           </div>
         </div>
       </section>
+      {/* Coming Soon Modal */}
+      <AnimatePresence>
+        {showComingSoon && (
+          <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              onClick={() => setShowComingSoon(false)}
+              className="absolute inset-0 bg-black/60 backdrop-blur-sm"
+            />
+            <motion.div
+              initial={{ scale: 0.9, opacity: 0, y: 20 }}
+              animate={{ scale: 1, opacity: 1, y: 0 }}
+              exit={{ scale: 0.9, opacity: 0, y: 20 }}
+              className="relative bg-white rounded-[2.5rem] shadow-2xl overflow-hidden max-w-lg w-full p-8 md:p-12 text-center"
+            >
+              <button
+                onClick={() => setShowComingSoon(false)}
+                className="absolute top-6 right-6 p-2 rounded-full hover:bg-gray-100 transition-colors text-gray-400 hover:text-gray-900"
+              >
+                <X size={24} />
+              </button>
+
+              <div className="mb-8">
+                <div className="w-24 h-24 bg-blue-100 rounded-3xl flex items-center justify-center mx-auto mb-6 relative">
+                  <motion.div
+                    animate={{
+                      scale: [1, 1.1, 1],
+                      rotate: [0, 5, -5, 0]
+                    }}
+                    transition={{
+                      duration: 4,
+                      repeat: Infinity,
+                      ease: "easeInOut"
+                    }}
+                  >
+                    <ShoppingCart size={48} className="text-blue-600" />
+                  </motion.div>
+                  <motion.div
+                    animate={{ scale: [1, 1.2, 1], opacity: [0.5, 1, 0.5] }}
+                    transition={{ duration: 2, repeat: Infinity }}
+                    className="absolute -top-2 -right-2 w-8 h-8 bg-green-500 rounded-full flex items-center justify-center border-4 border-white"
+                  >
+                    <Zap size={14} className="text-white fill-current" />
+                  </motion.div>
+                </div>
+                <h2 className="text-3xl font-extrabold text-gray-900 mb-4 italic">
+                  Bientôt <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-cyan-500">Disponible</span>
+                </h2>
+                <p className="text-gray-600 text-lg leading-relaxed">
+                  Notre équipe travaille d'arrache-pied pour vous offrir la meilleure expérience e-commerce en Afrique.
+                  Soyez les premiers à être informés du lancement !
+                </p>
+              </div>
+
+              <div className="space-y-4">
+                <button
+                  onClick={() => setShowComingSoon(false)}
+                  className="w-full bg-blue-600 text-white py-4 rounded-2xl font-bold hover:bg-blue-700 transition-all shadow-lg shadow-blue-200 hover:shadow-blue-300 transform hover:-translate-y-1 active:translate-y-0"
+                >
+                  D'accord, j'attendrais !
+                </button>
+                <Link
+                  to="/enrollments"
+                  className="block text-blue-600 font-semibold hover:underline"
+                  onClick={() => setShowComingSoon(false)}
+                >
+                  S'inscrire pour les mises à jour
+                </Link>
+              </div>
+
+              <div className="mt-8 pt-8 border-t border-gray-100 grid grid-cols-3 gap-4">
+                {['Paiement Sécurisé', 'Support 24/7', 'Livraison Rapide'].map((text, i) => (
+                  <div key={i} className="text-center">
+                    <div className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">{text}</div>
+                  </div>
+                ))}
+              </div>
+            </motion.div>
+          </div>
+        )}
+      </AnimatePresence>
     </motion.div>
   );
 };

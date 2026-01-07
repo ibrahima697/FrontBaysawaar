@@ -1,7 +1,7 @@
 // ...existing code...
 import React, { useState, useEffect } from 'react';
-import { motion } from 'framer-motion';
-import { Loader2 } from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { Loader2, User, Mail, Phone, MapPin, Globe, Building2, CheckCircle, Info, ArrowRight, ShieldCheck, HeartPulse, GraduationCap, Briefcase } from 'lucide-react';
 import { enrollmentsAPI } from '../services/api';
 import Swal from 'sweetalert2';
 import ImageUpload from '../components/ImageUpload';
@@ -170,153 +170,277 @@ const Enrollments: React.FC = () => {
   };
 
   return (
-    <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="min-h-screen bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
-      <div className="max-w-7xl mx-auto bg-white rounded-3xl shadow-xl overflow-hidden">
-        <div className="bg-green-600 py-8 px-8 text-center">
-          <h1 className="text-3xl md:text-4xl font-bold text-white mb-2">{getTitle()}</h1>
-          <p className="text-green-100 text-lg max-w-2xl mx-auto">{getDescription()}</p>
+    <motion.div
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      className="min-h-screen bg-gray-50"
+    >
+      {/* Hero Section */}
+      <section className="relative h-[300px] md:h-[400px] bg-cover bg-center bg-no-repeat bg-fixed" style={{ backgroundImage: 'url(https://res.cloudinary.com/drxouwbms/image/upload/v1755949759/Screenshot_2025-08-23_at_11_41_05_1_-Picsart-AiImageEnhancer_kfsp1y.png)' }}>
+        <div className="absolute inset-0 bg-gradient-to-b from-black/80 to-black/40 backdrop-blur-[2px]"></div>
+        <div className="absolute inset-0 flex items-center justify-center">
+          <div className="text-center px-4 max-w-4xl mx-auto">
+            <motion.h1
+              initial={{ y: 30, opacity: 0 }}
+              animate={{ y: 0, opacity: 1 }}
+              transition={{ duration: 0.8 }}
+              className="text-3xl md:text-5xl lg:text-6xl font-extrabold text-white mb-4 leading-tight "
+            >
+              {formType === 'women_empowerment' ? (
+                <>Autonomisation des <span className="text-transparent bg-clip-text bg-gradient-to-r from-pink-400 to-purple-400">Femmes</span></>
+              ) : formType === 'formalization' ? (
+                <>Accompagnement <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-cyan-400">Formalisation</span></>
+              ) : (
+                <>Rejoignez <span className="text-transparent bg-clip-text bg-gradient-to-r from-green-400 to-blue-400">BAY SA WAAR</span></>
+              )}
+            </motion.h1>
+            <motion.p
+              initial={{ y: 30, opacity: 0 }}
+              animate={{ y: 0, opacity: 1 }}
+              transition={{ duration: 0.8, delay: 0.2 }}
+              className="text-base md:text-lg text-gray-200 font-light max-w-2xl mx-auto"
+            >
+              {getDescription()}
+            </motion.p>
+          </div>
         </div>
+      </section>
 
-        <div className="p-8 md:p-12">
-          {submitStatus && (
-            <div className={`p-4 rounded-xl mb-8 ${submitStatus === 'success' ? 'bg-green-50 text-green-800 border border-green-200' : 'bg-red-50 text-red-800 border border-red-200'
-              }`}>
-              {submitMessage}
-            </div>
-          )}
+      {/* Main Content */}
+      <section className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 -mt-16 md:-mt-24 relative z-10 pb-20">
+        <motion.div
+          initial={{ y: 40, opacity: 0 }}
+          animate={{ y: 0, opacity: 1 }}
+          transition={{ duration: 0.6, delay: 0.3 }}
+          className="bg-white rounded-[2.5rem] shadow-2xl shadow-gray-200/50 overflow-hidden border border-gray-100"
+        >
+          <div className="p-6 md:p-12">
+            <AnimatePresence mode="wait">
+              {submitStatus && (
+                <motion.div
+                  initial={{ opacity: 0, height: 0 }}
+                  animate={{ opacity: 1, height: 'auto' }}
+                  exit={{ opacity: 0, height: 0 }}
+                  className={`p-5 rounded-2xl mb-10 flex items-center gap-4 ${submitStatus === 'success' ? 'bg-green-50 text-green-800 border border-green-100' : 'bg-red-50 text-red-800 border border-red-100'
+                    }`}
+                >
+                  {submitStatus === 'success' ? <CheckCircle size={24} className="flex-shrink-0" /> : <Info size={24} className="flex-shrink-0" />}
+                  <p className="font-semibold">{submitMessage}</p>
+                </motion.div>
+              )}
+            </AnimatePresence>
 
-          <form onSubmit={handleSubmit} className="space-y-8">
-            {/* Common Fields - Horizontal Layout */}
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-              <div>
-                <label className={labelBase}>Prénom *</label>
-                <input name="firstName" value={formData.firstName} onChange={handleInputChange} className={inputBase} placeholder="Votre prénom" required />
+            <form onSubmit={handleSubmit} className="space-y-10">
+              {/* Sections Header */}
+              <div className="flex items-center gap-4 mb-2">
+                <div className="w-10 h-10 bg-green-100 rounded-xl flex items-center justify-center text-green-600">
+                  <User size={20} />
+                </div>
+                <h2 className="text-xl font-bold text-gray-900">Informations Personnelles</h2>
               </div>
-              <div>
-                <label className={labelBase}>Nom *</label>
-                <input name="lastName" value={formData.lastName} onChange={handleInputChange} className={inputBase} placeholder="Votre nom" required />
-              </div>
-              <div>
-                <label className={labelBase}>Email *</label>
-                <input name="email" type="email" value={formData.email} onChange={handleInputChange} className={inputBase} placeholder="votre@email.com" required />
-              </div>
-              <div>
-                <label className={labelBase}>Téléphone *</label>
-                <input name="phone" type="tel" value={formData.phone} onChange={handleInputChange} className={inputBase} placeholder="+221 xx xx xx xx" required />
-              </div>
-              <div>
-                <label className={labelBase}>Pays *</label>
-                <input name="country" value={formData.country} onChange={handleInputChange} className={inputBase} placeholder="Sénégal" required />
-              </div>
-              <div>
-                <label className={labelBase}>Ville *</label>
-                <input name="city" value={formData.city} onChange={handleInputChange} className={inputBase} placeholder="Dakar" required />
-              </div>
-            </div>
 
-            <hr className="border-gray-100" />
-
-            {/* Dynamic Sections based on formType */}
-            {formType === 'women_empowerment' && (
-              <div className="space-y-6">
-                <h3 className="text-xl font-bold text-gray-800">Détails du Projet</h3>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  <div>
-                    <label className={labelBase}>Nom du projet / activité</label>
-                    <input name="companyName" value={formData.companyName} onChange={handleInputChange} className={inputBase} placeholder="Nom de votre projet" />
+              {/* Personal Info Grid */}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-6">
+                <div className="space-y-2">
+                  <label className={labelBase}>Prénom *</label>
+                  <div className="relative group">
+                    <User className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 group-focus-within:text-green-500 transition-colors" size={18} />
+                    <input name="firstName" value={formData.firstName} onChange={handleInputChange} className={`${inputBase} pl-12`} placeholder="Ex: Jean" required />
                   </div>
-                  <div>
-                    <label className={labelBase}>Secteur d'activité</label>
-                    <select className={inputBase}>
-                      <option>Agriculture / Transformation</option>
-                      <option>Commerce</option>
-                      <option>Artisanat</option>
-                      <option>Services</option>
-                    </select>
+                </div>
+                <div className="space-y-2">
+                  <label className={labelBase}>Nom *</label>
+                  <div className="relative group">
+                    <User className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 group-focus-within:text-green-500 transition-colors" size={18} />
+                    <input name="lastName" value={formData.lastName} onChange={handleInputChange} className={`${inputBase} pl-12`} placeholder="Ex: Ndiaye" required />
                   </div>
-                  <div className="md:col-span-2">
-                    <label className={labelBase}>Description brève</label>
-                    <textarea className={inputBase} rows={3} placeholder="Décrivez votre activité en quelques mots..."></textarea>
+                </div>
+                <div className="space-y-2">
+                  <label className={labelBase}>Email de contact *</label>
+                  <div className="relative group">
+                    <Mail className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 group-focus-within:text-green-500 transition-colors" size={18} />
+                    <input name="email" type="email" value={formData.email} onChange={handleInputChange} className={`${inputBase} pl-12`} placeholder="votre@email.com" required />
+                  </div>
+                </div>
+                <div className="space-y-2">
+                  <label className={labelBase}>Numéro de téléphone *</label>
+                  <div className="relative group">
+                    <Phone className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 group-focus-within:text-green-500 transition-colors" size={18} />
+                    <input name="phone" type="tel" value={formData.phone} onChange={handleInputChange} className={`${inputBase} pl-12`} placeholder="+221 ..." required />
+                  </div>
+                </div>
+                <div className="space-y-2">
+                  <label className={labelBase}>Pays de résidence *</label>
+                  <div className="relative group">
+                    <Globe className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 group-focus-within:text-green-500 transition-colors" size={18} />
+                    <input name="country" value={formData.country} onChange={handleInputChange} className={`${inputBase} pl-12`} placeholder="Sénégal" required />
+                  </div>
+                </div>
+                <div className="space-y-2">
+                  <label className={labelBase}>Ville *</label>
+                  <div className="relative group">
+                    <MapPin className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 group-focus-within:text-green-500 transition-colors" size={18} />
+                    <input name="city" value={formData.city} onChange={handleInputChange} className={`${inputBase} pl-12`} placeholder="Dakar" required />
                   </div>
                 </div>
               </div>
-            )}
 
-            {formType === 'formalization' && (
-              <div className="space-y-6">
-                <h3 className="text-xl font-bold text-gray-800">Informations Entreprise</h3>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  <div>
-                    <label className={labelBase}>Nom de l'entreprise (si existant)</label>
-                    <input name="companyName" value={formData.companyName} onChange={handleInputChange} className={inputBase} placeholder="Votre entreprise" />
+              {/* Dynamic Sections */}
+              {formType === 'women_empowerment' && (
+                <motion.div
+                  initial={{ opacity: 0, x: 20 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  className="space-y-8 pt-6"
+                >
+                  <div className="flex items-center gap-4">
+                    <div className="w-10 h-10 bg-pink-100 rounded-xl flex items-center justify-center text-pink-600">
+                      <HeartPulse size={20} />
+                    </div>
+                    <h3 className="text-xl font-bold text-gray-900">Détails de votre Projet</h3>
                   </div>
-                  <div>
-                    <label className={labelBase}>Statut actuel</label>
-                    <select className={inputBase}>
-                      <option>Informel</option>
-                      <option>GIE</option>
-                      <option>Entreprise Individuelle</option>
-                      <option>SARL</option>
-                    </select>
-                  </div>
-                  <div className="md:col-span-2">
-                    <label className={labelBase}>Besoins spécifiques</label>
-                    <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mt-2">
-                      {['NINEA', 'RCCM', 'Fiscalité', 'Business Plan'].map(item => (
-                        <label key={item} className="flex items-center space-x-2">
-                          <input type="checkbox" className="h-4 w-4 text-green-600 rounded" />
-                          <span className="text-sm text-gray-700">{item}</span>
-                        </label>
-                      ))}
+
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-6">
+                    <div className="space-y-2">
+                      <label className={labelBase}>Nom du projet / activité</label>
+                      <div className="relative group">
+                        <Briefcase className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 group-focus-within:text-pink-500 transition-colors" size={18} />
+                        <input name="companyName" value={formData.companyName} onChange={handleInputChange} className={`${inputBase} pl-12`} placeholder="Nom de votre initiative" />
+                      </div>
+                    </div>
+                    <div className="space-y-2">
+                      <label className={labelBase}>Secteur d'activité</label>
+                      <select className={inputBase}>
+                        <option>Agriculture / Transformation</option>
+                        <option>Commerce</option>
+                        <option>Artisanat</option>
+                        <option>Services</option>
+                      </select>
+                    </div>
+                    <div className="md:col-span-2 space-y-2">
+                      <label className={labelBase}>Description de votre vision</label>
+                      <textarea className={`${inputBase} resize-none`} rows={4} placeholder="Parlez-nous de vos objectifs et de la manière dont nous pouvons vous aider..."></textarea>
                     </div>
                   </div>
-                </div>
-              </div>
-            )}
+                </motion.div>
+              )}
 
-            {formType === 'formation' && (
-              <div className="space-y-6">
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  <div>
-                    <label className={labelBase}>Nom de l'entreprise (optionnel)</label>
-                    <input name="companyName" value={formData.companyName} onChange={handleInputChange} className={inputBase} placeholder="Votre entreprise" />
+              {formType === 'formalization' && (
+                <motion.div
+                  initial={{ opacity: 0, x: 20 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  className="space-y-8 pt-6"
+                >
+                  <div className="flex items-center gap-4">
+                    <div className="w-10 h-10 bg-blue-100 rounded-xl flex items-center justify-center text-blue-600">
+                      <ShieldCheck size={20} />
+                    </div>
+                    <h3 className="text-xl font-bold text-gray-900">Informations Entreprise</h3>
                   </div>
-                  <div>
-                    <label className={labelBase}>Intérêts</label>
-                    <div className="grid grid-cols-2 gap-2 mt-2">
-                      {['Formations', 'Autonomisation', 'Formalisation', 'Voyages'].map(interest => (
-                        <label key={interest} className="flex items-center space-x-2">
-                          <input type="checkbox" name="interests" value={interest.toLowerCase()} checked={formData.interests.includes(interest.toLowerCase())} onChange={handleInputChange} className="h-4 w-4 text-green-600 rounded" />
-                          <span className="text-sm text-gray-700">{interest}</span>
-                        </label>
-                      ))}
+
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-6">
+                    <div className="space-y-2">
+                      <label className={labelBase}>Nom de l'entreprise (si existant)</label>
+                      <div className="relative group">
+                        <Building2 className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 group-focus-within:text-blue-500 transition-colors" size={18} />
+                        <input name="companyName" value={formData.companyName} onChange={handleInputChange} className={`${inputBase} pl-12`} placeholder="Votre structure" />
+                      </div>
+                    </div>
+                    <div className="space-y-2">
+                      <label className={labelBase}>Statut juridique actuel</label>
+                      <select className={inputBase}>
+                        <option>Informel</option>
+                        <option>GIE</option>
+                        <option>Entreprise Individuelle</option>
+                        <option>SARL</option>
+                      </select>
+                    </div>
+                    <div className="md:col-span-2 space-y-4 pt-2">
+                      <label className={labelBase}>Besoins spécifiques</label>
+                      <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                        {['NINEA', 'RCCM', 'Fiscalité', 'Business Plan'].map(item => (
+                          <label key={item} className="p-4 rounded-2xl border border-gray-100 hover:border-blue-200 hover:bg-blue-50/50 cursor-pointer transition-all flex items-center gap-3">
+                            <input type="checkbox" className="h-4 w-4 text-blue-600 rounded-lg focus:ring-blue-500" />
+                            <span className="text-sm font-medium text-gray-700">{item}</span>
+                          </label>
+                        ))}
+                      </div>
                     </div>
                   </div>
+                </motion.div>
+              )}
+
+              {formType === 'formation' && (
+                <motion.div
+                  initial={{ opacity: 0, x: 20 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  className="space-y-8 pt-6"
+                >
+                  <div className="flex items-center gap-4">
+                    <div className="w-10 h-10 bg-green-100 rounded-xl flex items-center justify-center text-green-600">
+                      <GraduationCap size={20} />
+                    </div>
+                    <h3 className="text-xl font-bold text-gray-900">Intérêts & Documents</h3>
+                  </div>
+
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-6">
+                    <div className="space-y-2">
+                      <label className={labelBase}>Nom de l'entreprise (optionnel)</label>
+                      <div className="relative group">
+                        <Building2 className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 group-focus-within:text-green-500 transition-colors" size={18} />
+                        <input name="companyName" value={formData.companyName} onChange={handleInputChange} className={`${inputBase} pl-12`} placeholder="Ex: Ma Société Sarl" />
+                      </div>
+                    </div>
+                    <div className="space-y-4">
+                      <label className={labelBase}>Domaines d'intérêt</label>
+                      <div className="grid grid-cols-2 gap-3">
+                        {['Formations', 'Autonomisation', 'Formalisation', 'Voyages'].map(interest => (
+                          <label key={interest} className="flex items-center gap-3 p-3 rounded-xl border border-gray-100 hover:border-green-200 transition-all cursor-pointer">
+                            <input type="checkbox" name="interests" value={interest.toLowerCase()} checked={formData.interests.includes(interest.toLowerCase())} onChange={handleInputChange} className="h-4 w-4 text-green-600 rounded focus:ring-green-500" />
+                            <span className="text-xs font-medium text-gray-700">{interest}</span>
+                          </label>
+                        ))}
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-8 pt-4">
+                    <div className="p-6 rounded-[2rem] bg-gray-50/50 border border-gray-200/50">
+                      <ImageUpload label="Logo entreprise" name="companyLogo" multiple={false} maxFiles={1} maxSize={5} onFilesChange={setCompanyLogoFiles} required={false} />
+                    </div>
+                    <div className="p-6 rounded-[2rem] bg-gray-50/50 border border-gray-200/50">
+                      <ImageUpload label="Documents officiels" name="businessDocuments" multiple={true} maxFiles={5} maxSize={5} onFilesChange={setBusinessDocumentsFiles} required={false} />
+                    </div>
+                  </div>
+                </motion.div>
+              )}
+
+              <div className="pt-10 border-t border-gray-100">
+                <div className="flex items-center space-x-3 mb-8">
+                  <input type="checkbox" id="terms" required className="h-5 w-5 text-green-600 rounded-lg focus:ring-green-500 transition-all cursor-pointer" />
+                  <label htmlFor="terms" className="text-sm text-gray-600">
+                    J'accepte les <a href="#" className="font-bold text-gray-900 border-b-2 border-green-200 hover:border-green-500 transition-all">conditions d'utilisation</a>
+                  </label>
                 </div>
 
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  <ImageUpload label="Logo entreprise" name="companyLogo" multiple={false} maxFiles={1} maxSize={5} onFilesChange={setCompanyLogoFiles} required={false} />
-                  <ImageUpload label="Documents (NINEA, etc.)" name="businessDocuments" multiple={true} maxFiles={5} maxSize={5} onFilesChange={setBusinessDocumentsFiles} required={false} />
+                <div className="flex flex-col items-center">
+                  <button
+                    type="submit"
+                    disabled={isSubmitting}
+                    className="w-full md:w-auto md:min-w-[350px] bg-gradient-to-r from-green-600 to-green-500 hover:from-green-700 hover:to-green-600 text-white py-5 px-10 rounded-2xl font-bold flex justify-center items-center transition-all shadow-xl shadow-green-200 hover:shadow-green-300 transform hover:-translate-y-1 active:translate-y-0 disabled:opacity-70 disabled:filter-none"
+                  >
+                    {isSubmitting ? <Loader2 className="animate-spin mr-3" size={24} /> : <ArrowRight className="mr-3" size={24} />}
+                    {isSubmitting ? 'Soumission...' : 'Finaliser mon inscription'}
+                  </button>
+                  <p className="mt-4 text-sm text-gray-400 flex items-center gap-2">
+                    <ShieldCheck size={14} /> Vos données sont protégées
+                  </p>
                 </div>
               </div>
-            )}
-
-            <div className="pt-6 border-t border-gray-100">
-              <div className="flex items-center space-x-2 mb-6">
-                <input type="checkbox" id="terms" required className="h-4 w-4 text-green-600 rounded" />
-                <label htmlFor="terms" className="text-sm text-gray-700">
-                  J'accepte les <a href="#" className="text-green-600 font-medium hover:underline">conditions</a> et la <a href="#" className="text-green-600 font-medium hover:underline">politique de confidentialité</a>
-                </label>
-              </div>
-
-              <button type="submit" disabled={isSubmitting} className="w-full md:w-auto md:min-w-[300px] bg-green-600 text-white py-4 px-8 rounded-xl font-bold hover:bg-green-700 disabled:bg-gray-400 flex justify-center items-center transition-all shadow-lg hover:shadow-xl mx-auto block">
-                {isSubmitting ? <Loader2 className="animate-spin mr-2" size={20} /> : null}
-                {isSubmitting ? 'Traitement en cours...' : 'Envoyer ma demande'}
-              </button>
-            </div>
-          </form>
-        </div>
-      </div>
+            </form>
+          </div>
+        </motion.div>
+      </section>
     </motion.div>
   );
 };
