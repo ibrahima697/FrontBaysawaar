@@ -1,7 +1,11 @@
 // src/pages/Events.tsx
 import { useEffect, useState } from 'react';
-import { motion, Variants } from 'framer-motion';
-import { Calendar, MapPin, Users, ArrowRight, TrendingUp, Globe, Award, CheckCircle, Play } from 'lucide-react';
+import { motion, Variants, AnimatePresence } from 'framer-motion';
+import {
+  Calendar, MapPin, Users, ArrowRight, TrendingUp, Globe,
+  Award, CheckCircle, Play, X, ChevronLeft, ChevronRight,
+  Info, Clock, DollarSign
+} from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import Swal from 'sweetalert2';
 import { eventsAPI } from '../services/api';
@@ -26,6 +30,9 @@ interface Event {
 const Events = () => {
   const [events, setEvents] = useState<Event[]>([]);
   const [loading, setLoading] = useState(true);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [eventsPerPage] = useState(6);
+  const [selectedEvent, setSelectedEvent] = useState<Event | null>(null);
   const { user } = useAuth();
 
   useEffect(() => {
@@ -78,7 +85,14 @@ const Events = () => {
       await eventsAPI.register(slug);
 
       const { data } = await eventsAPI.getAll();
-      setEvents(data.events);
+      const updatedEvents = data.events;
+      setEvents(updatedEvents);
+
+      // Mettre à jour l'événement sélectionné pour refléter le nouveau statut dans la modale
+      if (selectedEvent) {
+        const updatedSelected = updatedEvents.find((e: Event) => e.slug === selectedEvent.slug);
+        if (updatedSelected) setSelectedEvent(updatedSelected);
+      }
 
       Swal.fire({
         icon: 'success',
@@ -245,7 +259,7 @@ const Events = () => {
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {events.map((event, idx) => (
+            {events.slice((currentPage - 1) * eventsPerPage, currentPage * eventsPerPage).map((event, idx) => (
               <motion.div
                 key={event._id}
                 initial={{ opacity: 0, y: 20 }}
@@ -291,30 +305,54 @@ const Events = () => {
                         <MapPin size={14} className="text-green-500" /> {event.location}
                       </div>
 
-                      {user && event.registrations.some(reg => {
-                        if (!reg.user) return false;
-                        const registeredUserId = typeof reg.user === 'string'
-                          ? reg.user
-                          : reg.user._id?.toString() || reg.user.toString();
-                        return registeredUserId === user._id;
-                      }) ? (
-                        <span className="text-green-500 font-bold flex items-center gap-2 text-sm">
-                          <CheckCircle size={16} /> Inscrit
-                        </span>
-                      ) : (
-                        <button
-                          onClick={() => handleRegister(event.slug)}
-                          className="w-10 h-10 rounded-full bg-white text-black flex items-center justify-center hover:bg-green-500 hover:text-white transition-all transform group-hover:scale-110"
-                        >
-                          <ArrowRight size={18} />
-                        </button>
-                      )}
+                      <button
+                        onClick={() => setSelectedEvent(event)}
+                        className="px-6 py-2 rounded-full border border-white/20 text-white text-sm font-bold uppercase tracking-wider hover:bg-white hover:text-black transition-all transform group-hover:scale-105"
+                      >
+                        Ouvrir
+                      </button>
                     </div>
                   </div>
                 </div>
               </motion.div>
             ))}
           </div>
+
+          {/* Pagination Controls */}
+          {events.length > eventsPerPage && (
+            <div className="flex justify-center items-center mt-16 gap-4">
+              <button
+                onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
+                disabled={currentPage === 1}
+                className="p-3 rounded-full border border-white/10 text-white disabled:opacity-30 hover:bg-white/5 transition-all"
+              >
+                <ChevronLeft size={24} />
+              </button>
+
+              <div className="flex gap-2">
+                {Array.from({ length: Math.ceil(events.length / eventsPerPage) }, (_, i) => i + 1).map((page) => (
+                  <button
+                    key={page}
+                    onClick={() => setCurrentPage(page)}
+                    className={`w-12 h-12 rounded-full border transition-all font-bold ${currentPage === page
+                      ? 'bg-green-500 border-green-500 text-white'
+                      : 'border-white/10 text-gray-500 hover:border-white/30 hover:text-white'
+                      }`}
+                  >
+                    {page}
+                  </button>
+                ))}
+              </div>
+
+              <button
+                onClick={() => setCurrentPage(prev => Math.min(prev + 1, Math.ceil(events.length / eventsPerPage)))}
+                disabled={currentPage === Math.ceil(events.length / eventsPerPage)}
+                className="p-3 rounded-full border border-white/10 text-white disabled:opacity-30 hover:bg-white/5 transition-all"
+              >
+                <ChevronRight size={24} />
+              </button>
+            </div>
+          )}
         </div>
       </section>
 
@@ -543,6 +581,128 @@ const Events = () => {
           </form>
         </div>
       </section>
+
+      {/* Event Details Modal */}
+      <AnimatePresence>
+        {selectedEvent && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-[100] flex items-center justify-center px-4 backdrop-blur-md bg-black/80"
+            onClick={() => setSelectedEvent(null)}
+          >
+            <motion.div
+              initial={{ scale: 0.9, opacity: 0, y: 20 }}
+              animate={{ scale: 1, opacity: 1, y: 0 }}
+              exit={{ scale: 0.9, opacity: 0, y: 20 }}
+              className="bg-[#101010] w-full max-w-4xl max-h-[90vh] overflow-y-auto rounded-3xl border border-white/10 shadow-2xl relative scrollbar-hide"
+              onClick={e => e.stopPropagation()}
+            >
+              <button
+                onClick={() => setSelectedEvent(null)}
+                className="absolute top-6 right-6 z-50 p-2 bg-black/50 text-white rounded-full hover:bg-white hover:text-black transition-all"
+              >
+                <X size={24} />
+              </button>
+
+              <div className="flex flex-col md:flex-row">
+                <div className="md:w-1/2 h-[300px] md:h-auto relative">
+                  <img
+                    src={selectedEvent.images?.[0]?.url || "https://images.unsplash.com/photo-1540575467063-178a50c2df87?q=80&w=800&auto=format&fit=crop"}
+                    alt={selectedEvent.title}
+                    className="w-full h-full object-cover"
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-[#101010] to-transparent md:hidden" />
+                  <div className="absolute inset-y-0 right-0 w-32 bg-gradient-to-l from-[#101010] to-transparent hidden md:block" />
+                </div>
+
+                <div className="md:w-1/2 p-8 md:p-12">
+                  <div className="flex items-center gap-2 text-green-500 font-bold uppercase tracking-widest text-xs mb-4">
+                    <span className="h-[1px] w-8 bg-green-500"></span>
+                    {selectedEvent?.type.replace('_', ' ')}
+                  </div>
+
+                  <h2 className="text-4xl font-black text-white mb-6 tracking-tight leading-tight uppercase">
+                    {selectedEvent?.title}
+                  </h2>
+
+                  <div className="space-y-6 mb-10">
+                    <div className="flex items-start gap-4 text-gray-400">
+                      <div className="bg-white/5 p-3 rounded-xl border border-white/5">
+                        <Calendar className="text-green-500" size={20} />
+                      </div>
+                      <div>
+                        <p className="text-white font-bold text-sm uppercase tracking-wider">Date & Heure</p>
+                        <p className="text-sm font-light mt-1 text-gray-400">
+                          Du {selectedEvent && new Date(selectedEvent.dateStart).toLocaleDateString('fr-FR', { day: 'numeric', month: 'long', year: 'numeric' })}<br />
+                          au {selectedEvent && new Date(selectedEvent.dateEnd).toLocaleDateString('fr-FR', { day: 'numeric', month: 'long', year: 'numeric' })}
+                        </p>
+                      </div>
+                    </div>
+
+                    <div className="flex items-start gap-4 text-gray-400">
+                      <div className="bg-white/5 p-3 rounded-xl border border-white/5">
+                        <MapPin className="text-green-500" size={20} />
+                      </div>
+                      <div>
+                        <p className="text-white font-bold text-sm uppercase tracking-wider">Localisation</p>
+                        <p className="text-sm font-light mt-1 text-gray-400">{selectedEvent?.location}</p>
+                      </div>
+                    </div>
+
+                    <div className="flex items-start gap-4 text-gray-400">
+                      <div className="bg-white/5 p-3 rounded-xl border border-white/5">
+                        <Info className="text-green-500" size={20} />
+                      </div>
+                      <div>
+                        <p className="text-white font-bold text-sm uppercase tracking-wider">À propos</p>
+                        <p className="text-sm font-light mt-1 text-gray-300 leading-relaxed">
+                          {selectedEvent?.shortDescription}
+                        </p>
+                      </div>
+                    </div>
+
+                    <div className="grid grid-cols-2 gap-4">
+                      <div className="p-4 bg-white/5 rounded-2xl border border-white/5 hover:border-green-500/20 transition-colors">
+                        <p className="text-[10px] text-gray-500 uppercase tracking-[0.2em] mb-1">Pass Membre</p>
+                        <p className="text-xl font-black text-white">{selectedEvent?.priceMember?.toLocaleString() || 0} <span className="text-[10px] font-normal text-gray-500">FCFA</span></p>
+                      </div>
+                      <div className="p-4 bg-white/5 rounded-2xl border border-white/5 hover:border-green-500/20 transition-colors">
+                        <p className="text-[10px] text-gray-500 uppercase tracking-[0.2em] mb-1">Standard</p>
+                        <p className="text-xl font-black text-white">{selectedEvent?.priceNonMember?.toLocaleString() || 0} <span className="text-[10px] font-normal text-gray-500">FCFA</span></p>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="flex items-center justify-between gap-4">
+                    {user && selectedEvent?.registrations?.some((reg: any) => {
+                      if (!reg.user) return false;
+                      const registeredUserId = typeof reg.user === 'string'
+                        ? reg.user
+                        : reg.user._id?.toString() || reg.user.toString();
+                      return registeredUserId === user?._id;
+                    }) ? (
+                      <div className="w-full bg-green-500/10 border border-green-500/20 text-green-500 py-5 rounded-xl flex items-center justify-center gap-3 font-bold tracking-widest text-sm uppercase">
+                        <CheckCircle size={20} /> Inscription Confirmée
+                      </div>
+                    ) : (
+                      <button
+                        onClick={() => {
+                          if (selectedEvent) handleRegister(selectedEvent.slug);
+                        }}
+                        className="w-full bg-white text-black py-5 rounded-xl font-black tracking-[0.2em] text-sm uppercase hover:bg-green-500 hover:text-white transition-all transform hover:-translate-y-1 shadow-2xl shadow-black/50"
+                      >
+                        RÉSERVER MA PLACE
+                      </button>
+                    )}
+                  </div>
+                </div>
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 };

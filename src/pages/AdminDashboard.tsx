@@ -18,7 +18,9 @@ import {
   MapPin,
   Pencil,
   UserCheck,
-  Loader2
+  Loader2,
+  Search,
+  Filter
 } from 'lucide-react';
 import { adminAPI, productsAPI, blogsAPI, formationsAPI, eventsAPI } from '../services/api';
 import Swal from 'sweetalert2';
@@ -29,7 +31,7 @@ import BlogFormModal from '../components/BlogFormModal';
 import FormationFormModal from '../components/FormationFormModal';
 import FormationModal from '../components/FormationModal';
 import EventFormModal from '../components/EventFormModal';
-import { EventData, Product } from '../types';
+import { EventData, Product, User } from '../types';
 
 interface AdminStats {
   totalUsers: number;
@@ -40,6 +42,7 @@ interface AdminStats {
   totalProducts: number;
   totalFormations: number;
   totalBlogs: number;
+  totalEvents: number;
 }
 
 interface Enrollment {
@@ -114,9 +117,10 @@ interface BlogPost {
 }
 
 const AdminDashboard = () => {
-  const [activeTab, setActiveTab] = useState<'dashboard' | 'products' | 'blogs' | 'formations' | 'events'>('dashboard');
+  const [activeTab, setActiveTab] = useState<'dashboard' | 'products' | 'blogs' | 'formations' | 'events' | 'users'>('dashboard');
   const [stats, setStats] = useState<AdminStats | null>(null);
   const [enrollments, setEnrollments] = useState<Enrollment[]>([]);
+  const [users, setUsers] = useState<User[]>([]);
   const [products, setProducts] = useState<Product[]>([]);
   const [blogs, setBlogs] = useState<BlogPost[]>([]);
   const [formations, setFormations] = useState<Formation[]>([]);
@@ -141,6 +145,10 @@ const AdminDashboard = () => {
   const [formationsPerPage] = useState(5);
   const [eventsCurrentPage, setEventsCurrentPage] = useState(1);
   const [eventsPerPage] = useState(6);
+  const [usersCurrentPage, setUsersCurrentPage] = useState(1);
+  const [usersPerPage] = useState(10);
+  const [userSearchQuery, setUserSearchQuery] = useState('');
+  const [userRoleFilter, setUserRoleFilter] = useState<'all' | 'member' | 'admin' | 'partner' | 'client'>('all');
   const [showFormationModal, setShowFormationModal] = useState(false);
   const [events, setEvents] = useState<EventData[]>([]);
   const [showEventFormModal, setShowEventFormModal] = useState(false);
@@ -178,6 +186,8 @@ const AdminDashboard = () => {
       fetchFormations();
     } else if (activeTab === 'events') {
       fetchEvents();
+    } else if (activeTab === 'users') {
+      fetchUsers();
     }
   }, [activeTab]);
 
@@ -195,7 +205,18 @@ const AdminDashboard = () => {
   const fetchAdminData = async () => {
     try {
       const response = await adminAPI.getAdminStats();
-      setStats(response.data);
+      const data = response.data;
+      // Handle potential missing totalEvents from backend
+      if (data && typeof data.totalEvents === 'undefined') {
+        const eventsRes = await eventsAPI.getAll();
+        data.totalEvents = eventsRes.data.events?.length || 0;
+      }
+      // Handle potential missing totalFormations from backend
+      if (data && typeof data.totalFormations === 'undefined') {
+        const formationsRes = await formationsAPI.getAll();
+        data.totalFormations = formationsRes.data.formations?.length || 0;
+      }
+      setStats(data);
     } catch (error) {
       console.error('Erreur lors du chargement des statistiques:', error);
       Swal.fire({
@@ -255,6 +276,46 @@ const AdminDashboard = () => {
     } catch (error) {
       console.error('Erreur events:', error);
       Swal.fire('Erreur', 'Impossible de charger les événements', 'error');
+    }
+  };
+
+  const fetchUsers = async () => {
+    try {
+      const response = await adminAPI.getAllUsers();
+      // Le backend renvoie directement un tableau d'utilisateurs
+      const userData = Array.isArray(response.data) ? response.data : (response.data.users || []);
+      setUsers(userData);
+    } catch (error) {
+      console.error('Erreur users:', error);
+      Swal.fire('Erreur', 'Impossible de charger les utilisateurs', 'error');
+    }
+  };
+
+  const handleDeleteUser = async (id: string) => {
+    const result = await Swal.fire({
+      title: 'Supprimer l\'utilisateur ?',
+      text: "Cette action est irréversible et supprimera toutes les données associées.",
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#dc2626',
+      cancelButtonColor: '#6b7280',
+      confirmButtonText: 'Oui, supprimer',
+      cancelButtonText: 'Annuler'
+    });
+
+    if (result.isConfirmed) {
+      try {
+        addProcessingId(id);
+        await adminAPI.deleteUser(id);
+        Swal.fire('Supprimé!', 'L\'utilisateur a été supprimé.', 'success');
+        fetchUsers();
+        fetchAdminData();
+      } catch (error) {
+        console.error('Erreur lors de la suppression de l\'utilisateur:', error);
+        Swal.fire('Erreur', 'Impossible de supprimer l\'utilisateur', 'error');
+      } finally {
+        removeProcessingId(id);
+      }
     }
   };
 
@@ -593,8 +654,21 @@ const AdminDashboard = () => {
             </button>
 
             <button
+              onClick={() => setActiveTab('users')}
+              className={`py-3 sm:py-4 px-4 sm:px-6 rounded-xl font-medium text-sm transition-all duration-300 ${activeTab === 'users'
+                ? 'bg-green-500 text-white shadow-lg'
+                : 'text-gray-600 hover:text-gray-900 hover:bg-white/50'
+                }`}
+            >
+              <div className="flex items-center space-x-2">
+                <Users className="w-4 h-4" />
+                <span>Utilisateurs</span>
+              </div>
+            </button>
+
+            <button
               onClick={() => setActiveTab('formations')}
-              className={`py-3 sm:py4 px-4 sm:px-6 rounded-xl font-medium text-sm transition-all duration-300 ${activeTab === 'formations'
+              className={`py-3 sm:py-4 px-4 sm:px-6 rounded-xl font-medium text-sm transition-all duration-300 ${activeTab === 'formations'
                 ? 'bg-green-500 text-white shadow-lg'
                 : 'text-gray-600 hover:text-gray-900 hover:bg-white/50'
                 }`}
@@ -676,11 +750,11 @@ const AdminDashboard = () => {
                 >
                   <div className="flex items-center space-x-4">
                     <div className="p-4 bg-gradient-to-br from-yellow-500 to-orange-500 rounded-2xl shadow-lg shadow-orange-500/20">
-                      <Clock className="w-8 h-8 text-white" />
+                      <BookOpen className="w-8 h-8 text-white" />
                     </div>
                     <div>
-                      <p className="text-sm font-medium text-gray-500 mb-1">En Attente</p>
-                      <h3 className="text-3xl font-bold text-gray-900">{stats.pendingEnrollments}</h3>
+                      <p className="text-sm font-medium text-gray-500 mb-1">Formations</p>
+                      <h3 className="text-3xl font-bold text-gray-900">{stats.totalFormations}</h3>
                     </div>
                   </div>
                 </motion.div>
@@ -693,11 +767,11 @@ const AdminDashboard = () => {
                 >
                   <div className="flex items-center space-x-4">
                     <div className="p-4 bg-gradient-to-br from-green-500 to-emerald-600 rounded-2xl shadow-lg shadow-green-500/20">
-                      <CheckCircle className="w-8 h-8 text-white" />
+                      <Calendar className="w-8 h-8 text-white" />
                     </div>
                     <div>
-                      <p className="text-sm font-medium text-gray-500 mb-1">Approuvés</p>
-                      <h3 className="text-3xl font-bold text-gray-900">{stats.approvedEnrollments}</h3>
+                      <p className="text-sm font-medium text-gray-500 mb-1">Événements</p>
+                      <h3 className="text-3xl font-bold text-gray-900">{stats.totalEvents}</h3>
                     </div>
                   </div>
                 </motion.div>
@@ -902,6 +976,164 @@ const AdminDashboard = () => {
               </div>
             </div>
           </>
+        )}
+
+        {/* Section Utilisateurs */}
+        {activeTab === 'users' && (
+          <div className="space-y-6">
+            <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+              <div>
+                <h2 className="text-2xl font-bold text-gray-900">Gestion des Utilisateurs</h2>
+                <p className="text-gray-500">Consultez et gérez les membres de la plateforme</p>
+              </div>
+              <div className="flex flex-col sm:flex-row gap-3">
+                <div className="relative group">
+                  <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 group-focus-within:text-green-500 transition-colors" />
+                  <input
+                    type="text"
+                    placeholder="Rechercher un utilisateur..."
+                    value={userSearchQuery}
+                    onChange={(e) => {
+                      setUserSearchQuery(e.target.value);
+                      setUsersCurrentPage(1);
+                    }}
+                    className="pl-10 pr-4 py-2 bg-white border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-green-500/20 focus:border-green-500 transition-all w-full sm:w-64"
+                  />
+                </div>
+                <div className="relative group">
+                  <Filter className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+                  <select
+                    value={userRoleFilter}
+                    onChange={(e) => {
+                      setUserRoleFilter(e.target.value as any);
+                      setUsersCurrentPage(1);
+                    }}
+                    className="pl-10 pr-8 py-2 bg-white border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-green-500/20 focus:border-green-500 transition-all appearance-none cursor-pointer"
+                  >
+                    <option value="all">Tous les rôles</option>
+                    <option value="member">Membres</option>
+                    <option value="admin">Administrateurs</option>
+                    <option value="partner">Partenaires</option>
+                    <option value="client">Clients</option>
+                  </select>
+                </div>
+              </div>
+            </div>
+
+            <div className="bg-white/80 backdrop-blur-xl rounded-2xl border border-white/40 shadow-xl overflow-hidden">
+              <div className="overflow-x-auto">
+                <table className="min-w-full divide-y divide-gray-100">
+                  <thead className="bg-gray-50/50">
+                    <tr>
+                      <th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Utilisateur</th>
+                      <th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Rôle</th>
+                      <th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Pays</th>
+                      <th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Date d'inscription</th>
+                      <th className="px-6 py-4 text-right text-xs font-semibold text-gray-500 uppercase tracking-wider">Actions</th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-gray-100 bg-white/40">
+                    {users
+                      .filter(u => {
+                        const matchesSearch = `${u.firstName} ${u.lastName} ${u.email}`.toLowerCase().includes(userSearchQuery.toLowerCase());
+                        const matchesRole = userRoleFilter === 'all' || u.role === userRoleFilter;
+                        return matchesSearch && matchesRole;
+                      })
+                      .slice((usersCurrentPage - 1) * usersPerPage, usersCurrentPage * usersPerPage)
+                      .map((u) => (
+                        <tr key={u._id} className="hover:bg-white/80 transition-colors duration-200">
+                          <td className="px-6 py-4 whitespace-nowrap">
+                            <div className="flex items-center">
+                              <div className="h-10 w-10 rounded-full bg-gradient-to-br from-green-400 to-blue-500 flex items-center justify-center text-white font-bold shadow-sm">
+                                {u.firstName.charAt(0)}{u.lastName.charAt(0)}
+                              </div>
+                              <div className="ml-4">
+                                <div className="text-sm font-bold text-gray-900">{u.firstName} {u.lastName}</div>
+                                <div className="text-xs text-gray-500">{u.email}</div>
+                              </div>
+                            </div>
+                          </td>
+                          <td className="px-6 py-4 whitespace-nowrap">
+                            <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium border capitalize ${u.role === 'admin' ? 'bg-red-50 text-red-700 border-red-100' :
+                              u.role === 'partner' ? 'bg-blue-50 text-blue-700 border-blue-100' :
+                                u.role === 'client' ? 'bg-purple-50 text-purple-700 border-purple-100' :
+                                  'bg-green-50 text-green-700 border-green-100'
+                              }`}>
+                              {u.role}
+                            </span>
+                          </td>
+                          <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-600">
+                            {u.companyDetails?.address || 'Non spécifié'}
+                          </td>
+                          <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                            {u.createdAt ? new Date(u.createdAt).toLocaleDateString('fr-FR') : '-'}
+                          </td>
+                          <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                            <button
+                              onClick={() => handleDeleteUser(u._id)}
+                              disabled={processingIds.has(u._id)}
+                              className="p-2 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-all disabled:opacity-50"
+                              title="Supprimer l'utilisateur"
+                            >
+                              {processingIds.has(u._id) ? (
+                                <Loader2 className="w-4 h-4 animate-spin" />
+                              ) : (
+                                <Trash2 className="w-4 h-4" />
+                              )}
+                            </button>
+                          </td>
+                        </tr>
+                      ))}
+                  </tbody>
+                </table>
+              </div>
+
+              {/* Pagination Utilisateurs */}
+              <div className="px-6 py-4 border-t border-gray-100 bg-gray-50/50 flex flex-col sm:flex-row items-center justify-between gap-4">
+                <div className="text-sm text-gray-500">
+                  Affichage de <span className="font-semibold text-gray-900">
+                    {Math.min((usersCurrentPage - 1) * usersPerPage + 1, users.length)}
+                  </span> à <span className="font-semibold text-gray-900">
+                    {Math.min(usersCurrentPage * usersPerPage, users.length)}
+                  </span> sur <span className="font-semibold text-gray-900">{users.length}</span> utilisateurs
+                </div>
+                <nav className="flex items-center space-x-1">
+                  <button
+                    onClick={() => setUsersCurrentPage(usersCurrentPage - 1)}
+                    disabled={usersCurrentPage === 1}
+                    className="p-2 rounded-lg border border-gray-200 bg-white text-gray-500 hover:bg-gray-50 disabled:opacity-50 transition-all"
+                  >
+                    <ChevronLeft className="w-4 h-4" />
+                  </button>
+                  <div className="flex items-center space-x-1 px-2">
+                    {Array.from({ length: Math.ceil(users.length / usersPerPage) }, (_, i) => i + 1)
+                      .filter(p => p === 1 || p === usersCurrentPage || p === Math.ceil(users.length / usersPerPage) || Math.abs(p - usersCurrentPage) <= 1)
+                      .map((pageNum, idx, array) => (
+                        <div key={pageNum} className="flex items-center">
+                          {idx > 0 && array[idx - 1] !== pageNum - 1 && <span className="px-2 text-gray-400">...</span>}
+                          <button
+                            onClick={() => setUsersCurrentPage(pageNum)}
+                            className={`w-8 h-8 flex items-center justify-center rounded-lg text-sm font-medium transition-all ${usersCurrentPage === pageNum
+                              ? 'bg-green-600 text-white shadow-md shadow-green-200'
+                              : 'bg-white text-gray-600 border border-gray-200 hover:bg-gray-50'
+                              }`}
+                          >
+                            {pageNum}
+                          </button>
+                        </div>
+                      ))}
+                  </div>
+                  <button
+                    onClick={() => setUsersCurrentPage(usersCurrentPage + 1)}
+                    disabled={usersCurrentPage === Math.ceil(users.length / usersPerPage)}
+                    className="p-2 rounded-lg border border-gray-200 bg-white text-gray-500 hover:bg-gray-50 disabled:opacity-50 transition-all"
+                  >
+                    <ChevronRight className="w-4 h-4" />
+                  </button>
+                </nav>
+              </div>
+            </div>
+          </div>
         )}
 
         {/** Section Formations */}
