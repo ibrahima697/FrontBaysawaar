@@ -4,7 +4,7 @@ import { motion, Variants, AnimatePresence } from 'framer-motion';
 import {
   Calendar, MapPin, Users, ArrowRight, TrendingUp, Globe,
   Award, CheckCircle, Play, X, ChevronLeft, ChevronRight,
-  Info, Clock, DollarSign
+  Info, Clock, DollarSign, Heart, Zap, Share2
 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import Swal from 'sweetalert2';
@@ -558,27 +558,149 @@ const Events = () => {
         </div>
       </section>
 
-      {/* Modern Newsletter Section */}
-      <section className="py-32 relative overflow-hidden">
-        <div className="absolute inset-0 bg-green-900/10"></div>
-        <div className="max-w-4xl mx-auto px-6 relative z-10 text-center">
-          <h2 className="text-5xl md:text-6xl font-black text-white mb-8 tracking-tighter">
-            RESTEZ CONNECTÉ
-          </h2>
-          <p className="text-xl text-gray-400 mb-12 font-light">
-            Inscrivez-vous à notre newsletter exclusive pour ne rien manquer.
-          </p>
+      {/* Bento Finale - The Future is Now */}
+      <section className="py-40 bg-[#050505] relative overflow-hidden">
+        {/* Decorative Background Elements */}
+        <div className="absolute top-0 right-0 w-[600px] h-[600px] bg-green-500/5 rounded-full blur-[150px] -translate-y-1/2 translate-x-1/2 z-0" />
+        <div className="absolute bottom-0 left-0 w-[600px] h-[600px] bg-blue-500/5 rounded-full blur-[150px] translate-y-1/2 -translate-x-1/2 z-0" />
 
-          <form className="flex flex-col sm:flex-row gap-0 max-w-xl mx-auto" onSubmit={(e) => e.preventDefault()}>
-            <input
-              type="email"
-              placeholder="Votre email professionnel"
-              className="flex-1 px-8 py-5 bg-white text-black placeholder-gray-500 focus:outline-none rounded-l-none"
-            />
-            <button className="px-10 py-5 bg-green-600 hover:bg-green-700 text-white font-bold tracking-widest uppercase transition-all">
-              S'inscrire
-            </button>
-          </form>
+        <div className="max-w-[90rem] mx-auto px-6 relative z-10">
+          <div className="text-center mb-20">
+            <motion.span
+              initial={{ opacity: 0, y: 10 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              className="text-green-500 font-bold tracking-[0.4em] uppercase text-xs mb-4 block"
+            >
+              Le Mot de la Fin
+            </motion.span>
+            <motion.h2
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              className="text-5xl md:text-7xl font-black text-white tracking-tighter"
+            >
+              UNE NOUVELLE <span className="text-gray-700">ÈRE</span>
+            </motion.h2>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-4 grid-rows-none md:grid-rows-2 gap-6 h-auto md:h-[800px]">
+
+            {/* 1. Main Feature Card (CTA) */}
+            <motion.div
+              initial={{ opacity: 0, scale: 0.95 }}
+              whileInView={{ opacity: 1, scale: 1 }}
+              className="md:col-span-2 md:row-span-2 bg-gradient-to-br from-green-600 to-green-900 rounded-[40px] p-10 md:p-16 flex flex-col justify-between relative overflow-hidden group border border-white/10 shadow-2xl"
+            >
+              <div className="absolute top-0 right-0 p-12 opacity-10 group-hover:scale-110 transition-transform duration-700">
+                <Zap size={200} fill="currentColor" />
+              </div>
+
+              <div className="relative z-10">
+                <div className="bg-white/10 backdrop-blur-md w-14 h-14 rounded-2xl flex items-center justify-center mb-8 border border-white/20">
+                  <Heart className="text-white" size={28} />
+                </div>
+                <h3 className="text-4xl md:text-6xl font-black text-white leading-tight mb-6">
+                  REJOIGNEZ <br /> LE MOUVEMENT.
+                </h3>
+                <p className="text-green-100 text-lg md:text-xl font-light max-w-md opacity-80 leading-relaxed">
+                  Baysawaar n'est pas qu'une plateforme, c'est une mission pour catalyser l'excellence africaine. En devenant membre, vous accédez à un monde d'opportunités sans limites.
+                </p>
+              </div>
+
+              <div className="relative z-10 mt-12">
+                <motion.button
+                  whileHover={{ scale: 1.05, x: 10 }}
+                  whileTap={{ scale: 0.95 }}
+                  className="bg-white text-green-900 px-10 py-6 rounded-full font-black tracking-widest uppercase text-sm flex items-center gap-4 hover:shadow-[0_20px_40px_rgba(255,255,255,0.2)] transition-all"
+                >
+                  DEVENIR MEMBRE MAINTENANT <ArrowRight size={20} />
+                </motion.button>
+              </div>
+            </motion.div>
+
+            {/* 2. Heritage Card (Image) */}
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.1 }}
+              className="md:col-span-1 md:row-span-1 rounded-[40px] overflow-hidden relative group border border-white/5"
+            >
+              <img
+                src="https://res.cloudinary.com/drxouwbms/image/upload/v1765711712/photorealistic-portrait-african-woman_mimrxs.jpg"
+                alt="Heritage"
+                className="w-full h-full object-cover grayscale transition-all duration-700 group-hover:grayscale-0 group-hover:scale-110"
+              />
+              <div className="absolute inset-0 bg-gradient-to-t from-black via-transparent to-transparent opacity-60" />
+              <div className="absolute bottom-8 left-8">
+                <span className="text-white font-bold tracking-widest uppercase text-[10px] bg-green-600 px-3 py-1 rounded-full mb-2 inline-block">Vision</span>
+                <p className="text-white font-bold text-lg">Nos Racines, Notre Futur</p>
+              </div>
+            </motion.div>
+
+            {/* 3. Community Card (Interactive) */}
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.2 }}
+              className="md:col-span-1 md:row-span-1 bg-[#101010] rounded-[40px] p-8 border border-white/5 flex flex-col justify-between hover:border-green-500/30 transition-all group"
+            >
+              <div className="flex justify-between items-start">
+                <div className="bg-white/5 w-12 h-12 rounded-xl flex items-center justify-center text-green-500 group-hover:bg-green-500 group-hover:text-black transition-colors">
+                  <Share2 size={24} />
+                </div>
+                <div className="flex -space-x-3">
+                  {[1, 2, 3].map(i => (
+                    <div key={i} className="w-8 h-8 rounded-full border-2 border-[#101010] bg-gray-800 overflow-hidden">
+                      <img src={`https://i.pravatar.cc/100?img=${i + 20}`} alt="avatar" />
+                    </div>
+                  ))}
+                </div>
+              </div>
+              <div>
+                <h4 className="text-4xl font-bold text-white mb-2">2.4k+</h4>
+                <p className="text-gray-500 text-sm uppercase tracking-widest font-medium">Membres Actifs</p>
+              </div>
+            </motion.div>
+
+            {/* 4. Globe / Connection Card */}
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.3 }}
+              className="md:col-span-2 md:row-span-1 bg-[#0a0a0a] rounded-[40px] p-10 border border-white/5 relative overflow-hidden group flex items-center gap-10"
+            >
+              <div className="absolute top-0 right-0 w-full h-full opacity-10 pointer-events-none">
+                <Globe size={300} className="translate-x-1/2" />
+              </div>
+              <div className="relative z-10 flex-1">
+                <h4 className="text-2xl font-bold text-white mb-4">Connecter l'Afrique <br /> au reste du Monde.</h4>
+                <p className="text-gray-400 text-sm font-light leading-relaxed max-w-sm">
+                  Grâce à nos partenariats internationaux, nous ouvrons des portes vers les marchés mondiaux pour les talents locaux.
+                </p>
+              </div>
+              <div className="relative z-10 hidden md:block">
+                <div className="w-24 h-24 rounded-full border border-white/10 flex items-center justify-center animate-spin-slow">
+                  <div className="w-2 h-2 bg-green-500 rounded-full" />
+                </div>
+              </div>
+            </motion.div>
+
+          </div>
+
+          {/* Social Proof Footer */}
+          {/* <div className="mt-20 flex flex-col md:flex-row items-center justify-between gap-8 border-t border-white/5 pt-12">
+            <p className="text-gray-500 text-sm font-light">© 2026 Baysawaar Foundation. All rights reserved.</p>
+            <div className="flex gap-10">
+              {["Instagram", "LinkedIn", "Twitter", "Facebook"].map(social => (
+                <a key={social} href="#" className="text-gray-500 hover:text-white transition-colors text-xs font-bold uppercase tracking-[0.2em]">{social}</a>
+              ))}
+            </div>
+            <motion.button
+              whileHover={{ scale: 1.05 }}
+              className="text-green-500 font-bold uppercase tracking-widest text-xs border-b border-green-500 pb-1"
+            >
+              S'inscrire à la gazette
+            </motion.button>
+          </div> */}
         </div>
       </section>
 
