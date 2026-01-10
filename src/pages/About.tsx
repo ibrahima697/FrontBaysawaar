@@ -367,33 +367,111 @@ const About = () => {
         </div>
       </section>
 
-      {/* Values */}
-      <section className="py-20 relative overflow-hidden">
+      {/* Values - Connected Infographic Redesign */}
+      <section className="py-32 relative overflow-hidden bg-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
-          <div className="text-center mb-16">
-            <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">Nos Valeurs Fondamentales</h2>
-            <p className="text-xl text-gray-600 max-w-2xl mx-auto">
-              Les principes essentiels qui inspirent et guident chacune de nos actions.
-            </p>
-          </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-            {values.map((value, index) => (
-              <motion.div
-                key={index}
-                initial={{ y: 30, opacity: 0 }}
-                whileInView={{ y: 0, opacity: 1 }}
-                transition={{ delay: index * 0.1 }}
-                viewport={{ once: true }}
-                className="group bg-white/50 backdrop-blur-lg border border-white/60 p-8 rounded-3xl hover:bg-white/80 transition-all duration-300 shadow-lg hover:shadow-xl hover:-translate-y-1"
-              >
-                <div className="w-14 h-14 bg-gradient-to-br from-green-500 to-emerald-600 rounded-2xl flex items-center justify-center mb-6 shadow-lg group-hover:scale-110 transition-transform duration-300">
-                  <value.icon className="text-white" size={28} />
-                </div>
-                <h3 className="text-xl font-bold text-gray-900 mb-3">{value.title}</h3>
-                <p className="text-gray-600 leading-relaxed">{value.description}</p>
-              </motion.div>
-            ))}
+          <div className="relative">
+            {/* Central Infographic Hub (Desktop Only) */}
+            <div className="hidden lg:flex absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-72 h-44 z-30 flex-col items-center justify-center bg-white rounded-[2.5rem] shadow-2xl border border-gray-100 text-center p-8 transition-all duration-500 hover:scale-105">
+              <div className="text-[10px] font-black text-black uppercase tracking-[0.4em] mb-2">NOS</div>
+              <div className="text-3xl font-black text-green-600 leading-none tracking-tighter">Valeurs</div>
+              <div className="flex gap-2 mt-6">
+                <div className="w-2.5 h-2.5 rounded-full bg-[#182656]"></div>
+                <div className="w-2.5 h-2.5 rounded-full bg-[#182656]"></div>
+                <div className="w-2.5 h-2.5 rounded-full bg-[#182656]"></div>
+                <div className="w-2.5 h-2.5 rounded-full bg-[#182656]"></div>
+              </div>
+
+              {/* Decorative Hub Arrows */}
+              <div className="absolute left-[-24px] top-1/2 -translate-y-1/2 text-slate-200">
+                <TrendingUp className="rotate-[225deg]" size={20} />
+              </div>
+              <div className="absolute right-[-24px] top-1/2 -translate-y-1/2 text-slate-200">
+                <TrendingUp className="rotate-45" size={20} />
+              </div>
+            </div>
+
+            {/* Mobile Header */}
+            <div className="lg:hidden text-center mb-16">
+              <h2 className="text-3xl font-black text-slate-900 mb-4 tracking-tight uppercase">Nos Valeurs</h2>
+              <div className="w-16 h-1 bg-green-500 mx-auto rounded-full"></div>
+            </div>
+
+            {/* Connecting SVG Lines (Desktop Only) */}
+            {/* High-Precision Connecting SVG Lines (Desktop Only) */}
+            <svg className="absolute hidden lg:block w-full h-full pointer-events-none z-10" viewBox="0 0 1000 600">
+              <defs>
+                <marker id="arrow-green" markerWidth="10" markerHeight="7" refX="10" refY="3.5" orient="auto">
+                  <path d="M0 0 L10 3.5 L0 7 Z" fill="#16a34a" />
+                </marker>
+                <marker id="arrow-navy" markerWidth="10" markerHeight="7" refX="10" refY="3.5" orient="auto">
+                  <path d="M0 0 L10 3.5 L0 7 Z" fill="#182656" />
+                </marker>
+              </defs>
+
+              {/* Option 01 (Top Left) */}
+              <motion.path d="M480 200 L 400 200 L 400 120 L 320 120" stroke="#cbd5e1" strokeWidth="1.5" fill="none" initial={{ pathLength: 0 }} whileInView={{ pathLength: 1 }} transition={{ duration: 1.2 }} viewport={{ once: true }} />
+              <motion.circle cx="400" cy="200" r="4" fill="white" stroke="#cbd5e1" strokeWidth="2" initial={{ scale: 0 }} whileInView={{ scale: 1 }} transition={{ delay: 0.6 }} viewport={{ once: true }} />
+              <motion.path d="M380 120 L 360 120" stroke="#16a34a" strokeWidth="2" markerEnd="url(#arrow-green)" initial={{ opacity: 0 }} whileInView={{ opacity: 1 }} transition={{ delay: 1 }} viewport={{ once: true }} />
+
+              {/* Option 02 (Bottom Left) */}
+              <motion.path d="M480 400 L 400 400 L 400 480 L 320 480" stroke="#cbd5e1" strokeWidth="1.5" fill="none" initial={{ pathLength: 0 }} whileInView={{ pathLength: 1 }} transition={{ duration: 1.2, delay: 0.2 }} viewport={{ once: true }} />
+              <motion.circle cx="400" cy="400" r="4" fill="white" stroke="#cbd5e1" strokeWidth="2" initial={{ scale: 0 }} whileInView={{ scale: 1 }} transition={{ delay: 0.8 }} viewport={{ once: true }} />
+              <motion.path d="M380 480 L 360 480" stroke="#16a34a" strokeWidth="2" markerEnd="url(#arrow-green)" initial={{ opacity: 0 }} whileInView={{ opacity: 1 }} transition={{ delay: 1.2 }} viewport={{ once: true }} />
+
+              {/* Option 03 (Bottom Right) */}
+              <motion.path d="M520 400 L 600 400 L 600 480 L 680 480" stroke="#cbd5e1" strokeWidth="1.5" fill="none" initial={{ pathLength: 0 }} whileInView={{ pathLength: 1 }} transition={{ duration: 1.2, delay: 0.4 }} viewport={{ once: true }} />
+              <motion.circle cx="600" cy="400" r="4" fill="white" stroke="#cbd5e1" strokeWidth="2" initial={{ scale: 0 }} whileInView={{ scale: 1 }} transition={{ delay: 1 }} viewport={{ once: true }} />
+              <motion.path d="M620 480 L 640 480" stroke="#182656" strokeWidth="2" markerEnd="url(#arrow-navy)" initial={{ opacity: 0 }} whileInView={{ opacity: 1 }} transition={{ delay: 1.4 }} viewport={{ once: true }} />
+
+              {/* Option 04 (Top Right) */}
+              <motion.path d="M520 200 L 600 200 L 600 120 L 680 120" stroke="#cbd5e1" strokeWidth="1.5" fill="none" initial={{ pathLength: 0 }} whileInView={{ pathLength: 1 }} transition={{ duration: 1.2, delay: 0.6 }} viewport={{ once: true }} />
+              <motion.circle cx="600" cy="200" r="4" fill="white" stroke="#cbd5e1" strokeWidth="2" initial={{ scale: 0 }} whileInView={{ scale: 1 }} transition={{ delay: 1.2 }} viewport={{ once: true }} />
+              <motion.path d="M620 120 L 640 120" stroke="#182656" strokeWidth="2" markerEnd="url(#arrow-navy)" initial={{ opacity: 0 }} whileInView={{ opacity: 1 }} transition={{ delay: 1.6 }} viewport={{ once: true }} />
+            </svg>
+
+            {/* Grid for Cards */}
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-y-12 lg:gap-y-32 gap-x-32 sm:gap-x-48 px-0 sm:px-12 lg:px-0">
+              {values.map((value, index) => {
+                const isLeft = index === 0 || index === 1;
+                const isGreen = index === 0 || index === 1;
+                const colorClass = isGreen ? "text-green-600" : "text-[#182656]";
+                const borderClass = isGreen ? "border-green-100/50" : "border-slate-100/50";
+                const accentBg = isGreen ? "bg-gradient-to-br from-green-500 to-emerald-600" : "bg-gradient-to-br from-[#182656] to-slate-900";
+
+                return (
+                  <motion.div
+                    key={index}
+                    initial={{ scale: 0.9, opacity: 0 }}
+                    whileInView={{ scale: 1, opacity: 1 }}
+                    transition={{ delay: index * 0.1, duration: 0.6 }}
+                    viewport={{ once: true }}
+                    className={`relative flex items-center ${isLeft ? 'lg:justify-end' : 'lg:justify-start'} group`}
+                  >
+                    <div className={`relative flex items-center ${isLeft ? 'flex-row' : 'flex-row-reverse'} w-full max-w-sm`}>
+
+                      {/* Card Content */}
+                      <div className={`relative flex-1 bg-white p-6 sm:p-10 ${isLeft ? 'pr-12 sm:pr-16' : 'pl-12 sm:pl-16'} rounded-[2.5rem] border ${borderClass} shadow-xl z-10 transition-all duration-500 group-hover:-translate-y-2 group-hover:shadow-2xl`}>
+                        <div className={`text-[10px] font-black uppercase tracking-widest ${colorClass} opacity-40 mb-3`}></div>
+                        <h3 className="text-xl font-black text-slate-900 uppercase tracking-tight mb-3 italic">{value.title}</h3>
+                        <p className="text-slate-400 text-[13px] font-medium leading-relaxed">{value.description}</p>
+                      </div>
+
+                      {/* Overlapping Icon Circle */}
+                      <div className={`relative ${isLeft ? '-ml-8 sm:-ml-12' : '-mr-8 sm:-mr-12'} z-20 transition-transform duration-500 group-hover:scale-110`}>
+                        <div className={`w-16 h-16 sm:w-20 sm:h-20 ${accentBg} rounded-full flex items-center justify-center shadow-2xl border-4 border-white`}>
+                          <value.icon className="text-white" size={28} />
+                        </div>
+                        {/* Decorative Outer Ring */}
+                        <div className={`absolute inset-0 -m-2 border-2 border-dashed ${isGreen ? 'border-green-200' : 'border-slate-200'} rounded-full animate-spin-slow opacity-0 group-hover:opacity-100 transition-opacity`}></div>
+                      </div>
+
+                    </div>
+                  </motion.div>
+                );
+              })}
+            </div>
           </div>
         </div>
       </section>
