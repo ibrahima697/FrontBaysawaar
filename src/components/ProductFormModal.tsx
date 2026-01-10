@@ -23,6 +23,7 @@ const ProductFormModal: React.FC<ProductFormModalProps> = ({
   const [isLoading, setIsLoading] = useState(false);
   const [imageFiles, setImageFiles] = useState<File[]>([]);
   const [specList, setSpecList] = useState<{ name: string; value: string }[]>([]);
+  const [errors, setErrors] = useState<Record<string, string>>({});
   const [formData, setFormData] = useState({
     name: '',
     description: '',
@@ -69,7 +70,32 @@ const ProductFormModal: React.FC<ProductFormModalProps> = ({
       setSpecList([]);
     }
     setImageFiles([]);
+    setErrors({});
   }, [product, isOpen]);
+
+  const validateForm = () => {
+    const newErrors: Record<string, string> = {};
+    if (!formData.name.trim()) newErrors.name = "Le nom est requis";
+    if (!formData.description.trim()) newErrors.description = "La description est requise";
+    if (!formData.category.trim()) newErrors.category = "La catégorie est requise";
+
+    const priceNum = parseFloat(formData.price);
+    if (!formData.price) {
+      newErrors.price = "Le prix est requis";
+    } else if (isNaN(priceNum) || priceNum < 0) {
+      newErrors.price = "Le prix doit être un nombre positif";
+    }
+
+    if (formData.stock) {
+      const stockNum = parseInt(formData.stock);
+      if (isNaN(stockNum) || stockNum < 0) {
+        newErrors.stock = "Le stock doit être un nombre positif";
+      }
+    }
+
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
 
   const handleSpecChange = (index: number, field: 'name' | 'value', value: string) => {
     const newSpecs = [...specList];
@@ -88,13 +114,7 @@ const ProductFormModal: React.FC<ProductFormModalProps> = ({
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    if (!formData.name || !formData.description || !formData.price || !formData.category) {
-      Swal.fire({
-        icon: 'warning',
-        title: 'Champs requis',
-        text: 'Veuillez remplir tous les champs obligatoires',
-        confirmButtonColor: '#dc2626',
-      });
+    if (!validateForm()) {
       return;
     }
 
@@ -107,7 +127,7 @@ const ProductFormModal: React.FC<ProductFormModalProps> = ({
       submitData.append('price', formData.price);
       submitData.append('category', formData.category);
       submitData.append('brand', formData.brand);
-      submitData.append('stock', formData.stock);
+      submitData.append('stock', formData.stock || '0');
       submitData.append('specifications', JSON.stringify(specList));
       submitData.append('tags', formData.tags);
       submitData.append('isActive', formData.isActive.toString());
@@ -178,7 +198,7 @@ const ProductFormModal: React.FC<ProductFormModalProps> = ({
 
         {/* Form */}
         <form onSubmit={handleSubmit} className="overflow-y-auto max-h-[calc(90vh-80px)]">
-          <div className="p-6 space-y-6">
+          <div className="p-4 sm:p-8 space-y-6">
             {/* Images */}
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">
@@ -203,10 +223,13 @@ const ProductFormModal: React.FC<ProductFormModalProps> = ({
                 type="text"
                 name="name"
                 value={formData.name}
-                onChange={handleInputChange}
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
-                required
+                onChange={e => {
+                  handleInputChange(e);
+                  if (errors.name) setErrors(prev => ({ ...prev, name: '' }));
+                }}
+                className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-green-500 transition-all ${errors.name ? 'border-red-500 bg-red-50' : 'border-gray-300 focus:border-transparent'}`}
               />
+              {errors.name && <p className="text-red-500 text-xs mt-1">{errors.name}</p>}
             </div>
 
             {/* Description */}
@@ -217,11 +240,14 @@ const ProductFormModal: React.FC<ProductFormModalProps> = ({
               <textarea
                 name="description"
                 value={formData.description}
-                onChange={handleInputChange}
+                onChange={e => {
+                  handleInputChange(e);
+                  if (errors.description) setErrors(prev => ({ ...prev, description: '' }));
+                }}
                 rows={4}
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
-                required
+                className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-green-500 transition-all ${errors.description ? 'border-red-500 bg-red-50' : 'border-gray-300 focus:border-transparent'}`}
               />
+              {errors.description && <p className="text-red-500 text-xs mt-1">{errors.description}</p>}
             </div>
 
             {/* Price and Stock */}
@@ -234,12 +260,15 @@ const ProductFormModal: React.FC<ProductFormModalProps> = ({
                   type="number"
                   name="price"
                   value={formData.price}
-                  onChange={handleInputChange}
+                  onChange={e => {
+                    handleInputChange(e);
+                    if (errors.price) setErrors(prev => ({ ...prev, price: '' }));
+                  }}
                   step="0.01"
                   min="0"
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
-                  required
+                  className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-green-500 transition-all ${errors.price ? 'border-red-500 bg-red-50' : 'border-gray-300 focus:border-transparent'}`}
                 />
+                {errors.price && <p className="text-red-500 text-xs mt-1">{errors.price}</p>}
               </div>
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">
@@ -249,10 +278,14 @@ const ProductFormModal: React.FC<ProductFormModalProps> = ({
                   type="number"
                   name="stock"
                   value={formData.stock}
-                  onChange={handleInputChange}
+                  onChange={e => {
+                    handleInputChange(e);
+                    if (errors.stock) setErrors(prev => ({ ...prev, stock: '' }));
+                  }}
                   min="0"
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
+                  className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-green-500 transition-all ${errors.stock ? 'border-red-500 bg-red-50' : 'border-gray-300 focus:border-transparent'}`}
                 />
+                {errors.stock && <p className="text-red-500 text-xs mt-1">{errors.stock}</p>}
               </div>
             </div>
 
@@ -266,10 +299,13 @@ const ProductFormModal: React.FC<ProductFormModalProps> = ({
                   type="text"
                   name="category"
                   value={formData.category}
-                  onChange={handleInputChange}
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
-                  required
+                  onChange={e => {
+                    handleInputChange(e);
+                    if (errors.category) setErrors(prev => ({ ...prev, category: '' }));
+                  }}
+                  className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-green-500 transition-all ${errors.category ? 'border-red-500 bg-red-50' : 'border-gray-300 focus:border-transparent'}`}
                 />
+                {errors.category && <p className="text-red-500 text-xs mt-1">{errors.category}</p>}
               </div>
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">

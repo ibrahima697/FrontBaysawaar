@@ -27,8 +27,16 @@ interface AuthProviderProps {
 }
 
 export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
-  const [user, setUser] = useState<User | null>(null);
-  const [token, setToken] = useState<string | null>(null);
+  const [user, setUser] = useState<User | null>(() => {
+    const savedUser = localStorage.getItem('user');
+    try {
+      return savedUser ? JSON.parse(savedUser) : null;
+    } catch (e) {
+      console.error('Failed to parse saved user:', e);
+      return null;
+    }
+  });
+  const [token, setToken] = useState<string | null>(() => localStorage.getItem('token'));
   const [isLoading, setIsLoading] = useState(true);
 
   const checkAuth = async () => {
@@ -38,18 +46,24 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         setToken(storedToken);
         const response = await authAPI.getMe();
         if (response.data?.data) {
-          setUser(response.data.data);
+          const userData = response.data.data;
+          setUser(userData);
+          localStorage.setItem('user', JSON.stringify(userData));
         } else {
           localStorage.removeItem('token');
           localStorage.removeItem('user');
           setToken(null);
+          setUser(null);
         }
+      } else {
+        setIsLoading(false);
       }
     } catch (error: any) {
       console.error('Auth check failed:', error);
       localStorage.removeItem('token');
       localStorage.removeItem('user');
       setToken(null);
+      setUser(null);
     } finally {
       setIsLoading(false);
     }
@@ -63,13 +77,18 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     setIsLoading(true);
     try {
       const response = await authAPI.login(email, password);
-      const { token: newToken, user: userData } = response.data; // ← .data !
+      const { token: newToken, user: userData } = response.data;
 
       localStorage.setItem('token', newToken);
       localStorage.setItem('user', JSON.stringify(userData));
 
       setToken(newToken);
       setUser(userData);
+
+      // S'assurer de charger le profil complet (avec la photo) immédiatement après le login
+      // sans attendre un refresh manuel
+      await checkAuth();
+
       setIsLoading(false);
       return true;
     } catch (error: any) {

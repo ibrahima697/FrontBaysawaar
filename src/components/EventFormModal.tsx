@@ -42,6 +42,7 @@ const EventFormModal: React.FC<Props> = ({ isOpen, onClose, event, onEventSaved 
 
     const [imageFile, setImageFile] = useState<File | null>(null);
     const [previewUrl, setPreviewUrl] = useState<string | null>(null);
+    const [errors, setErrors] = useState<Record<string, string>>({});
 
     useEffect(() => {
         if (event) {
@@ -71,7 +72,8 @@ const EventFormModal: React.FC<Props> = ({ isOpen, onClose, event, onEventSaved 
             setPreviewUrl(null);
         }
         setImageFile(null);
-    }, [event]);
+        setErrors({});
+    }, [event, isOpen]);
 
     const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         if (e.target.files && e.target.files[0]) {
@@ -85,72 +87,69 @@ const EventFormModal: React.FC<Props> = ({ isOpen, onClose, event, onEventSaved 
         }
     };
 
+    const validateForm = () => {
+        const newErrors: Record<string, string> = {};
+        if (!form.title.trim()) newErrors.title = "Le titre est requis";
+        if (!form.description.trim()) newErrors.description = "La description est requise";
+        if (!form.location.trim()) newErrors.location = "Le lieu est requis";
+        if (!form.dateStart) newErrors.dateStart = "La date de début est requise";
+        if (!form.dateEnd) newErrors.dateEnd = "La date de fin est requise";
+
+        if (form.dateStart && form.dateEnd) {
+            const start = new Date(form.dateStart);
+            const end = new Date(form.dateEnd);
+            if (end < start) {
+                newErrors.dateEnd = "La date de fin ne peut pas être antérieure à la date de début";
+            }
+        }
+
+        if (form.maxParticipants <= 0) {
+            newErrors.maxParticipants = "Le nombre de participants doit être supérieur à 0";
+        }
+
+        setErrors(newErrors);
+        return Object.keys(newErrors).length === 0;
+    };
+
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
+
+        if (!validateForm()) {
+            return;
+        }
+
         try {
-            // DEBUG LOGGING
-            console.log("--- SUBMITTING EVENT FORM ---");
-            console.log("Event ID:", event?._id);
-            console.log("Image File:", imageFile ? "Yes" : "No");
+            // Create mode OR Update with Image -> Use FormData
+            const formDataToSubmit = new FormData();
+            formDataToSubmit.append('title', form.title);
+            formDataToSubmit.append('description', form.description);
+            formDataToSubmit.append('dateStart', form.dateStart);
+            formDataToSubmit.append('dateEnd', form.dateEnd);
+            formDataToSubmit.append('location', form.location);
+            formDataToSubmit.append('maxParticipants', form.maxParticipants.toString());
+            formDataToSubmit.append('priceMember', form.priceMember.toString());
+            formDataToSubmit.append('priceNonMember', form.priceNonMember.toString());
+            formDataToSubmit.append('isFeatured', String(form.isFeatured));
+            if (form.type) formDataToSubmit.append('type', form.type);
 
-            // Logic decision: If we have an image, we MUST use FormData.
-            // If we don't have an image, we can try using JSON, assuming the backend supports it.
-            // Many backends have trouble with PUT + Multipart if not configured correctly.
+            if (imageFile) {
+                formDataToSubmit.append('images', imageFile);
+            }
 
-            if (event?._id && !imageFile) {
-                // Update mode without new image -> Use JSON
-                console.log("Using JSON strategy for update...");
-                const jsonData = {
-                    title: form.title,
-                    description: form.description,
-                    dateStart: form.dateStart,
-                    dateEnd: form.dateEnd,
-                    location: form.location,
-                    maxParticipants: form.maxParticipants,
-                    priceMember: form.priceMember,
-                    priceNonMember: form.priceNonMember,
-                    isFeatured: form.isFeatured,
-                    type: form.type
-                };
-
-                await eventsAPI.update(event._id, jsonData as any); // Cast as any to bypass strict type check if needed, or update API sig
+            if (event?._id) {
+                // If it's an update and no new image, we can technically still use FormData or JSON
+                // FormData is more robust here since the backend is already expecting it for create.
+                await eventsAPI.update(event._id, formDataToSubmit);
                 Swal.fire('Succès', 'Événement mis à jour', 'success');
             } else {
-                // Create mode OR Update with Image -> Use FormData
-                console.log("Using FormData strategy...");
-                const formData = new FormData();
-                formData.append('title', form.title);
-                formData.append('description', form.description);
-                formData.append('dateStart', form.dateStart);
-                formData.append('dateEnd', form.dateEnd);
-                formData.append('location', form.location);
-                formData.append('maxParticipants', form.maxParticipants.toString());
-                formData.append('priceMember', form.priceMember.toString());
-                formData.append('priceNonMember', form.priceNonMember.toString());
-                formData.append('isFeatured', String(form.isFeatured));
-                if (form.type) formData.append('type', form.type);
-
-                if (imageFile) {
-                    formData.append('images', imageFile);
-                }
-
-                if (event?._id) {
-                    await eventsAPI.update(event._id, formData);
-                    Swal.fire('Succès', 'Événement mis à jour', 'success');
-                } else {
-                    await eventsAPI.create(formData);
-                    Swal.fire('Succès', 'Événement créé avec succès', 'success');
-                }
+                await eventsAPI.create(formDataToSubmit);
+                Swal.fire('Succès', 'Événement créé avec succès', 'success');
             }
 
             onEventSaved();
             onClose();
         } catch (err: any) {
             console.error("API Error Details:", err);
-            if (err.response) {
-                console.error("Response Status:", err.response.status);
-                console.error("Response Data:", err.response.data);
-            }
             Swal.fire('Erreur', err.response?.data?.message || 'Impossible de sauvegarder', 'error');
         }
     };
@@ -159,7 +158,7 @@ const EventFormModal: React.FC<Props> = ({ isOpen, onClose, event, onEventSaved 
 
     return (
         <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-            <div className="bg-white rounded-2xl shadow-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto p-6">
+            <div className="bg-white rounded-2xl shadow-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto p-4 sm:p-8">
                 <div className="flex justify-between items-center mb-6">
                     <h2 className="text-2xl font-bold">{event?._id ? 'Éditer' : 'Créer'} un Événement</h2>
                     <button onClick={onClose} className="p-2 hover:bg-gray-100 rounded-lg">
@@ -204,18 +203,20 @@ const EventFormModal: React.FC<Props> = ({ isOpen, onClose, event, onEventSaved 
                             <input
                                 type="text"
                                 value={form.title}
-                                onChange={e => setForm({ ...form, title: e.target.value })}
-                                className="w-full p-3 border rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
-                                required
+                                onChange={e => {
+                                    setForm({ ...form, title: e.target.value });
+                                    if (errors.title) setErrors(prev => ({ ...prev, title: '' }));
+                                }}
+                                className={`w-full p-3 border rounded-lg focus:ring-2 focus:ring-green-500 transition-all ${errors.title ? 'border-red-500 bg-red-50' : 'border-gray-200 focus:border-transparent'}`}
                             />
+                            {errors.title && <p className="text-red-500 text-xs mt-1">{errors.title}</p>}
                         </div>
                         <div>
                             <label className="block text-sm font-medium mb-1">Type *</label>
                             <select
                                 value={(form as any).type || 'seminar'}
                                 onChange={e => setForm({ ...form, type: e.target.value } as any)}
-                                className="w-full p-3 border rounded-lg focus:ring-2 focus:ring-green-500"
-                                required
+                                className="w-full p-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-green-500"
                             >
                                 <option value="seminar">Séminaire</option>
                                 <option value="business_trip">Voyage d'affaires</option>
@@ -231,10 +232,13 @@ const EventFormModal: React.FC<Props> = ({ isOpen, onClose, event, onEventSaved 
                         <label className="block text-sm font-medium mb-1">Description *</label>
                         <textarea
                             value={form.description}
-                            onChange={e => setForm({ ...form, description: e.target.value })}
-                            className="w-full p-3 border rounded-lg h-24 focus:ring-2 focus:ring-green-500"
-                            required
+                            onChange={e => {
+                                setForm({ ...form, description: e.target.value });
+                                if (errors.description) setErrors(prev => ({ ...prev, description: '' }));
+                            }}
+                            className={`w-full p-3 border rounded-lg h-24 focus:ring-2 focus:ring-green-500 transition-all ${errors.description ? 'border-red-500 bg-red-50' : 'border-gray-200'}`}
                         />
+                        {errors.description && <p className="text-red-500 text-xs mt-1">{errors.description}</p>}
                     </div>
 
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -243,20 +247,26 @@ const EventFormModal: React.FC<Props> = ({ isOpen, onClose, event, onEventSaved 
                             <input
                                 type="date"
                                 value={form.dateStart}
-                                onChange={e => setForm({ ...form, dateStart: e.target.value })}
-                                className="w-full p-3 border rounded-lg focus:ring-2 focus:ring-green-500"
-                                required
+                                onChange={e => {
+                                    setForm({ ...form, dateStart: e.target.value });
+                                    if (errors.dateStart) setErrors(prev => ({ ...prev, dateStart: '' }));
+                                }}
+                                className={`w-full p-3 border rounded-lg focus:ring-2 focus:ring-green-500 transition-all ${errors.dateStart ? 'border-red-500 bg-red-50' : 'border-gray-200'}`}
                             />
+                            {errors.dateStart && <p className="text-red-500 text-xs mt-1">{errors.dateStart}</p>}
                         </div>
                         <div>
                             <label className="block text-sm font-medium mb-1">Date Fin *</label>
                             <input
                                 type="date"
                                 value={form.dateEnd}
-                                onChange={e => setForm({ ...form, dateEnd: e.target.value })}
-                                className="w-full p-3 border rounded-lg focus:ring-2 focus:ring-green-500"
-                                required
+                                onChange={e => {
+                                    setForm({ ...form, dateEnd: e.target.value });
+                                    if (errors.dateEnd) setErrors(prev => ({ ...prev, dateEnd: '' }));
+                                }}
+                                className={`w-full p-3 border rounded-lg focus:ring-2 focus:ring-green-500 transition-all ${errors.dateEnd ? 'border-red-500 bg-red-50' : 'border-gray-200'}`}
                             />
+                            {errors.dateEnd && <p className="text-red-500 text-xs mt-1">{errors.dateEnd}</p>}
                         </div>
                     </div>
 
@@ -266,21 +276,27 @@ const EventFormModal: React.FC<Props> = ({ isOpen, onClose, event, onEventSaved 
                             <input
                                 type="text"
                                 value={form.location}
-                                onChange={e => setForm({ ...form, location: e.target.value })}
-                                className="w-full p-3 border rounded-lg focus:ring-2 focus:ring-green-500"
-                                required
+                                onChange={e => {
+                                    setForm({ ...form, location: e.target.value });
+                                    if (errors.location) setErrors(prev => ({ ...prev, location: '' }));
+                                }}
+                                className={`w-full p-3 border rounded-lg focus:ring-2 focus:ring-green-500 transition-all ${errors.location ? 'border-red-500 bg-red-50' : 'border-gray-200'}`}
                             />
+                            {errors.location && <p className="text-red-500 text-xs mt-1">{errors.location}</p>}
                         </div>
                         <div>
                             <label className="block text-sm font-medium mb-1">Participants Max *</label>
                             <input
                                 type="number"
                                 value={form.maxParticipants}
-                                onChange={e => setForm({ ...form, maxParticipants: parseInt(e.target.value) || 0 })}
-                                className="w-full p-3 border rounded-lg focus:ring-2 focus:ring-green-500"
+                                onChange={e => {
+                                    setForm({ ...form, maxParticipants: parseInt(e.target.value) || 0 });
+                                    if (errors.maxParticipants) setErrors(prev => ({ ...prev, maxParticipants: '' }));
+                                }}
+                                className={`w-full p-3 border rounded-lg focus:ring-2 focus:ring-green-500 transition-all ${errors.maxParticipants ? 'border-red-500 bg-red-50' : 'border-gray-200'}`}
                                 min="1"
-                                required
                             />
+                            {errors.maxParticipants && <p className="text-red-500 text-xs mt-1">{errors.maxParticipants}</p>}
                         </div>
                     </div>
 
@@ -291,7 +307,7 @@ const EventFormModal: React.FC<Props> = ({ isOpen, onClose, event, onEventSaved 
                                 type="number"
                                 value={form.priceMember}
                                 onChange={e => setForm({ ...form, priceMember: parseFloat(e.target.value) || 0 })}
-                                className="w-full p-3 border rounded-lg focus:ring-2 focus:ring-green-500"
+                                className="w-full p-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-green-500"
                                 min="0"
                             />
                         </div>
@@ -301,7 +317,7 @@ const EventFormModal: React.FC<Props> = ({ isOpen, onClose, event, onEventSaved 
                                 type="number"
                                 value={form.priceNonMember}
                                 onChange={e => setForm({ ...form, priceNonMember: parseFloat(e.target.value) || 0 })}
-                                className="w-full p-3 border rounded-lg focus:ring-2 focus:ring-green-500"
+                                className="w-full p-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-green-500"
                                 min="0"
                             />
                         </div>

@@ -15,7 +15,29 @@ const Contact = () => {
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitStatus, setSubmitStatus] = useState('');
+  const [errors, setErrors] = useState<Record<string, string>>({});
 
+  const validateForm = () => {
+    const newErrors: Record<string, string> = {};
+
+    if (!formData.name.trim()) newErrors.name = 'Le nom est requis';
+
+    if (!formData.email.trim()) {
+      newErrors.email = "L'email est requis";
+    } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) {
+      newErrors.email = "Format d'email invalide";
+    }
+
+    if (!formData.subject.trim()) newErrors.subject = 'Le sujet est requis';
+    if (!formData.message.trim()) newErrors.message = 'Le message est requis';
+
+    if (formData.phone && !/^\+?[0-9\s-]{8,20}$/.test(formData.phone)) {
+      newErrors.phone = "Format de téléphone invalide";
+    }
+
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
 
   const contactInfo = [
     {
@@ -68,10 +90,23 @@ const Contact = () => {
       ...prev,
       [name]: value
     }));
+    // Clear error when user starts typing
+    if (errors[name]) {
+      setErrors(prev => {
+        const newErrors = { ...prev };
+        delete newErrors[name];
+        return newErrors;
+      });
+    }
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+
+    if (!validateForm()) {
+      return;
+    }
+
     setIsSubmitting(true);
     setSubmitStatus('');
 
@@ -82,7 +117,6 @@ const Contact = () => {
       setFormData({
         name: '', email: '', phone: '', company: '', subject: '', message: '', category: activeTab
       });
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars
     } catch (error) {
       setSubmitStatus('error');
     } finally {
@@ -223,7 +257,7 @@ const Contact = () => {
               </div>
 
               {/* Category Selection */}
-              <div className="grid grid-cols-3 gap-3 mb-8">
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 mb-8">
                 {contactCategories.map((category) => (
                   <button
                     key={category.id}
@@ -261,28 +295,28 @@ const Contact = () => {
               <form onSubmit={handleSubmit} className="space-y-6">
                 <div className="grid md:grid-cols-2 gap-6">
                   <div className="space-y-2">
-                    <label className="text-sm font-medium text-gray-700">Nom Complet</label>
+                    <label className="text-sm font-medium text-gray-700">Nom Complet *</label>
                     <input
                       type="text"
                       name="name"
                       value={formData.name}
                       onChange={handleInputChange}
-                      required
-                      className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-green-500 focus:ring-2 focus:ring-green-200 transition-all outline-none bg-gray-50 focus:bg-white"
+                      className={`w-full px-4 py-3 rounded-xl border ${errors.name ? 'border-red-500' : 'border-gray-200'} focus:border-green-500 focus:ring-2 focus:ring-green-200 transition-all outline-none bg-gray-50 focus:bg-white`}
                       placeholder="Votre nom"
                     />
+                    {errors.name && <p className="text-red-500 text-xs mt-1">{errors.name}</p>}
                   </div>
                   <div className="space-y-2">
-                    <label className="text-sm font-medium text-gray-700">Email</label>
+                    <label className="text-sm font-medium text-gray-700">Email *</label>
                     <input
                       type="email"
                       name="email"
                       value={formData.email}
                       onChange={handleInputChange}
-                      required
-                      className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-green-500 focus:ring-2 focus:ring-green-200 transition-all outline-none bg-gray-50 focus:bg-white"
+                      className={`w-full px-4 py-3 rounded-xl border ${errors.email ? 'border-red-500' : 'border-gray-200'} focus:border-green-500 focus:ring-2 focus:ring-green-200 transition-all outline-none bg-gray-50 focus:bg-white`}
                       placeholder="votre@email.com"
                     />
+                    {errors.email && <p className="text-red-500 text-xs mt-1">{errors.email}</p>}
                   </div>
                 </div>
 
@@ -294,9 +328,10 @@ const Contact = () => {
                       name="phone"
                       value={formData.phone}
                       onChange={handleInputChange}
-                      className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-green-500 focus:ring-2 focus:ring-green-200 transition-all outline-none bg-gray-50 focus:bg-white"
+                      className={`w-full px-4 py-3 rounded-xl border ${errors.phone ? 'border-red-500' : 'border-gray-200'} focus:border-green-500 focus:ring-2 focus:ring-green-200 transition-all outline-none bg-gray-50 focus:bg-white`}
                       placeholder="+221 ..."
                     />
+                    {errors.phone && <p className="text-red-500 text-xs mt-1">{errors.phone}</p>}
                   </div>
                   <div className="space-y-2">
                     <label className="text-sm font-medium text-gray-700">Entreprise</label>
@@ -312,29 +347,29 @@ const Contact = () => {
                 </div>
 
                 <div className="space-y-2">
-                  <label className="text-sm font-medium text-gray-700">Sujet</label>
+                  <label className="text-sm font-medium text-gray-700">Sujet *</label>
                   <input
                     type="text"
                     name="subject"
                     value={formData.subject}
                     onChange={handleInputChange}
-                    required
-                    className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-green-500 focus:ring-2 focus:ring-green-200 transition-all outline-none bg-gray-50 focus:bg-white"
+                    className={`w-full px-4 py-3 rounded-xl border ${errors.subject ? 'border-red-500' : 'border-gray-200'} focus:border-green-500 focus:ring-2 focus:ring-green-200 transition-all outline-none bg-gray-50 focus:bg-white`}
                     placeholder="L'objet de votre message"
                   />
+                  {errors.subject && <p className="text-red-500 text-xs mt-1">{errors.subject}</p>}
                 </div>
 
                 <div className="space-y-2">
-                  <label className="text-sm font-medium text-gray-700">Message</label>
+                  <label className="text-sm font-medium text-gray-700">Message *</label>
                   <textarea
                     name="message"
                     value={formData.message}
                     onChange={handleInputChange}
-                    required
                     rows={5}
-                    className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-green-500 focus:ring-2 focus:ring-green-200 transition-all outline-none bg-gray-50 focus:bg-white resize-none"
+                    className={`w-full px-4 py-3 rounded-xl border ${errors.message ? 'border-red-500' : 'border-gray-200'} focus:border-green-500 focus:ring-2 focus:ring-green-200 transition-all outline-none bg-gray-50 focus:bg-white resize-none`}
                     placeholder="Comment pouvons-nous vous aider ?"
                   />
+                  {errors.message && <p className="text-red-500 text-xs mt-1">{errors.message}</p>}
                 </div>
 
                 <button
