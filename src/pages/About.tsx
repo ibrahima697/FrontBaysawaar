@@ -1,9 +1,11 @@
 import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { path } from 'framer-motion/client';
 import { Target, Eye, Heart, Users, Award, Globe, TrendingUp, Handshake, Facebook, Linkedin } from 'lucide-react';
 
 const About = () => {
+  const navigate = useNavigate();
   const values = [
     {
       icon: Target,
@@ -134,64 +136,130 @@ const About = () => {
         </div>
       </section>
 
-      {/* Company Story */}
-      <section className="py-16 sm:py-24 relative overflow-hidden">
-        {/* Background blobs */}
-        <div className="absolute top-0 left-0 w-full h-full overflow-hidden -z-10">
-          <div className="absolute top-20 left-10 w-72 h-72 bg-green-300/20 rounded-full blur-3xl"></div>
-          <div className="absolute bottom-20 right-10 w-96 h-96 bg-blue-300/20 rounded-full blur-3xl"></div>
-        </div>
-
+      {/* Company Story - Layered Overlap Layout */}
+      <section className="py-24 relative overflow-hidden bg-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 lg:gap-24 items-center">
+
+            {/* Left: Visual Stack */}
             <motion.div
-              initial={{ x: -50, opacity: 0 }}
+              initial={{ x: -100, opacity: 0 }}
               whileInView={{ x: 0, opacity: 1 }}
-              transition={{ duration: 0.8 }}
+              transition={{ duration: 1, ease: "easeOut" }}
               viewport={{ once: true }}
-              className="order-2 lg:order-1"
+              className="relative"
             >
-              <div className="bg-white/60 backdrop-blur-xl border border-white/40 p-8 sm:p-10 rounded-3xl shadow-xl">
-                <h2 className="text-3xl sm:text-4xl font-bold text-gray-900 mb-6 bg-gradient-to-r from-green-600 to-blue-600 bg-clip-text text-transparent">Notre Histoire</h2>
-                <div className="space-y-6 text-gray-700 leading-relaxed text-lg">
+              {/* Main Image */}
+              <div className="relative z-10 w-[85%] aspect-[4/5] rounded-[60px] overflow-hidden shadow-2xl border-8 border-white">
+                <img
+                  src="https://images.pexels.com/photos/3184465/pexels-photo-3184465.jpeg?auto=compress&cs=tinysrgb&w=800"
+                  alt="Notre équipe au travail"
+                  className="w-full h-full object-cover"
+                />
+              </div>
+
+              {/* Secondary Overlapping Image */}
+              <motion.div
+                initial={{ y: 50, opacity: 0 }}
+                whileInView={{ y: 0, opacity: 1 }}
+                transition={{ delay: 0.3, duration: 0.8 }}
+                viewport={{ once: true }}
+                className="absolute -bottom-10 -right-4 z-20 w-[55%] aspect-square rounded-[40px] overflow-hidden shadow-2xl border-8 border-white hidden sm:block"
+              >
+                <img
+                  src="https://images.pexels.com/photos/1181686/pexels-photo-1181686.jpeg?auto=compress&cs=tinysrgb&w=400"
+                  alt="Productivité"
+                  className="w-full h-full object-cover"
+                />
+              </motion.div>
+
+              {/* Floating Stat Card */}
+              <motion.div
+                initial={{ scale: 0, opacity: 0 }}
+                whileInView={{ scale: 1, opacity: 1 }}
+                transition={{ delay: 0.6, type: "spring", stiffness: 100 }}
+                viewport={{ once: true }}
+                className="absolute top-10 -right-6 lg:-right-12 z-30 bg-white p-6 rounded-3xl shadow-xl border border-gray-100 flex items-center gap-4"
+              >
+                <div className="w-12 h-12 bg-green-500 rounded-2xl flex items-center justify-center text-white">
+                  <TrendingUp size={24} />
+                </div>
+                <div>
+                  <p className="text-2xl font-black text-slate-900 leading-none">10,000+</p>
+                  <p className="text-xs font-bold text-slate-400 uppercase tracking-widest mt-1">Entreprises</p>
+                </div>
+              </motion.div>
+
+              {/* Floating Trust Card */}
+              <motion.div
+                initial={{ scale: 0, opacity: 0 }}
+                whileInView={{ scale: 1, opacity: 1 }}
+                transition={{ delay: 0.8, type: "spring", stiffness: 100 }}
+                viewport={{ once: true }}
+                className="absolute -bottom-6 -left-8 z-30 bg-[#182656] p-6 rounded-3xl shadow-xl border border-slate-800 flex flex-col gap-3"
+              >
+                <p className="text-white font-black text-lg">Très appréciée</p>
+                <div className="flex gap-1">
+                  {[1, 2, 3, 4, 5].map(i => (
+                    <motion.span
+                      key={i}
+                      animate={{ scale: [1, 1.2, 1] }}
+                      transition={{ repeat: Infinity, duration: 2, delay: i * 0.2 }}
+                      className="text-yellow-400"
+                    >
+                      ★
+                    </motion.span>
+                  ))}
+                </div>
+                <div className="flex -space-x-3 mt-1">
+                  {[1, 2, 3].map(i => (
+                    <div key={i} className="w-8 h-8 rounded-full border-2 border-slate-900 bg-gray-200 overflow-hidden">
+                      <img src={`https://i.pravatar.cc/100?img=${i + 10}`} alt="user" />
+                    </div>
+                  ))}
+                  <div className="w-8 h-8 rounded-full border-2 border-slate-900 bg-green-500 flex items-center justify-center text-[10px] font-bold text-white">
+                    +1k
+                  </div>
+                </div>
+              </motion.div>
+            </motion.div>
+
+            {/* Right: Content */}
+            <motion.div
+              initial={{ x: 100, opacity: 0 }}
+              whileInView={{ x: 0, opacity: 1 }}
+              transition={{ duration: 1, ease: "easeOut" }}
+              viewport={{ once: true }}
+            >
+              <div className="relative">
+                <div className="inline-block px-4 py-1.5 bg-green-50 text-green-600 rounded-lg text-sm font-black uppercase tracking-[0.2em] mb-6">
+                  Un peu sur nous
+                </div>
+                <h2 className="text-4xl sm:text-5xl lg:text-6xl font-black text-slate-900 mb-8 uppercase tracking-tighter leading-[0.9]">
+                  NOTRE <br />
+                  <span className="text-green-600">HISTOIRE</span>
+                </h2>
+                <div className="space-y-6 text-slate-500 text-lg font-medium leading-relaxed max-w-lg">
                   <p>
-                    Fondée en 2018, BAY SA WARR est née d'une vision simple mais puissante :
-                    créer un écosystème complet où les entreprises africaines pourraient prospérer,
-                    se connecter et concurrencer sur la scène mondiale.
+                    Fondée en 2018, BAY SA WARR est née d'une vision puissante : créer un écosystème où les entreprises africaines prospèrent sur la scène mondiale.
                   </p>
                   <p>
-                    Ce qui a commencé comme une initiative locale au Sénégal a grandi en une
-                    plateforme continentale servant plus de 10 000 entreprises dans plus de 50
-                    pays. Notre succès est basé sur la compréhension des défis et des opportunités
-                    uniques au sein des marchés africains.
+                    Aujourd'hui, nous sommes le moteur du commerce numérique africain, facilitant des transactions continentales et bâtissant des partenariats durables pour un avenir prospère.
                   </p>
-                  <p>
-                    Aujourd'hui, nous sommes fiers d'être reconnus comme une force motrice dans
-                    le commerce numérique africain, facilitant des millions de dollars de valeur
-                    commerciale et créant des partenariats durables.
-                  </p>
+                </div>
+
+                <div className="mt-12">
+                  <button
+                    onClick={() => navigate('/enrollments')}
+                    className="group relative px-8 py-4 bg-[#182656] text-white rounded-2xl font-black uppercase tracking-widest text-sm overflow-hidden transition-all hover:pr-12"
+                  >
+                    <span className="relative z-10 transition-all group-hover:mr-2">Nous rejoindre</span>
+                    <TrendingUp className="absolute right-4 top-1/2 -translate-y-1/2 opacity-0 group-hover:opacity-100 transition-all rotate-45" size={20} />
+                  </button>
                 </div>
               </div>
             </motion.div>
 
-            <motion.div
-              initial={{ x: 50, opacity: 0 }}
-              whileInView={{ x: 0, opacity: 1 }}
-              transition={{ duration: 0.8 }}
-              viewport={{ once: true }}
-              className="relative order-1 lg:order-2"
-            >
-              <div className="absolute inset-0 bg-gradient-to-tr from-green-500 to-blue-500 rounded-3xl transform rotate-3 blur-lg opacity-30"></div>
-              <img
-                src="https://images.pexels.com/photos/3184465/pexels-photo-3184465.jpeg?auto=compress&cs=tinysrgb&w=800"
-                alt="African business meeting"
-                className="relative rounded-3xl shadow-2xl w-full h-[400px] object-cover border-4 border-white/50"
-              />
-              <div className="absolute -bottom-6 -left-6 bg-white/80 backdrop-blur-md p-6 rounded-2xl shadow-xl border border-white/40">
-                <p className="text-4xl font-bold text-green-600">+7 ans</p>
-                <p className="text-gray-600 font-medium">d'excellence</p>
-              </div>
-            </motion.div>
           </div>
         </div>
       </section>
@@ -298,46 +366,124 @@ const About = () => {
         </div>
       </section>
 
-      {/* Activities */}
-      <section className="py-20 bg-gray-50 relative">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-16">
-            <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">Nos Activités Principales</h2>
-            <p className="text-xl text-gray-600 max-w-2xl mx-auto">
-              Solutions globales pour les entreprises africaines modernes
+      {/* Activities - Redesigned Bento Grid */}
+      <section className="py-24 bg-white relative overflow-hidden">
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_right,rgba(34,197,94,0.02)_0%,transparent_50%)]"></div>
+
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+          <div className="text-center mb-20">
+            <h2 className="text-3xl sm:text-4xl md:text-5xl font-black text-slate-900 mb-6 uppercase tracking-tight">
+              Nos <span className="text-green-600">Activités</span>
+            </h2>
+            <div className="w-24 h-1.5 bg-green-600 mx-auto rounded-full mb-4"></div>
+            <p className="text-slate-500 text-lg max-w-2xl mx-auto font-medium">
+              Des solutions innovantes pour propulser l'excellence entrepreneuriale africaine.
             </p>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-            {activities.map((activity, index) => (
-              <motion.div
-                key={index}
-                initial={{ y: 30, opacity: 0 }}
-                whileInView={{ y: 0, opacity: 1 }}
-                transition={{ delay: index * 0.1 }}
-                viewport={{ once: true }}
-                className="group relative overflow-hidden rounded-3xl bg-white/80 backdrop-blur-xl border border-white/50 p-8 hover:shadow-2xl transition-all duration-300"
-              >
-                <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-green-500/10 to-blue-500/10 rounded-bl-full -mr-8 -mt-8 transition-transform group-hover:scale-150 duration-500"></div>
-
-                <div className="flex items-start gap-6 relative z-10">
-                  <div className="w-16 h-16 bg-white rounded-2xl shadow-md flex items-center justify-center flex-shrink-0 group-hover:scale-110 transition-transform duration-300">
-                    <activity.icon className="text-green-600 w-8 h-8" />
-                  </div>
-                  <div>
-                    <h3 className="text-2xl font-bold text-gray-900 mb-2">{activity.title}</h3>
-                    <p className="text-gray-600 mb-4">{activity.description}</p>
-                    <div className="flex flex-wrap gap-2">
-                      {activity.features.map((feature, idx) => (
-                        <span key={idx} className="text-xs font-medium px-3 py-1 bg-green-50 text-green-700 rounded-full border border-green-100">
-                          {feature}
-                        </span>
-                      ))}
-                    </div>
-                  </div>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 auto-rows-[320px] md:auto-rows-[280px]">
+            {/* 1. Plateforme FIPA - TALL CARD */}
+            <motion.div
+              initial={{ opacity: 0, y: 30 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              className="md:row-span-2 group relative overflow-hidden rounded-[40px] bg-gray-50 p-10 border border-gray-100 hover:shadow-2xl hover:shadow-green-900/10 transition-all duration-500"
+            >
+              <div className="h-full flex flex-col">
+                <div className="w-16 h-16 bg-white rounded-2xl shadow-sm flex items-center justify-center mb-8 group-hover:scale-110 transition-transform duration-500">
+                  <Globe className="text-green-600 w-8 h-8" />
                 </div>
-              </motion.div>
-            ))}
+                <h3 className="text-3xl font-black text-slate-900 mb-4 uppercase tracking-tighter leading-none">
+                  {activities[0].title}
+                </h3>
+                <p className="text-slate-500 font-medium mb-8 leading-relaxed">
+                  {activities[0].description}
+                </p>
+                <div className="mt-auto space-y-3">
+                  {activities[0].features.map((feature, idx) => (
+                    <div key={idx} className="flex items-center gap-2 text-sm font-bold text-slate-700">
+                      <div className="w-1.5 h-1.5 rounded-full bg-green-500"></div>
+                      {feature}
+                    </div>
+                  ))}
+                </div>
+              </div>
+              <div className="absolute -bottom-10 -right-10 w-40 h-40 bg-green-500/5 rounded-full blur-3xl group-hover:bg-green-500/10 transition-colors"></div>
+            </motion.div>
+
+            {/* 2. Solutions E-commerce - WIDE CARD */}
+            <motion.div
+              initial={{ opacity: 0, y: 30 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ delay: 0.1 }}
+              className="md:col-span-2 group relative overflow-hidden rounded-[40px] bg-[#182656] p-10 text-white hover:shadow-2xl hover:shadow-slate-900/40 transition-all duration-500"
+            >
+              <div className="flex flex-col md:flex-row gap-10 h-full">
+                <div className="flex-1 flex flex-col justify-center">
+                  <div className="w-14 h-14 bg-white/10 rounded-2xl flex items-center justify-center mb-6 group-hover:rotate-12 transition-transform">
+                    <TrendingUp className="text-green-400 w-7 h-7" />
+                  </div>
+                  <h3 className="text-3xl font-black mb-4 uppercase tracking-tighter">
+                    {activities[1].title}
+                  </h3>
+                  <p className="text-gray-400 font-medium leading-relaxed">
+                    {activities[1].description}
+                  </p>
+                </div>
+                <div className="flex-1 flex flex-wrap gap-3 content-center justify-center md:justify-end">
+                  {activities[1].features.map((feature, idx) => (
+                    <span key={idx} className="px-4 py-2 bg-white/5 border border-white/10 rounded-xl text-xs font-bold uppercase tracking-widest hover:bg-green-500 hover:text-slate-950 transition-colors">
+                      {feature}
+                    </span>
+                  ))}
+                </div>
+              </div>
+            </motion.div>
+
+            {/* 3. Programmes de Partenariat - STANDARD CARD */}
+            <motion.div
+              initial={{ opacity: 0, y: 30 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ delay: 0.2 }}
+              className="group relative overflow-hidden rounded-[40px] bg-green-50 p-8 border border-green-100 hover:shadow-2xl hover:shadow-green-900/10 transition-all duration-500"
+            >
+              <div className="w-14 h-14 bg-white rounded-2xl shadow-sm flex items-center justify-center mb-6 group-hover:-translate-y-2 transition-transform">
+                <Handshake className="text-green-600 w-7 h-7" />
+              </div>
+              <h3 className="text-xl font-black text-slate-900 mb-3 uppercase tracking-tighter">
+                {activities[2].title}
+              </h3>
+              <p className="text-slate-600 text-sm font-medium leading-relaxed">
+                {activities[2].description}
+              </p>
+              <div className="absolute top-4 right-4 text-green-200/50 group-hover:text-green-300/50 transition-colors">
+                <Handshake size={64} strokeWidth={1} />
+              </div>
+            </motion.div>
+
+            {/* 4. Conseil aux Entreprises - STANDARD CARD */}
+            <motion.div
+              initial={{ opacity: 0, y: 30 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ delay: 0.3 }}
+              className="group relative overflow-hidden rounded-[40px] bg-gray-50 p-8 border border-gray-100 hover:shadow-2xl hover:shadow-slate-900/10 transition-all duration-500"
+            >
+              <div className="w-14 h-14 bg-white rounded-2xl shadow-sm flex items-center justify-center mb-6 group-hover:rotate-12 transition-transform">
+                <Award className="text-green-600 w-7 h-7" />
+              </div>
+              <h3 className="text-xl font-black text-slate-900 mb-3 uppercase tracking-tighter">
+                {activities[3].title}
+              </h3>
+              <p className="text-slate-600 text-sm font-medium leading-relaxed">
+                {activities[3].description}
+              </p>
+              <div className="absolute top-4 right-4 text-gray-200 group-hover:text-green-200 transition-colors">
+                <Award size={64} strokeWidth={1} />
+              </div>
+            </motion.div>
           </div>
         </div>
       </section>
