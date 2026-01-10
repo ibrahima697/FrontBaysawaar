@@ -205,7 +205,7 @@ const About = () => {
                       key={i}
                       animate={{ scale: [1, 1.2, 1] }}
                       transition={{ repeat: Infinity, duration: 2, delay: i * 0.2 }}
-                      className="text-yellow-400"
+                      className="text-green-500"
                     >
                       ★
                     </motion.span>
@@ -264,70 +264,102 @@ const About = () => {
         </div>
       </section>
 
-      {/* Mission & Vision Redesigned */}
-      <section className="py-24 relative overflow-hidden bg-white">
-        {/* Decorative Background Elements */}
-        <div className="absolute top-0 left-0 w-full h-full overflow-hidden pointer-events-none">
-          <div className="absolute top-1/4 -left-20 w-96 h-96 bg-green-100/50 rounded-full blur-3xl mix-blend-multiply animate-blob"></div>
-          <div className="absolute bottom-1/4 -right-20 w-96 h-96 bg-blue-100/50 rounded-full blur-3xl mix-blend-multiply animate-blob animation-delay-2000"></div>
-        </div>
-
+      {/* Mission & Vision - Precision Infographic Redesign */}
+      <section className="py-32 relative overflow-hidden bg-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-8 lg:gap-12">
+          <div className="relative flex flex-col md:flex-row items-center justify-center gap-16 lg:gap-32">
 
-            {/* Mission Card */}
+            {/* Connecting S-Curve Line (Desktop Only) */}
+            <svg className="absolute hidden md:block w-full h-full pointer-events-none z-0" viewBox="0 0 1000 400">
+              <motion.path
+                d="M430 200 C 500 200, 500 200, 570 200"
+                stroke="#94a3b8"
+                strokeWidth="2"
+                fill="none"
+                initial={{ pathLength: 0, opacity: 0 }}
+                whileInView={{ pathLength: 1, opacity: 1 }}
+                transition={{ duration: 1, ease: "easeInOut" }}
+                viewport={{ once: true }}
+              />
+              {/* Start Dot */}
+              <motion.circle
+                cx="428" cy="200" r="4" fill="#2d8756"
+                initial={{ scale: 0 }}
+                whileInView={{ scale: 1 }}
+                transition={{ delay: 0.8 }}
+                viewport={{ once: true }}
+              />
+              {/* End Dot */}
+              <motion.circle
+                cx="572" cy="200" r="4" fill="#182656"
+                initial={{ scale: 0 }}
+                whileInView={{ scale: 1 }}
+                transition={{ delay: 0.8 }}
+                viewport={{ once: true }}
+              />
+            </svg>
+
+            {/* Mission Card (Option 01) */}
             <motion.div
-              initial={{ x: -30, opacity: 0 }}
+              initial={{ x: -50, opacity: 0 }}
               whileInView={{ x: 0, opacity: 1 }}
-              transition={{ duration: 0.6 }}
+              transition={{ duration: 0.8 }}
               viewport={{ once: true }}
-              className="group relative"
+              className="relative w-full max-w-sm group"
             >
-              <div className="absolute inset-0 bg-gradient-to-br from-green-50 to-white rounded-[2rem] transform rotate-1 group-hover:rotate-2 transition-transform duration-500"></div>
-              <div className="relative bg-white/80 backdrop-blur-xl border border-green-100 p-8 sm:p-10 rounded-[2rem] shadow-xl hover:shadow-2xl hover:shadow-green-100/50 transition-all duration-500 h-full flex flex-col items-start">
-                <div className="w-16 h-16 bg-green-50 rounded-2xl flex items-center justify-center mb-8 group-hover:scale-110 transition-transform duration-500">
-                  <Target className="text-green-600" size={32} strokeWidth={1.5} />
+              {/* Image-accurate Border Frame */}
+              <div className="absolute -inset-6 pointer-events-none">
+                {/* Thin Base Border */}
+                <div className="absolute inset-0 border-[1.5px] border-green-200 rounded-[3rem]"></div>
+                {/* Dotted Top-Left Segment */}
+                <div className="absolute -top-[1.5px] -left-[1.5px] w-1/2 h-1/2 border-t-[3px] border-l-[3px] border-dotted border-green-600 rounded-tl-[3rem]"></div>
+                {/* Thick Blue Bottom-Left Bar */}
+                <div className="absolute -bottom-[1.5px] -left-[1.5px] w-1/3 h-1/3 border-b-[6px] border-l-[6px] border-green-600 rounded-bl-[3rem]"></div>
+              </div>
+
+              <div className="relative bg-[#fcfcfc] p-10 rounded-[2.5rem] shadow-xl flex flex-col items-center text-center h-full">
+                <div className="w-16 h-16 bg-white rounded-2xl shadow-sm flex items-center justify-center mb-8">
+                  <Target className="text-green-600" size={32} />
                 </div>
-                <h3 className="text-3xl font-bold text-gray-900 mb-4 group-hover:text-green-700 transition-colors">Notre Mission</h3>
-                <p className="text-xl text-gray-600 font-light leading-relaxed mb-6">
-                  Émanciper les entreprises africaines grâce au <span className="font-medium text-green-600">numérique</span>.
+
+                <span className="text-[10px] font-black text-green-600 uppercase tracking-[0.4em] mb-4"></span>
+                <h3 className="text-2xl font-black text-green-600 mb-6 uppercase tracking-tight">Notre Mission</h3>
+
+                <p className="text-slate-400 text-sm font-medium leading-relaxed">
+                  Émanciper les entreprises africaines grâce au numérique en boostant leur croissance et leur visibilité pour un impact réel.
                 </p>
-                <ul className="space-y-3 mt-auto">
-                  {['Innovation Digitale', 'Croissance Durable', 'Compétitivité Mondiale'].map((item, i) => (
-                    <li key={i} className="flex items-center gap-3 text-gray-500">
-                      <div className="w-1.5 h-1.5 rounded-full bg-green-400"></div>
-                      {item}
-                    </li>
-                  ))}
-                </ul>
               </div>
             </motion.div>
 
-            {/* Vision Card */}
+            {/* Vision Card (Option 02) */}
             <motion.div
-              initial={{ x: 30, opacity: 0 }}
+              initial={{ x: 50, opacity: 0 }}
               whileInView={{ x: 0, opacity: 1 }}
-              transition={{ duration: 0.6, delay: 0.2 }}
+              transition={{ duration: 0.8 }}
               viewport={{ once: true }}
-              className="group relative"
+              className="relative w-full max-w-sm group"
             >
-              <div className="absolute inset-0 bg-gradient-to-bl from-blue-50 to-white rounded-[2rem] transform -rotate-1 group-hover:-rotate-2 transition-transform duration-500"></div>
-              <div className="relative bg-white/80 backdrop-blur-xl border border-blue-100 p-8 sm:p-10 rounded-[2rem] shadow-xl hover:shadow-2xl hover:shadow-blue-100/50 transition-all duration-500 h-full flex flex-col items-start">
-                <div className="w-16 h-16 bg-blue-50 rounded-2xl flex items-center justify-center mb-8 group-hover:scale-110 transition-transform duration-500">
-                  <Eye className="text-blue-600" size={32} strokeWidth={1.5} />
+              {/* Image-accurate Border Frame */}
+              <div className="absolute -inset-6 pointer-events-none">
+                {/* Thin Base Border */}
+                <div className="absolute inset-0 border-[1.5px] border-slate-200 rounded-[3rem]"></div>
+                {/* Thick Navy Top-Right Bar */}
+                <div className="absolute -top-[1.5px] -right-[1.5px] w-1/3 h-1/3 border-t-[6px] border-r-[6px] border-[#182656] rounded-tr-[3rem]"></div>
+                {/* Dotted Bottom-Right Segment */}
+                <div className="absolute -bottom-[1.5px] -right-[1.5px] w-1/2 h-1/2 border-b-[3px] border-r-[3px] border-dotted border-[#182656] rounded-br-[3rem]"></div>
+              </div>
+
+              <div className="relative bg-[#fcfcfc] p-10 rounded-[2.5rem] shadow-xl flex flex-col items-center text-center h-full">
+                <div className="w-16 h-16 bg-white rounded-2xl shadow-sm flex items-center justify-center mb-8">
+                  <Eye className="text-[#182656]" size={32} />
                 </div>
-                <h3 className="text-3xl font-bold text-gray-900 mb-4 group-hover:text-blue-700 transition-colors">Notre Vision</h3>
-                <p className="text-xl text-gray-600 font-light leading-relaxed mb-6">
-                  Un marché continental <span className="font-medium text-blue-600">unifié</span> et prospère.
+
+                <span className="text-[10px] font-black text-slate-300 uppercase tracking-[0.4em] mb-4"></span>
+                <h3 className="text-2xl font-black text-[#182656] mb-6 uppercase tracking-tight">Notre Vision</h3>
+
+                <p className="text-slate-400 text-sm font-medium leading-relaxed">
+                  Devenir la référence continentale du commerce et de la transformation numérique en Afrique, bâtissant un marché unifié.
                 </p>
-                <ul className="space-y-3 mt-auto">
-                  {['Marché Unique', 'Excellence Africaine', 'Prospérité Partagée'].map((item, i) => (
-                    <li key={i} className="flex items-center gap-3 text-gray-500">
-                      <div className="w-1.5 h-1.5 rounded-full bg-blue-400"></div>
-                      {item}
-                    </li>
-                  ))}
-                </ul>
               </div>
             </motion.div>
 
