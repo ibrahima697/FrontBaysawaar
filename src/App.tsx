@@ -18,6 +18,7 @@ import ScrollToTop from './components/ScrollToTop';
 import ProtectedRoute from './components/ProtectedRoute';
 import Events from './pages/Events';
 import ForgotPassword from './pages/ForgotPassword';
+import WhatsAppWidget from './components/WhatsAppWidget';
 
 const AppContent = () => {
   const location = useLocation();
@@ -49,6 +50,7 @@ const AppContent = () => {
         </Routes>
       </AnimatePresence>
       {!isLoginPage && <Footer />}
+      <WhatsAppWidget />
     </div>
   );
 };
