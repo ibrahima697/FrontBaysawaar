@@ -20,7 +20,8 @@ import {
   UserCheck,
   Loader2,
   Search,
-  Filter
+  Filter,
+  Star
 } from 'lucide-react';
 import { adminAPI, productsAPI, blogsAPI, formationsAPI, eventsAPI } from '../services/api';
 import Swal from 'sweetalert2';
@@ -352,6 +353,39 @@ const AdminDashboard = () => {
       } finally {
         removeProcessingId(id);
       }
+    }
+  };
+
+
+  const handleToggleHero = async (event: EventData) => {
+    try {
+      addProcessingId(event._id!);
+      const newStatus = !event.isFeatured;
+
+      if (newStatus) {
+        // Enforce only one featured event: find and disable any existing featured event
+        const currentlyFeatured = events.find(e => e.isFeatured && e._id !== event._id);
+        if (currentlyFeatured) {
+          await eventsAPI.update(currentlyFeatured._id!, { isFeatured: false } as any);
+        }
+      }
+
+      await eventsAPI.update(event._id!, { isFeatured: newStatus } as any);
+
+      Swal.fire({
+        icon: 'success',
+        title: 'Succès',
+        text: newStatus ? 'Événement mis en avant dans le Hero' : 'Événement retiré du Hero',
+        timer: 1500,
+        showConfirmButton: false
+      });
+
+      fetchEvents();
+    } catch (error) {
+      console.error('Erreur lors du toggle hero:', error);
+      Swal.fire('Erreur', 'Impossible de modifier le statut Hero', 'error');
+    } finally {
+      removeProcessingId(event._id!);
     }
   };
 
@@ -1380,6 +1414,14 @@ const AdminDashboard = () => {
                       </div>
 
                       <div className="mt-6 flex gap-3">
+                        <button
+                          onClick={() => handleToggleHero(event)}
+                          disabled={event._id ? processingIds.has(event._id) : false}
+                          className={`flex items-center justify-center p-2.5 rounded-xl transition-all ${event.isFeatured ? 'bg-yellow-100 text-yellow-600 shadow-inner' : 'bg-gray-100 text-gray-400 hover:text-yellow-500 hover:bg-yellow-50'}`}
+                          title={event.isFeatured ? "Retirer du Hero" : "Mettre en Hero"}
+                        >
+                          <Star className={`w-5 h-5 ${event.isFeatured ? 'fill-current' : ''}`} />
+                        </button>
                         <button
                           onClick={() => handleEditEvent(event)}
                           className="flex-1 flex items-center justify-center gap-2 py-2.5 bg-gray-100 text-gray-700 rounded-xl hover:bg-gray-200 transition-colors font-medium text-sm"

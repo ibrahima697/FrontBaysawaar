@@ -3,7 +3,7 @@ import { useEffect, useState } from 'react';
 import { motion, Variants, AnimatePresence } from 'framer-motion';
 import {
   Calendar, MapPin, Users, ArrowRight, TrendingUp, Globe,
-  Award, CheckCircle, Play, X, ChevronLeft, ChevronRight,
+  Award, CheckCircle, X, ChevronLeft, ChevronRight,
   Info, Clock, DollarSign, Heart, Zap, Share2
 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
@@ -143,73 +143,96 @@ const Events = () => {
   return (
     <div className="min-h-screen bg-[#050505] text-white font-sans selection:bg-green-500 selection:text-white pb-20">
       {/* Hero Section - AfroNeo Style: Big, Bold, Immersive */}
-      {events.find(e => e.isFeatured) && (
-        <section className="relative h-screen min-h-[700px] flex items-center overflow-hidden">
-          {/* Background Image with heavy overlay */}
-          <div className="absolute inset-0 z-0">
-            <div className="absolute inset-0 bg-gradient-to-t from-[#050505] via-[#050505]/80 to-transparent z-10" />
-            <div className="absolute inset-0 bg-black/40 z-0" />
-            <motion.img
-              initial={{ scale: 1.1 }}
-              animate={{ scale: 1 }}
-              transition={{ duration: 10, ease: "easeOut" }}
-              src="https://res.cloudinary.com/drxouwbms/image/upload/v1765733341/african-kid-marketplace_zwl4xj.jpg"
-              alt="FIPA 2026"
-              className="w-full h-full object-cover grayscale-[30%]"
-            />
-          </div>
+      {(() => {
+        const featuredEvent = events.find(e => e.isFeatured);
+        if (!featuredEvent) return null;
 
-          <div className="relative z-20 max-w-[90rem] mx-auto px-6 w-full pt-20">
+        return (
+          <section className="relative h-screen min-h-[700px] flex items-center overflow-hidden">
+            {/* Background Image with heavy overlay */}
+            <div className="absolute inset-0 z-0">
+              <div className="absolute inset-0 bg-gradient-to-t from-[#050505] via-[#050505]/80 to-transparent z-10" />
+              <div className="absolute inset-0 bg-black/40 z-0" />
+              <motion.img
+                key={featuredEvent.images?.[0]?.url}
+                initial={{ scale: 1.1, opacity: 0 }}
+                animate={{ scale: 1, opacity: 1 }}
+                transition={{ duration: 2, ease: "easeOut" }}
+                src={featuredEvent.images?.[0]?.url || "https://res.cloudinary.com/drxouwbms/image/upload/v1765733341/african-kid-marketplace_zwl4xj.jpg"}
+                alt={featuredEvent.title}
+                className="w-full h-full object-cover grayscale-[30%]"
+              />
+            </div>
+
+            <div className="relative z-20 max-w-[90rem] mx-auto px-6 w-full pt-20">
+              <motion.div
+                initial={{ y: 50, opacity: 0 }}
+                animate={{ y: 0, opacity: 1 }}
+                transition={{ duration: 1, delay: 0.2 }}
+                className="max-w-5xl"
+              >
+                <div className="flex items-center gap-3 mb-8">
+                  <span className="h-[1px] w-12 bg-green-500"></span>
+                  <span className="text-green-400 uppercase tracking-[0.2em] text-sm font-medium">
+                    {featuredEvent.type.replace('_', ' ')} • À LA UNE
+                  </span>
+                </div>
+
+                <h1 className="text-7xl md:text-9xl font-black tracking-tight leading-[0.9] mb-8 text-white uppercase line-clamp-2">
+                  {featuredEvent.title.split(' ').map((word, i) => (
+                    <span key={i} className={i % 2 === 1 ? 'text-transparent bg-clip-text bg-gradient-to-r from-green-500 to-green-700' : ''}>
+                      {word}{' '}
+                    </span>
+                  ))}
+                </h1>
+
+                <p className="text-xl md:text-2xl text-gray-300 max-w-3xl font-light mb-12 leading-relaxed line-clamp-3">
+                  {featuredEvent.shortDescription}
+                </p>
+
+                <div className="flex flex-wrap gap-6">
+                  <motion.button
+                    onClick={() => setSelectedEvent(featuredEvent)}
+                    whileHover={{ scale: 1.02 }}
+                    whileTap={{ scale: 0.98 }}
+                    className="bg-white text-black px-10 py-5 rounded-none text-lg font-bold tracking-wide hover:bg-green-500 hover:text-white transition-all duration-300 flex items-center gap-3 shadow-[0_20px_50px_rgba(0,0,0,0.5)]"
+                  >
+                    VOIR LES DÉTAILS <ArrowRight size={20} />
+                  </motion.button>
+
+                  <motion.button
+                    onClick={() => handleRegister(featuredEvent.slug)}
+                    whileHover={{ scale: 1.02 }}
+                    whileTap={{ scale: 0.98 }}
+                    className="text-white px-10 py-5 border border-white/20 hover:border-white hover:bg-white/5 transition-all duration-300 flex items-center gap-3 text-lg font-medium"
+                  >
+                    S'INSCRIRE MAINTENANT
+                  </motion.button>
+                </div>
+              </motion.div>
+            </div>
+
+            {/* Scroll Indicator */}
             <motion.div
-              initial={{ y: 50, opacity: 0 }}
-              animate={{ y: 0, opacity: 1 }}
-              transition={{ duration: 1, delay: 0.2 }}
-              className="max-w-5xl"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ delay: 1.5, duration: 1 }}
+              className="absolute bottom-10 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2 z-20"
             >
-              <div className="flex items-center gap-3 mb-8">
-                <span className="h-[1px] w-12 bg-green-500"></span>
-                <span className="text-green-400 uppercase tracking-[0.2em] text-sm font-medium">L'événement de l'année</span>
-              </div>
-
-              <h1 className="text-7xl md:text-9xl font-black tracking-tight leading-[0.9] mb-8 text-white">
-                FIPA <span className="text-transparent bg-clip-text bg-gradient-to-r from-green-500 to-green-700">2026</span>
-              </h1>
-
-              <p className="text-xl md:text-2xl text-gray-300 max-w-2xl font-light mb-12 leading-relaxed">
-                Le rendez-vous incontournable pour <span className="text-white font-medium">connecter l'Afrique au monde</span>.
-                Une immersion totale dans le futur du commerce continental.
-              </p>
-
-              <div className="flex flex-wrap gap-6">
-                <motion.a
-                  href="/fipa-2026"
-                  whileHover={{ scale: 1.02 }}
-                  whileTap={{ scale: 0.98 }}
-                  className="bg-white text-black px-10 py-5 rounded-none text-lg font-bold tracking-wide hover:bg-green-500 hover:text-white transition-all duration-300 flex items-center gap-3"
-                >
-                  RÉSERVER MA PLACE <ArrowRight size={20} />
-                </motion.a>
-
-                <motion.button
-                  whileHover={{ scale: 1.02, x: 5 }}
-                  className="text-white px-10 py-5 border border-white/20 hover:border-white hover:bg-white/5 transition-all duration-300 flex items-center gap-3 text-lg font-medium"
-                >
-                  <Play size={20} fill="currentColor" /> DÉCOUVRIR LE TEASER
-                </motion.button>
-              </div>
+              <span className="text-[10px] uppercase tracking-widest text-gray-500">Explorer</span>
+              <div className="w-[1px] h-12 bg-gradient-to-b from-green-500 to-transparent"></div>
             </motion.div>
-          </div>
+          </section>
+        );
+      })()}
 
-          {/* Scroll Indicator */}
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ delay: 1.5, duration: 1 }}
-            className="absolute bottom-10 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2 z-20"
-          >
-            <span className="text-[10px] uppercase tracking-widest text-gray-500">Scroll</span>
-            <div className="w-[1px] h-12 bg-gradient-to-b from-green-500 to-transparent"></div>
-          </motion.div>
+      {!events.find(e => e.isFeatured) && (
+        <section className="relative h-[60vh] flex items-center justify-center bg-gradient-to-b from-black to-[#050505] overflow-hidden">
+          <div className="absolute inset-0 opacity-20 bg-[url('https://www.transparenttextures.com/patterns/carbon-fibre.png')]"></div>
+          <div className="text-center relative z-10 p-8 pt-32">
+            <h1 className="text-6xl md:text-8xl font-black text-white mb-6 uppercase tracking-tighter">Nos Événements</h1>
+            <p className="text-gray-500 text-xl max-w-2xl mx-auto font-light">Découvrez toutes nos activités et inscrivez-vous pour rejoindre l'innovation.</p>
+          </div>
         </section>
       )}
 
