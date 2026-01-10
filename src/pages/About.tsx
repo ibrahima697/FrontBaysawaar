@@ -1,6 +1,7 @@
-import { motion } from 'framer-motion';
+import { useState } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
 import { path } from 'framer-motion/client';
-import { Target, Eye, Heart, Users, Award, Globe, TrendingUp, Handshake } from 'lucide-react';
+import { Target, Eye, Heart, Users, Award, Globe, TrendingUp, Handshake, Facebook, Linkedin } from 'lucide-react';
 
 const About = () => {
   const values = [
@@ -79,10 +80,10 @@ const About = () => {
       image: 'https://images.pexels.com/photos/1239291/pexels-photo-1239291.jpeg?auto=compress&cs=tinysrgb&w=400',
     },
     {
-      name: 'Amina Kone',
-      role: 'Directrice des Partenariats',
-      bio: 'Développeuse de relations avec un vaste réseau sur les marchés africains et internationaux.',
-      image: 'https://images.pexels.com/photos/1239291/pexels-photo-1239291.jpeg?auto=compress&cs=tinysrgb&w=400',
+      name: 'Ndiaga Lo',
+      role: 'Developpeur Frontend',
+      bio: 'Développeur Frontend avec une expertise approfondie en React et Next.js.',
+      image: 'https://res.cloudinary.com/drxouwbms/image/upload/v1743803438/learners/bwear6xjrbj69froahdp.jpg',
     },
   ];
 
@@ -94,6 +95,13 @@ const About = () => {
     { name: 'Promotion Export Sénégal', logo: 'https://res.cloudinary.com/drxouwbms/image/upload/v1756378085/1630632559560-removebg-preview_sn0rfl.png' },
     { name: 'Gouvernement du Sénégal', logo: 'https://res.cloudinary.com/drxouwbms/image/upload/v1755781150/Coat_of_arms_of_Senegal.svg_bzqaft.png' },
   ];
+
+  const [currentSlide, setCurrentSlide] = useState(0);
+  const itemsPerSlide = 4;
+  const numSlides = Math.ceil(team.length / itemsPerSlide);
+
+  const nextSlide = () => setCurrentSlide((prev) => (prev + 1) % numSlides);
+  const prevSlide = () => setCurrentSlide((prev) => (prev - 1 + numSlides) % numSlides);
 
   return (
     <motion.div
@@ -334,72 +342,173 @@ const About = () => {
         </div>
       </section>
 
-      {/* Team */}
-      <section className="py-20 relative overflow-hidden">
-        <div className="absolute inset-0 bg-gradient-to-b from-white via-green-50/30 to-white"></div>
+      {/* Team Section - Carousel Slide Mode */}
+      <section className="py-24 bg-gray-50 relative overflow-hidden">
+        <div className="absolute top-0 left-0 w-full h-1 bg-green-500/10"></div>
+
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
           <div className="text-center mb-16">
-            <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">Équipe de Direction</h2>
-            <p className="text-xl text-gray-600 max-w-2xl mx-auto">
-              Des leaders expérimentés qui font avancer notre vision
+            <h2 className="text-3xl sm:text-4xl md:text-5xl font-extrabold text-slate-900 mb-6 uppercase tracking-tight">
+              Notre<span className="text-green-600"> équipe</span>
+            </h2>
+            <div className="w-24 h-1 bg-green-600 mx-auto mb-4"></div>
+            <p className="text-slate-500 text-lg uppercase tracking-widest font-light">
+              Des leaders visionnaires au service de l'excellence
             </p>
           </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-8">
-            {team.map((member, index) => (
-              <motion.div
-                key={index}
-                initial={{ y: 30, opacity: 0 }}
-                whileInView={{ y: 0, opacity: 1 }}
-                transition={{ delay: index * 0.1 }}
-                viewport={{ once: true }}
-                className="group relative bg-white/40 backdrop-blur-md border border-white/60 rounded-3xl p-6 text-center hover:bg-white/80 transition-all duration-300 hover:shadow-xl hover:-translate-y-2"
-              >
-                <div className="relative mb-6 inline-block">
-                  <div className="absolute inset-0 bg-gradient-to-br from-green-400 to-blue-500 rounded-full blur opacity-0 group-hover:opacity-50 transition-opacity duration-300"></div>
-                  <img
-                    src={member.image}
-                    alt={member.name}
-                    className="relative w-32 h-32 rounded-full object-cover border-4 border-white shadow-lg"
+          <div className="relative px-2 sm:px-12">
+            <div className="overflow-hidden py-8">
+              <AnimatePresence mode="wait">
+                <motion.div
+                  key={currentSlide}
+                  initial={{ opacity: 0, x: 50 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  exit={{ opacity: 0, x: -50 }}
+                  transition={{ duration: 0.5, ease: "easeInOut" }}
+                  className="grid grid-cols-1 lg:grid-cols-2 gap-x-12 gap-y-16"
+                >
+                  {team.slice(currentSlide * itemsPerSlide, (currentSlide + 1) * itemsPerSlide).map((member, index) => (
+                    <div
+                      key={index}
+                      className="flex flex-col sm:flex-row group"
+                    >
+                      {/* Image Container */}
+                      <div className="relative w-full sm:w-56 h-64 sm:h-56 flex-shrink-0">
+                        <div className="absolute inset-0 bg-green-500/10 translate-x-3 translate-y-3 rounded-tl-[40px] rounded-br-[40px] group-hover:translate-x-1 group-hover:translate-y-1 transition-transform duration-300"></div>
+                        <img
+                          src={member.image}
+                          alt={member.name}
+                          className="relative w-full h-full object-cover rounded-tl-[40px] rounded-br-[40px] grayscale group-hover:grayscale-0 transition-all duration-500 border-2 border-white shadow-lg"
+                        />
+                      </div>
+
+                      {/* Info Container */}
+                      <div className="flex-1 bg-white p-6 sm:pl-10 relative rounded-2xl sm:rounded-none sm:rounded-rk-2xl sm:rounded-br-2xl border border-gray-100 shadow-sm group-hover:shadow-xl transition-all duration-300">
+                        {/* Role Tag */}
+                        <div className="absolute -top-4 left-6 sm:left-10 bg-green-600 px-6 py-1.5 rounded-tr-xl rounded-bl-sm shadow-lg">
+                          <span className="text-white font-black text-xs uppercase tracking-tighter">
+                            {member.role === 'PDG & Fondatrice' ? 'CEO' :
+                              member.role === 'Directrice des Opérations' ? 'COO' :
+                                member.role === 'Directeur Technique' ? 'CTO' :
+                                  member.role.toLowerCase().includes('developpeur') ? 'Engineer' : 'Director'}
+                          </span>
+                        </div>
+
+                        <div className="mt-4">
+                          <h3 className="text-2xl font-black text-slate-900 uppercase tracking-tight mb-2 group-hover:text-green-600 transition-colors">
+                            {member.name}
+                          </h3>
+                          <p className="text-slate-600 text-sm leading-relaxed mb-6 font-medium line-clamp-3">
+                            {member.bio}
+                          </p>
+
+                          {/* Social Icons */}
+                          <div className="flex items-center gap-3">
+                            <a href="#" className="p-2.5 bg-gray-50 rounded-xl text-slate-400 hover:bg-green-600 hover:text-white transition-all shadow-sm">
+                              <Linkedin size={18} />
+                            </a>
+                            <a href="#" className="p-2.5 bg-gray-50 rounded-xl text-slate-400 hover:bg-green-600 hover:text-white transition-all shadow-sm">
+                              <Facebook size={18} />
+                            </a>
+                            <a href="#" className="p-2.5 bg-gray-50 rounded-xl text-slate-400 hover:bg-green-600 hover:text-white transition-all shadow-sm">
+                              <TrendingUp size={18} />
+                            </a>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </motion.div>
+              </AnimatePresence>
+            </div>
+
+            {/* Navigation Dots */}
+            {numSlides > 1 && (
+              <div className="flex justify-center mt-12 space-x-3">
+                {Array.from({ length: numSlides }).map((_, idx) => (
+                  <button
+                    key={idx}
+                    onClick={() => setCurrentSlide(idx)}
+                    className={`w-3 h-3 rounded-full transition-all duration-300 ${currentSlide === idx ? 'bg-green-600 w-8' : 'bg-gray-300 hover:bg-green-200'
+                      }`}
                   />
-                </div>
-                <h3 className="text-xl font-bold text-gray-900 mb-1">{member.name}</h3>
-                <p className="text-green-600 font-medium text-sm uppercase tracking-wide mb-3">{member.role}</p>
-                <p className="text-gray-500 text-sm leading-relaxed">{member.bio}</p>
-              </motion.div>
-            ))}
+                ))}
+              </div>
+            )}
+
+            {/* Arrow Controls (Hidden on mobile) */}
+            {numSlides > 1 && (
+              <div className="hidden sm:block">
+                <button
+                  onClick={prevSlide}
+                  className="absolute left-[-20px] sm:left-[-10px] top-1/2 -translate-y-1/2 p-3 rounded-full bg-white border border-gray-100 shadow-lg text-gray-400 hover:text-green-600 hover:border-green-100 transition-all active:scale-95 z-20"
+                >
+                  <TrendingUp size={24} className="rotate-[225deg]" />
+                </button>
+                <button
+                  onClick={nextSlide}
+                  className="absolute right-[-20px] sm:right-[-10px] top-1/2 -translate-y-1/2 p-3 rounded-full bg-white border border-gray-100 shadow-lg text-gray-400 hover:text-green-600 hover:border-green-100 transition-all active:scale-95 z-20"
+                >
+                  <TrendingUp size={24} className="rotate-45" />
+                </button>
+              </div>
+            )}
           </div>
         </div>
+
+        <div className="absolute bottom-0 left-0 w-full h-1 bg-green-500/10"></div>
       </section>
 
-      {/* Partners */}
-      <section className="py-20 bg-white relative overflow-hidden">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      {/* Partners - Tiled Design Light Mode */}
+      <section className="py-24 bg-white relative overflow-hidden">
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(34,197,94,0.03)_0%,transparent_100%)]"></div>
+
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
           <div className="text-center mb-16">
-            <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">Nos Partenaires</h2>
-            <p className="text-xl text-gray-600 max-w-2xl mx-auto">
-              En collaboration avec des organisations de premier plan partout en Afrique
-            </p>
+            <h2 className="text-3xl md:text-5xl font-black text-slate-900 mb-6 uppercase tracking-tight">
+              Nos <span className="text-green-600">Partenaires</span>
+            </h2>
+            <div className="w-20 h-1.5 bg-green-600 mx-auto rounded-full"></div>
           </div>
 
-          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-8">
-            {partners.map((partner, index) => (
-              <motion.div
-                key={index}
-                initial={{ opacity: 0, scale: 0.9 }}
-                whileInView={{ opacity: 1, scale: 1 }}
-                transition={{ delay: index * 0.1 }}
-                viewport={{ once: true }}
-                className="flex items-center justify-center p-6 bg-gray-50/50 backdrop-blur-sm rounded-2xl border border-gray-100 hover:border-green-200 hover:shadow-lg transition-all duration-300 group"
-              >
-                <img
-                  src={partner.logo}
-                  alt={partner.name}
-                  className="max-h-16 w-auto filter grayscale opacity-60 group-hover:grayscale-0 group-hover:opacity-100 transition-all duration-300"
-                />
-              </motion.div>
-            ))}
+          <div className="relative overflow-hidden py-10">
+            {/* Edge Fades */}
+            <div className="absolute inset-y-0 left-0 w-20 sm:w-40 bg-gradient-to-r from-white to-transparent z-20"></div>
+            <div className="absolute inset-y-0 right-0 w-20 sm:w-40 bg-gradient-to-l from-white to-transparent z-20"></div>
+
+            <motion.div
+              className="flex gap-8 px-4"
+              initial={{ x: "-50%" }}
+              animate={{ x: "0%" }}
+              transition={{
+                x: {
+                  repeat: Infinity,
+                  repeatType: "loop",
+                  duration: 30,
+                  ease: "linear",
+                },
+              }}
+              style={{ width: "max-content" }}
+            >
+              {[...partners, ...partners, ...partners, ...partners].map((partner, index) => (
+                <div
+                  key={index}
+                  className="w-56 h-32 flex-shrink-0 bg-white border border-gray-100 rounded-3xl shadow-sm flex items-center justify-center p-8 group hover:border-green-500/20 hover:shadow-xl hover:shadow-green-900/5 transition-all duration-500"
+                >
+                  <img
+                    src={partner.logo}
+                    alt={partner.name}
+                    className="max-h-12 w-auto filter grayscale opacity-40 group-hover:grayscale-0 group-hover:opacity-100 group-hover:scale-110 transition-all duration-500 ease-out"
+                  />
+                </div>
+              ))}
+            </motion.div>
           </div>
+
+          <p className="text-center mt-8 text-slate-400 font-medium uppercase tracking-widest text-xs sm:text-sm">
+            Faisons rayonner l'Afrique ensemble
+          </p>
         </div>
       </section>
     </motion.div>

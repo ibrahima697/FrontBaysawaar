@@ -1,6 +1,6 @@
 import { Link } from 'react-router-dom';
 import { useState } from 'react';
-import { Facebook, Instagram, Linkedin,  Mail, MapPin, Youtube} from 'lucide-react';
+import { Facebook, Instagram, Linkedin, Mail, MapPin, Youtube } from 'lucide-react';
 import { contactsAPI } from '../services/api';
 import Swal from 'sweetalert2';
 
@@ -10,7 +10,7 @@ const Footer = () => {
 
   const handleNewsletterSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     if (!email) {
       Swal.fire({
         icon: 'warning',
@@ -36,20 +36,20 @@ const Footer = () => {
     try {
       setIsSubscribing(true);
       await contactsAPI.subscribeNewsletter(email);
-      
+
       Swal.fire({
         icon: 'success',
         title: 'Inscription réussie !',
         text: 'Vous êtes maintenant abonné à notre newsletter',
         confirmButtonColor: '#16a34a',
       });
-      
+
       setEmail(''); // Vider le champ après succès
     } catch (error: any) {
       console.error('Erreur lors de l\'inscription à la newsletter:', error);
-      
+
       let errorMessage = 'Une erreur est survenue lors de l\'inscription';
-      
+
       if (error.code === 'ECONNABORTED' || error.message.includes('timeout')) {
         errorMessage = 'La requête a pris trop de temps. Veuillez réessayer.';
       } else if (error.response?.status === 400) {
@@ -59,7 +59,7 @@ const Footer = () => {
       } else if (error.response?.data?.message) {
         errorMessage = error.response.data.message;
       }
-      
+
       Swal.fire({
         icon: 'error',
         title: 'Erreur d\'inscription',
@@ -110,7 +110,7 @@ const Footer = () => {
               disabled={isSubscribing}
               className="w-full md:w-64 px-4 py-2 rounded-lg bg-white/10 border border-white/20 text-white placeholder-gray-400 focus:outline-none focus:ring-1 focus:ring-green-400 disabled:opacity-50 disabled:cursor-not-allowed"
             />
-            <button 
+            <button
               type="submit"
               disabled={isSubscribing}
               className="px-4 py-2 rounded-lg bg-green-500 text-white hover:bg-green-400 transition-colors w-full md:w-auto disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center space-x-2"
@@ -196,14 +196,7 @@ const Footer = () => {
           <p className="text-gray-400 text-sm">
             © {new Date().getFullYear()} BAY SA WAAR
           </p>
-          <div className="flex space-x-4 mt-4 md:mt-0">
-            <Link to="/privacy" className="text-gray-400 hover:text-white text-sm transition-colors">
-              Confidentialité
-            </Link>
-            <Link to="/terms" className="text-gray-400 hover:text-white text-sm transition-colors">
-              Conditions
-            </Link>
-          </div>
+
         </div>
       </div>
     </footer>
