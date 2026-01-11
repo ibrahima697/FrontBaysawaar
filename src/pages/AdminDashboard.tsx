@@ -580,6 +580,33 @@ const AdminDashboard = () => {
     fetchFormations(); // Rafraîchit la liste
   };
 
+  const handleDeleteFormation = async (id: string) => {
+    const result = await Swal.fire({
+      title: 'Êtes-vous sûr ?',
+      text: "Cette action supprimera définitivement la formation et toutes les inscriptions associées.",
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#d33',
+      cancelButtonColor: '#3085d6',
+      confirmButtonText: 'Oui, supprimer',
+      cancelButtonText: 'Annuler'
+    });
+
+    if (result.isConfirmed) {
+      try {
+        addProcessingId(id);
+        await formationsAPI.delete(id);
+        Swal.fire('Supprimé!', 'La formation a été supprimée.', 'success');
+        fetchFormations();
+      } catch (error) {
+        console.error('Erreur lors de la suppression:', error);
+        Swal.fire('Erreur', 'Impossible de supprimer la formation', 'error');
+      } finally {
+        removeProcessingId(id);
+      }
+    }
+  };
+
   const getStatusIcon = (status: string) => {
     switch (status) {
       case 'pending':
@@ -1213,12 +1240,27 @@ const AdminDashboard = () => {
                             </div>
                             <p className="text-gray-600 leading-relaxed mb-4">{form.description}</p>
                           </div>
-                          <button
-                            onClick={() => { setEditingFormation(form); setShowFormationFormModal(true); }}
-                            className="p-2 text-gray-400 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
-                          >
-                            <Pencil className="w-5 h-5" />
-                          </button>
+                          <div className="flex gap-2">
+                            <button
+                              onClick={() => { setEditingFormation(form); setShowFormationFormModal(true); }}
+                              className="p-2 text-gray-400 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
+                              title="Éditer"
+                            >
+                              <Pencil className="w-5 h-5" />
+                            </button>
+                            <button
+                              onClick={() => handleDeleteFormation(form._id)}
+                              disabled={processingIds.has(form._id)}
+                              className="p-2 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                              title="Supprimer"
+                            >
+                              {processingIds.has(form._id) ? (
+                                <Loader2 className="w-5 h-5 animate-spin" />
+                              ) : (
+                                <Trash2 className="w-5 h-5" />
+                              )}
+                            </button>
+                          </div>
                         </div>
 
                         {/* Progress Bar for Seats */}

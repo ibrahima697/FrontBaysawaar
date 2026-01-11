@@ -246,6 +246,7 @@ export const formationsAPI = {
 
   create: (data: any) => api.post('/formations', data),
   update: (id: string, data: any) => api.put(`/formations/${id}`, data),
+  delete: (id: string) => api.delete(`/formations/${id}`),
   register: (id: string) => api.post(`/formations/${id}/register`),
   updateRegistration: (fid: string, rid: string, data: any) =>
     api.put(`/formations/${fid}/registrations/${rid}`, data),
