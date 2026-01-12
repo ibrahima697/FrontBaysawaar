@@ -109,6 +109,7 @@ const Events = () => {
         icon: 'success',
         title: 'Inscription réussie !',
         text: 'Votre inscription a été enregistrée avec succès. Un email de confirmation vous a été envoyé.',
+        timer: 3000,
         confirmButtonText: 'Super !',
         confirmButtonColor: '#16a34a'
       });
