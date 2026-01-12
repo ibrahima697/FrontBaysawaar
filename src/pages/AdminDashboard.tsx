@@ -2027,38 +2027,6 @@ const AdminDashboard = () => {
               </div>
 
               <div className="flex-1 overflow-y-auto p-6">
-                <div className="mb-8 p-6 bg-gray-50 rounded-2xl border border-gray-100">
-                  <div className="flex items-center justify-between mb-2">
-                    <span className="text-sm font-semibold text-gray-700 uppercase tracking-wider">
-                      Jauge de participation
-                    </span>
-                    <div className="flex items-center gap-2">
-                      <span className="text-sm font-bold text-gray-900">
-                        {selectedEventDetail.registrations?.filter(r => r.status !== 'rejected').length || 0} / {selectedEventDetail.maxParticipants}
-                      </span>
-                      {(selectedEventDetail.registrations?.filter(r => r.status !== 'rejected').length || 0) >= selectedEventDetail.maxParticipants && (
-                        <span className="px-2 py-0.5 bg-red-100 text-red-700 text-xs font-bold rounded uppercase">
-                          Complet
-                        </span>
-                      )}
-                    </div>
-                  </div>
-                  <div className="w-full bg-gray-200 rounded-full h-3 overflow-hidden">
-                    <div
-                      className={`h-full rounded-full transition-all duration-500 ${(selectedEventDetail.registrations?.filter(r => r.status !== 'rejected').length || 0) >= selectedEventDetail.maxParticipants
-                          ? 'bg-red-500'
-                          : 'bg-green-500'
-                        }`}
-                      style={{
-                        width: `${Math.min(
-                          (((selectedEventDetail.registrations?.filter(r => r.status !== 'rejected').length || 0) / (selectedEventDetail.maxParticipants || 1)) * 100),
-                          100
-                        )}%`
-                      }}
-                    />
-                  </div>
-                </div>
-
                 <h4 className="text-xl font-bold text-gray-900 mb-6 flex items-center gap-2">
                   <Users className="w-6 h-6 text-green-600" />
                   Inscriptions ({selectedEventDetail.registrations?.length || 0})

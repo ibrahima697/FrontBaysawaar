@@ -33,7 +33,7 @@ const ForgotPassword = () => {
     return (
         <div className="min-h-screen flex items-center justify-center p-4 bg-gradient-to-br from-slate-50 via-green-50/30 to-slate-100 relative overflow-hidden">
             {/* Background Elements */}
-            <div className="absolute inset-0 bg-white/5 opacity-5" />
+            <div className="absolute inset-0 bg-[url('/grid-pattern.svg')] opacity-5" />
 
             <motion.div
                 initial={{ opacity: 0, y: 20 }}

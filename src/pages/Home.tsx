@@ -166,7 +166,7 @@ const Home = () => {
       <section className="relative py-24 overflow-hidden">
         {/* Background Pattern */}
         <div className="absolute inset-0 bg-gradient-to-b from-white via-green-50/30 to-white" />
-        <div className="absolute inset-0 bg-white/5 opacity-5" />
+        <div className="absolute inset-0 bg-[url('/grid-pattern.svg')] opacity-5" />
 
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative">
           <motion.div
@@ -286,7 +286,7 @@ const Home = () => {
       <section className="relative py-24 overflow-hidden">
         {/* Background Effects */}
         <div className="absolute inset-0 bg-gradient-to-b from-gray-50 via-white to-gray-50" />
-        <div className="absolute inset-0 bg-white/5 opacity-5" />
+        <div className="absolute inset-0 bg-[url('/grid-pattern.svg')] opacity-5" />
         <div className="absolute right-0 top-1/2 w-96 h-96 bg-green-200/30 rounded-full filter blur-[80px]" />
         <div className="absolute left-0 bottom-0 w-96 h-96 bg-blue-200/30 rounded-full filter blur-[80px]" />
 

@@ -1,10 +1,10 @@
 // src/pages/Events.tsx
 import { useEffect, useState, useRef } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion, Variants, AnimatePresence } from 'framer-motion';
 import {
   Calendar, MapPin, Users, ArrowRight, TrendingUp, Globe,
   Award, CheckCircle, X, ChevronLeft, ChevronRight,
-  Info, Clock, DollarSign, Heart, Zap, Share2, Loader2
+  Info, Clock, DollarSign, Heart, Zap, Share2
 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import Swal from 'sweetalert2';
@@ -31,7 +31,6 @@ interface Event {
 const Events = () => {
   const [events, setEvents] = useState<Event[]>([]);
   const [loading, setLoading] = useState(true);
-  const [registering, setRegistering] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
   const [eventsPerPage] = useState(6);
   const [selectedEvent, setSelectedEvent] = useState<Event | null>(null);
@@ -92,7 +91,6 @@ const Events = () => {
     if (!result.isConfirmed) return;
 
     try {
-      setRegistering(true);
       await eventsAPI.register(slug);
 
       const { data } = await eventsAPI.getAll();
@@ -108,9 +106,9 @@ const Events = () => {
       Swal.fire({
         icon: 'success',
         title: 'Inscription réussie !',
-        text: 'Votre inscription a été enregistrée avec succès. Un email de confirmation vous a été envoyé.',
+        text: 'Un email de confirmation vous a été envoyé.',
         timer: 3000,
-        confirmButtonText: 'Super !',
+        showConfirmButton: false,
         confirmButtonColor: '#16a34a'
       });
     } catch (err: any) {
@@ -133,11 +131,8 @@ const Events = () => {
           confirmButtonColor: '#16a34a'
         });
       }
-    } finally {
-      setRegistering(false);
     }
   };
-
 
   const stats = [
     { icon: Calendar, value: "50+", label: "Événements par an" },
@@ -831,30 +826,9 @@ const Events = () => {
                     <div className="bg-white/5 p-3 rounded-xl border border-white/5 flex-shrink-0">
                       <Users className="text-green-500" size={24} />
                     </div>
-                    <div className="flex-1">
+                    <div>
                       <p className="text-white font-bold text-sm uppercase tracking-wider mb-1">Participants</p>
-                      <div className="flex items-center justify-between mb-2">
-                        <span className="text-sm font-light text-gray-400">
-                          {selectedEvent?.registrations?.filter((r: any) => r.status !== 'rejected').length || 0} / {selectedEvent?.maxParticipants} inscrits
-                        </span>
-                        {(selectedEvent?.registrations?.filter((r: any) => r.status !== 'rejected').length || 0) >= (selectedEvent?.maxParticipants || 0) && (
-                          <span className="text-xs font-bold text-red-500 bg-red-500/10 px-2 py-0.5 rounded uppercase">Complet</span>
-                        )}
-                      </div>
-                      <div className="w-full bg-white/10 rounded-full h-2 overflow-hidden">
-                        <div
-                          className={`h-full rounded-full transition-all duration-500 ${((selectedEvent?.registrations?.filter((r: any) => r.status !== 'rejected').length || 0) >= (selectedEvent?.maxParticipants || 0))
-                            ? 'bg-red-500'
-                            : 'bg-green-500'
-                            }`}
-                          style={{
-                            width: `${Math.min(
-                              (((selectedEvent?.registrations?.filter((r: any) => r.status !== 'rejected').length || 0) / (selectedEvent?.maxParticipants || 1)) * 100),
-                              100
-                            )}%`
-                          }}
-                        />
-                      </div>
+                      <p className="text-sm font-light text-gray-400">{selectedEvent?.maxParticipants} places maximum</p>
                     </div>
                   </div>
 
@@ -919,29 +893,14 @@ const Events = () => {
                     <div className="w-full bg-green-500/10 border-2 border-green-500/30 text-green-400 py-6 rounded-2xl flex items-center justify-center gap-3 font-bold tracking-widest text-sm uppercase">
                       <CheckCircle size={24} /> Inscription Confirmée
                     </div>
-                  ) : (selectedEvent?.registrations?.filter((r: any) => r.status !== 'rejected').length || 0) >= (selectedEvent?.maxParticipants || 0) ? (
-                    <button
-                      disabled
-                      className="w-full bg-gray-800 text-gray-500 cursor-not-allowed py-6 rounded-2xl font-black tracking-[0.2em] text-sm uppercase border border-gray-700"
-                    >
-                      ÉVÉNEMENT COMPLET
-                    </button>
                   ) : (
                     <button
                       onClick={() => {
                         if (selectedEvent) handleRegister(selectedEvent.slug);
                       }}
-                      disabled={registering}
-                      className="w-full bg-gradient-to-r from-green-500 to-green-600 text-white py-6 rounded-2xl font-black tracking-[0.2em] text-sm uppercase hover:from-green-600 hover:to-green-700 transition-all transform hover:-translate-y-1 shadow-2xl shadow-green-900/50 hover:shadow-green-500/50 disabled:opacity-70 disabled:cursor-not-allowed disabled:transform-none"
+                      className="w-full bg-gradient-to-r from-green-500 to-green-600 text-white py-6 rounded-2xl font-black tracking-[0.2em] text-sm uppercase hover:from-green-600 hover:to-green-700 transition-all transform hover:-translate-y-1 shadow-2xl shadow-green-900/50 hover:shadow-green-500/50"
                     >
-                      {registering ? (
-                        <span className="flex items-center justify-center gap-2">
-                          <Loader2 className="animate-spin" size={20} />
-                          INSCRIPTION EN COURS...
-                        </span>
-                      ) : (
-                        'RÉSERVER MA PLACE MAINTENANT'
-                      )}
+                      RÉSERVER MA PLACE MAINTENANT
                     </button>
                   )}
                 </div>
