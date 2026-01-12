@@ -1,5 +1,5 @@
 // src/pages/Events.tsx
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import { motion, Variants, AnimatePresence } from 'framer-motion';
 import {
   Calendar, MapPin, Users, ArrowRight, TrendingUp, Globe,
@@ -47,6 +47,14 @@ const Events = () => {
         setLoading(false);
       });
   }, []);
+
+  // Scroll to events section when page changes
+  const eventsGridRef = useRef<HTMLDivElement>(null);
+  useEffect(() => {
+    if (eventsGridRef.current && currentPage > 1) {
+      eventsGridRef.current.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+  }, [currentPage]);
 
   const handleRegister = async (slug: string) => {
     if (!user) {
@@ -267,7 +275,7 @@ const Events = () => {
       </section>
 
       {/* Featured Events / Content - Grid Layout */}
-      <section className="py-32 relative">
+      <section ref={eventsGridRef} className="py-32 relative">
         <div className="max-w-[90rem] mx-auto px-6">
           <div className="flex flex-col md:flex-row justify-between items-end mb-20 gap-8">
             <div>
@@ -277,9 +285,9 @@ const Events = () => {
               </h2>
             </div>
 
-            <a href="#calendar" className="text-white border-b border-green-500 pb-1 hover:text-green-400 transition-colors uppercase text-sm tracking-wider font-medium">
+            {/* <a href="#calendar" className="text-white border-b border-green-500 pb-1 hover:text-green-400 transition-colors uppercase text-sm tracking-wider font-medium">
               Voir tout le calendrier
-            </a>
+            </a> */}
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
