@@ -826,9 +826,30 @@ const Events = () => {
                     <div className="bg-white/5 p-3 rounded-xl border border-white/5 flex-shrink-0">
                       <Users className="text-green-500" size={24} />
                     </div>
-                    <div>
+                    <div className="flex-1">
                       <p className="text-white font-bold text-sm uppercase tracking-wider mb-1">Participants</p>
-                      <p className="text-sm font-light text-gray-400">{selectedEvent?.maxParticipants} places maximum</p>
+                      <div className="flex items-center justify-between mb-2">
+                        <span className="text-sm font-light text-gray-400">
+                          {selectedEvent?.registrations?.filter((r: any) => r.status !== 'rejected').length || 0} / {selectedEvent?.maxParticipants} inscrits
+                        </span>
+                        {(selectedEvent?.registrations?.filter((r: any) => r.status !== 'rejected').length || 0) >= (selectedEvent?.maxParticipants || 0) && (
+                          <span className="text-xs font-bold text-red-500 bg-red-500/10 px-2 py-0.5 rounded uppercase">Complet</span>
+                        )}
+                      </div>
+                      <div className="w-full bg-white/10 rounded-full h-2 overflow-hidden">
+                        <div
+                          className={`h-full rounded-full transition-all duration-500 ${((selectedEvent?.registrations?.filter((r: any) => r.status !== 'rejected').length || 0) >= (selectedEvent?.maxParticipants || 0))
+                              ? 'bg-red-500'
+                              : 'bg-green-500'
+                            }`}
+                          style={{
+                            width: `${Math.min(
+                              (((selectedEvent?.registrations?.filter((r: any) => r.status !== 'rejected').length || 0) / (selectedEvent?.maxParticipants || 1)) * 100),
+                              100
+                            )}%`
+                          }}
+                        />
+                      </div>
                     </div>
                   </div>
 
@@ -893,6 +914,13 @@ const Events = () => {
                     <div className="w-full bg-green-500/10 border-2 border-green-500/30 text-green-400 py-6 rounded-2xl flex items-center justify-center gap-3 font-bold tracking-widest text-sm uppercase">
                       <CheckCircle size={24} /> Inscription Confirmée
                     </div>
+                  ) : (selectedEvent?.registrations?.filter((r: any) => r.status !== 'rejected').length || 0) >= (selectedEvent?.maxParticipants || 0) ? (
+                    <button
+                      disabled
+                      className="w-full bg-gray-800 text-gray-500 cursor-not-allowed py-6 rounded-2xl font-black tracking-[0.2em] text-sm uppercase border border-gray-700"
+                    >
+                      ÉVÉNEMENT COMPLET
+                    </button>
                   ) : (
                     <button
                       onClick={() => {

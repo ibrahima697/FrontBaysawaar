@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 import {
   Users,
   Clock,
@@ -21,7 +21,8 @@ import {
   Loader2,
   Search,
   Filter,
-  Star
+  Star,
+  Eye
 } from 'lucide-react';
 import { adminAPI, productsAPI, blogsAPI, formationsAPI, eventsAPI } from '../services/api';
 import Swal from 'sweetalert2';
@@ -149,11 +150,15 @@ const AdminDashboard = () => {
   const [usersCurrentPage, setUsersCurrentPage] = useState(1);
   const [usersPerPage] = useState(10);
   const [userSearchQuery, setUserSearchQuery] = useState('');
+  const [eventRegistrationsPage, setEventRegistrationsPage] = useState(1);
+  const [eventRegistrationsPerPage] = useState(5);
   const [userRoleFilter, setUserRoleFilter] = useState<'all' | 'member' | 'admin' | 'partner' | 'client'>('all');
   const [showFormationModal, setShowFormationModal] = useState(false);
   const [events, setEvents] = useState<EventData[]>([]);
   const [showEventFormModal, setShowEventFormModal] = useState(false);
   const [editingEvent, setEditingEvent] = useState<EventData | null>(null);
+  const [selectedEventDetail, setSelectedEventDetail] = useState<EventData | null>(null);
+  const [showEventDetailModal, setShowEventDetailModal] = useState(false);
   const [processingIds, setProcessingIds] = useState<Set<string>>(new Set());
 
   const addProcessingId = (id: string) => {
@@ -1423,9 +1428,17 @@ const AdminDashboard = () => {
                         </div>
                       )}
                       <div className="absolute top-4 right-4">
-                        <span className={`px-3 py-1 text-xs font-bold uppercase tracking-wider rounded-full shadow-md ${event.isFeatured ? 'bg-yellow-400 text-yellow-900' : 'bg-gray-200 text-gray-700'}`}>
-                          {event.isFeatured ? 'Mise en avant' : 'Standard'}
-                        </span>
+                        <button
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            handleToggleHero(event);
+                          }}
+                          disabled={event._id ? processingIds.has(event._id) : false}
+                          className={`flex items-center justify-center p-2 rounded-full transition-all shadow-lg backdrop-blur-sm ${event.isFeatured ? 'bg-yellow-400 text-yellow-900 border-2 border-yellow-200' : 'bg-white/90 text-gray-400 hover:text-yellow-500 hover:bg-white'}`}
+                          title={event.isFeatured ? "Retirer du Hero" : "Mettre en Hero"}
+                        >
+                          <Star className={`w-5 h-5 ${event.isFeatured ? 'fill-current' : ''}`} />
+                        </button>
                       </div>
                       <div className="absolute bottom-4 left-4">
                         <span className="px-3 py-1 text-xs font-bold uppercase tracking-wider rounded-full shadow-md bg-white/90 text-gray-800 backdrop-blur-sm">
@@ -1455,14 +1468,15 @@ const AdminDashboard = () => {
                         </div>
                       </div>
 
-                      <div className="mt-6 flex gap-3">
+                      <div className="mt-6 flex gap-2">
                         <button
-                          onClick={() => handleToggleHero(event)}
-                          disabled={event._id ? processingIds.has(event._id) : false}
-                          className={`flex items-center justify-center p-2.5 rounded-xl transition-all ${event.isFeatured ? 'bg-yellow-100 text-yellow-600 shadow-inner' : 'bg-gray-100 text-gray-400 hover:text-yellow-500 hover:bg-yellow-50'}`}
-                          title={event.isFeatured ? "Retirer du Hero" : "Mettre en Hero"}
+                          onClick={() => {
+                            setSelectedEventDetail(event);
+                            setShowEventDetailModal(true);
+                          }}
+                          className="flex-1 flex items-center justify-center gap-2 py-2.5 bg-blue-50 text-blue-600 rounded-xl hover:bg-blue-100 transition-colors font-medium text-sm"
                         >
-                          <Star className={`w-5 h-5 ${event.isFeatured ? 'fill-current' : ''}`} />
+                          <Eye className="w-4 h-4" /> Détails
                         </button>
                         <button
                           onClick={() => handleEditEvent(event)}
@@ -1985,6 +1999,165 @@ const AdminDashboard = () => {
         event={editingEvent}
         onEventSaved={handleEventSaved}
       />
+
+      <AnimatePresence>
+        {showEventDetailModal && selectedEventDetail && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              onClick={() => setShowEventDetailModal(false)}
+              className="absolute inset-0 bg-black/60 backdrop-blur-sm"
+            />
+            <motion.div
+              initial={{ scale: 0.95, opacity: 0, y: 20 }}
+              animate={{ scale: 1, opacity: 1, y: 0 }}
+              exit={{ scale: 0.95, opacity: 0, y: 20 }}
+              className="bg-white rounded-3xl shadow-2xl w-full max-w-4xl max-h-[90vh] overflow-hidden relative z-10 flex flex-col"
+            >
+              <div className="p-6 border-b flex justify-between items-center bg-gray-50">
+                <h3 className="text-2xl font-bold text-gray-800">Détails de l'événement</h3>
+                <button
+                  onClick={() => setShowEventDetailModal(false)}
+                  className="p-2 hover:bg-gray-200 rounded-full transition-colors"
+                >
+                  <XCircle className="w-6 h-6 text-gray-500" />
+                </button>
+              </div>
+
+              <div className="flex-1 overflow-y-auto p-6">
+                <div className="mb-8 p-6 bg-gray-50 rounded-2xl border border-gray-100">
+                  <div className="flex items-center justify-between mb-2">
+                    <span className="text-sm font-semibold text-gray-700 uppercase tracking-wider">
+                      Jauge de participation
+                    </span>
+                    <div className="flex items-center gap-2">
+                      <span className="text-sm font-bold text-gray-900">
+                        {selectedEventDetail.registrations?.filter(r => r.status !== 'rejected').length || 0} / {selectedEventDetail.maxParticipants}
+                      </span>
+                      {(selectedEventDetail.registrations?.filter(r => r.status !== 'rejected').length || 0) >= selectedEventDetail.maxParticipants && (
+                        <span className="px-2 py-0.5 bg-red-100 text-red-700 text-xs font-bold rounded uppercase">
+                          Complet
+                        </span>
+                      )}
+                    </div>
+                  </div>
+                  <div className="w-full bg-gray-200 rounded-full h-3 overflow-hidden">
+                    <div
+                      className={`h-full rounded-full transition-all duration-500 ${(selectedEventDetail.registrations?.filter(r => r.status !== 'rejected').length || 0) >= selectedEventDetail.maxParticipants
+                          ? 'bg-red-500'
+                          : 'bg-green-500'
+                        }`}
+                      style={{
+                        width: `${Math.min(
+                          (((selectedEventDetail.registrations?.filter(r => r.status !== 'rejected').length || 0) / (selectedEventDetail.maxParticipants || 1)) * 100),
+                          100
+                        )}%`
+                      }}
+                    />
+                  </div>
+                </div>
+
+                <h4 className="text-xl font-bold text-gray-900 mb-6 flex items-center gap-2">
+                  <Users className="w-6 h-6 text-green-600" />
+                  Inscriptions ({selectedEventDetail.registrations?.length || 0})
+                </h4>
+
+                {selectedEventDetail.registrations && selectedEventDetail.registrations.length > 0 ? (
+                  <>
+                    <div className="overflow-x-auto min-h-[400px]">
+                      <table className="w-full">
+                        <thead className="bg-gray-50 border-b border-gray-200">
+                          <tr>
+                            <th className="px-6 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Utilisateur</th>
+                            <th className="px-6 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Date</th>
+                            <th className="px-6 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Statut</th>
+                            <th className="px-6 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Actions</th>
+                          </tr>
+                        </thead>
+                        <tbody className="divide-y divide-gray-100">
+                          {selectedEventDetail.registrations
+                            .slice((eventRegistrationsPage - 1) * eventRegistrationsPerPage, eventRegistrationsPage * eventRegistrationsPerPage)
+                            .map((reg: any, index: number) => (
+                              <tr key={index} className="hover:bg-gray-50 transition-colors">
+                                <td className="px-6 py-4 whitespace-nowrap">
+                                  <div className="flex items-center">
+                                    <div className="h-10 w-10 flex-shrink-0 bg-green-100 rounded-full flex items-center justify-center text-green-700 font-bold">
+                                      {(reg.user?.firstName?.[0] || 'U')}{(reg.user?.lastName?.[0] || '')}
+                                    </div>
+                                    <div className="ml-4">
+                                      <div className="text-sm font-medium text-gray-900">
+                                        {reg.user ? `${reg.user.firstName} ${reg.user.lastName}` : 'Utilisateur supprimé'}
+                                      </div>
+                                      <div className="text-sm text-gray-500">{reg.user?.email || '-'}</div>
+                                    </div>
+                                  </div>
+                                </td>
+                                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                  {reg.registeredAt ? new Date(reg.registeredAt).toLocaleDateString() : '-'}
+                                </td>
+                                <td className="px-6 py-4 whitespace-nowrap">
+                                  <span className={`px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded-full ${reg.status === 'approved' ? 'bg-green-100 text-green-800' :
+                                    reg.status === 'rejected' ? 'bg-red-100 text-red-800' :
+                                      'bg-yellow-100 text-yellow-800'
+                                    }`}>
+                                    {reg.status === 'approved' ? 'Confirmé' : reg.status === 'rejected' ? 'Refusé' : 'En attente'}
+                                  </span>
+                                </td>
+                                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                  {/* Actions placeholder - can add approve/reject buttons later if needed */}
+                                  -
+                                </td>
+                              </tr>
+                            ))}
+                        </tbody>
+                      </table>
+                    </div>
+
+                    {/* Pagination Controls for Registrations */}
+                    {selectedEventDetail.registrations.length > eventRegistrationsPerPage && (
+                      <div className="flex justify-center items-center mt-6 gap-2">
+                        <button
+                          onClick={() => setEventRegistrationsPage(prev => Math.max(prev - 1, 1))}
+                          disabled={eventRegistrationsPage === 1}
+                          className="p-2 rounded-lg border border-gray-200 text-gray-500 hover:bg-gray-50 disabled:opacity-30 disabled:cursor-not-allowed"
+                        >
+                          <ChevronLeft className="w-5 h-5" />
+                        </button>
+                        <span className="text-sm text-gray-600 font-medium px-2">
+                          Page {eventRegistrationsPage} sur {Math.ceil(selectedEventDetail.registrations.length / eventRegistrationsPerPage)}
+                        </span>
+                        <button
+                          onClick={() => setEventRegistrationsPage(prev => Math.min(prev + 1, Math.ceil((selectedEventDetail.registrations?.length || 0) / eventRegistrationsPerPage)))}
+                          disabled={eventRegistrationsPage === Math.ceil(selectedEventDetail.registrations.length / eventRegistrationsPerPage)}
+                          className="p-2 rounded-lg border border-gray-200 text-gray-500 hover:bg-gray-50 disabled:opacity-30 disabled:cursor-not-allowed"
+                        >
+                          <ChevronRight className="w-5 h-5" />
+                        </button>
+                      </div>
+                    )}
+                  </>
+                ) : (
+                  <div className="text-center py-12 bg-gray-50 rounded-2xl border border-dashed border-gray-200">
+                    <Users className="w-12 h-12 text-gray-300 mx-auto mb-3" />
+                    <p className="text-gray-500">Aucune inscription pour le moment</p>
+                  </div>
+                )}
+              </div>
+
+              <div className="p-6 border-t bg-gray-50 flex justify-end">
+                <button
+                  onClick={() => setShowEventDetailModal(false)}
+                  className="px-6 py-2 bg-white border border-gray-300 rounded-xl text-gray-700 hover:bg-gray-50 font-medium transition-colors"
+                >
+                  Fermer
+                </button>
+              </div>
+            </motion.div>
+          </div>
+        )}
+      </AnimatePresence>
     </motion.div >
   );
 };
