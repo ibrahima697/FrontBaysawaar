@@ -4,7 +4,7 @@ import { motion, Variants, AnimatePresence } from 'framer-motion';
 import {
   Calendar, MapPin, Users, ArrowRight, TrendingUp, Globe,
   Award, CheckCircle, X, ChevronLeft, ChevronRight,
-  Info, Clock, DollarSign, Heart, Zap, Share2
+  Info, Clock, DollarSign, Heart, Zap, Share2, Loader2
 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import Swal from 'sweetalert2';
@@ -31,6 +31,7 @@ interface Event {
 const Events = () => {
   const [events, setEvents] = useState<Event[]>([]);
   const [loading, setLoading] = useState(true);
+  const [registering, setRegistering] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
   const [eventsPerPage] = useState(6);
   const [selectedEvent, setSelectedEvent] = useState<Event | null>(null);
@@ -91,6 +92,7 @@ const Events = () => {
     if (!result.isConfirmed) return;
 
     try {
+      setRegistering(true);
       await eventsAPI.register(slug);
 
       const { data } = await eventsAPI.getAll();
@@ -106,9 +108,8 @@ const Events = () => {
       Swal.fire({
         icon: 'success',
         title: 'Inscription réussie !',
-        text: 'Un email de confirmation vous a été envoyé.',
-        timer: 3000,
-        showConfirmButton: false,
+        text: 'Votre inscription a été enregistrée avec succès. Un email de confirmation vous a été envoyé.',
+        confirmButtonText: 'Super !',
         confirmButtonColor: '#16a34a'
       });
     } catch (err: any) {
@@ -131,8 +132,11 @@ const Events = () => {
           confirmButtonColor: '#16a34a'
         });
       }
+    } finally {
+      setRegistering(false);
     }
   };
+
 
   const stats = [
     { icon: Calendar, value: "50+", label: "Événements par an" },
@@ -839,8 +843,8 @@ const Events = () => {
                       <div className="w-full bg-white/10 rounded-full h-2 overflow-hidden">
                         <div
                           className={`h-full rounded-full transition-all duration-500 ${((selectedEvent?.registrations?.filter((r: any) => r.status !== 'rejected').length || 0) >= (selectedEvent?.maxParticipants || 0))
-                              ? 'bg-red-500'
-                              : 'bg-green-500'
+                            ? 'bg-red-500'
+                            : 'bg-green-500'
                             }`}
                           style={{
                             width: `${Math.min(
@@ -926,9 +930,17 @@ const Events = () => {
                       onClick={() => {
                         if (selectedEvent) handleRegister(selectedEvent.slug);
                       }}
-                      className="w-full bg-gradient-to-r from-green-500 to-green-600 text-white py-6 rounded-2xl font-black tracking-[0.2em] text-sm uppercase hover:from-green-600 hover:to-green-700 transition-all transform hover:-translate-y-1 shadow-2xl shadow-green-900/50 hover:shadow-green-500/50"
+                      disabled={registering}
+                      className="w-full bg-gradient-to-r from-green-500 to-green-600 text-white py-6 rounded-2xl font-black tracking-[0.2em] text-sm uppercase hover:from-green-600 hover:to-green-700 transition-all transform hover:-translate-y-1 shadow-2xl shadow-green-900/50 hover:shadow-green-500/50 disabled:opacity-70 disabled:cursor-not-allowed disabled:transform-none"
                     >
-                      RÉSERVER MA PLACE MAINTENANT
+                      {registering ? (
+                        <span className="flex items-center justify-center gap-2">
+                          <Loader2 className="animate-spin" size={20} />
+                          INSCRIPTION EN COURS...
+                        </span>
+                      ) : (
+                        'RÉSERVER MA PLACE MAINTENANT'
+                      )}
                     </button>
                   )}
                 </div>
