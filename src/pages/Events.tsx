@@ -14,6 +14,7 @@ interface Event {
   _id: string;
   slug: string;
   title: string;
+  description: string;
   shortDescription: string;
   images: { url: string; alt: string }[];
   type: string;
@@ -741,107 +742,159 @@ const Events = () => {
               initial={{ scale: 0.9, opacity: 0, y: 20 }}
               animate={{ scale: 1, opacity: 1, y: 0 }}
               exit={{ scale: 0.9, opacity: 0, y: 20 }}
-              className="bg-[#101010] w-full max-w-4xl max-h-[90vh] overflow-y-auto rounded-3xl border border-white/10 shadow-2xl relative scrollbar-hide"
+              className="bg-[#101010] w-full max-w-5xl max-h-[95vh] overflow-y-auto rounded-3xl border border-white/10 shadow-2xl relative scrollbar-hide"
               onClick={e => e.stopPropagation()}
             >
               <button
                 onClick={() => setSelectedEvent(null)}
-                className="absolute top-6 right-6 z-50 p-2 bg-black/50 text-white rounded-full hover:bg-white hover:text-black transition-all"
+                className="absolute top-6 right-6 z-50 p-3 bg-black/70 backdrop-blur-sm text-white rounded-full hover:bg-white hover:text-black transition-all shadow-xl"
               >
                 <X size={24} />
               </button>
 
-              <div className="flex flex-col md:flex-row">
-                <div className="md:w-1/2 h-[300px] md:h-auto relative">
+              {/* Full-Width Image Section with Adaptive Height */}
+              <div className="relative w-full overflow-hidden bg-black">
+                <div className="relative w-full flex items-center justify-center" style={{
+                  maxHeight: '60vh',
+                  minHeight: '300px'
+                }}>
                   <img
                     src={selectedEvent.images?.[0]?.url || "https://images.unsplash.com/photo-1540575467063-178a50c2df87?q=80&w=800&auto=format&fit=crop"}
                     alt={selectedEvent.title}
-                    className="w-full h-full object-cover"
+                    className="w-full h-auto object-contain"
+                    style={{
+                      maxHeight: '60vh',
+                      objectFit: 'contain'
+                    }}
                   />
-                  <div className="absolute inset-0 bg-gradient-to-t from-[#101010] to-transparent md:hidden" />
-                  <div className="absolute inset-y-0 right-0 w-32 bg-gradient-to-l from-[#101010] to-transparent hidden md:block" />
+                  {/* Gradient Overlay */}
+                  {/* <div className="absolute inset-0 bg-gradient-to-t from-[#101010] via-[#101010]/40 to-transparent" /> */}
+
+                  {/* Event Type Badge */}
+                  <div className="absolute top-6 left-6">
+                    <span className="bg-green-600 text-white text-xs font-bold px-4 py-2 uppercase tracking-widest shadow-xl">
+                      {selectedEvent?.type.replace('_', ' ')}
+                    </span>
+                  </div>
+                </div>
+              </div>
+
+              {/* Content Section */}
+              <div className="p-8 md:p-12">
+                {/* Title */}
+                <h2 className="text-4xl md:text-5xl font-black text-white mb-8 tracking-tight leading-tight uppercase">
+                  {selectedEvent?.title}
+                </h2>
+
+                {/* Event Details Grid */}
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-10">
+                  {/* Date */}
+                  <div className="flex items-start gap-4">
+                    <div className="bg-white/5 p-3 rounded-xl border border-white/5 flex-shrink-0">
+                      <Calendar className="text-green-500" size={24} />
+                    </div>
+                    <div>
+                      <p className="text-white font-bold text-sm uppercase tracking-wider mb-1">Date & Heure</p>
+                      <p className="text-sm font-light text-gray-400 leading-relaxed">
+                        Du {selectedEvent && new Date(selectedEvent.dateStart).toLocaleDateString('fr-FR', { day: 'numeric', month: 'long', year: 'numeric' })}<br />
+                        au {selectedEvent && new Date(selectedEvent.dateEnd).toLocaleDateString('fr-FR', { day: 'numeric', month: 'long', year: 'numeric' })}
+                      </p>
+                    </div>
+                  </div>
+
+                  {/* Location */}
+                  <div className="flex items-start gap-4">
+                    <div className="bg-white/5 p-3 rounded-xl border border-white/5 flex-shrink-0">
+                      <MapPin className="text-green-500" size={24} />
+                    </div>
+                    <div>
+                      <p className="text-white font-bold text-sm uppercase tracking-wider mb-1">Localisation</p>
+                      <p className="text-sm font-light text-gray-400">{selectedEvent?.location}</p>
+                    </div>
+                  </div>
+
+                  {/* Participants */}
+                  <div className="flex items-start gap-4">
+                    <div className="bg-white/5 p-3 rounded-xl border border-white/5 flex-shrink-0">
+                      <Users className="text-green-500" size={24} />
+                    </div>
+                    <div>
+                      <p className="text-white font-bold text-sm uppercase tracking-wider mb-1">Participants</p>
+                      <p className="text-sm font-light text-gray-400">{selectedEvent?.maxParticipants} places maximum</p>
+                    </div>
+                  </div>
+
+                  {/* Duration/Time */}
+                  <div className="flex items-start gap-4">
+                    <div className="bg-white/5 p-3 rounded-xl border border-white/5 flex-shrink-0">
+                      <Clock className="text-green-500" size={24} />
+                    </div>
+                    <div>
+                      <p className="text-white font-bold text-sm uppercase tracking-wider mb-1">Durée</p>
+                      <p className="text-sm font-light text-gray-400">
+                        {Math.ceil((new Date(selectedEvent.dateEnd).getTime() - new Date(selectedEvent.dateStart).getTime()) / (1000 * 60 * 60 * 24))} jour(s)
+                      </p>
+                    </div>
+                  </div>
                 </div>
 
-                <div className="md:w-1/2 p-8 md:p-12">
-                  <div className="flex items-center gap-2 text-green-500 font-bold uppercase tracking-widest text-xs mb-4">
-                    <span className="h-[1px] w-8 bg-green-500"></span>
-                    {selectedEvent?.type.replace('_', ' ')}
+                {/* Description Section */}
+                <div className="mb-10">
+                  <div className="flex items-center gap-3 mb-4">
+                    <div className="bg-white/5 p-2 rounded-lg border border-white/5">
+                      <Info className="text-green-500" size={20} />
+                    </div>
+                    <h3 className="text-white font-bold text-lg uppercase tracking-wider">À propos de l'événement</h3>
                   </div>
+                  <p className="text-base font-light text-gray-300 leading-relaxed whitespace-pre-line">
+                    {selectedEvent?.description || selectedEvent?.shortDescription || "Aucune description disponible."}
+                  </p>
+                </div>
 
-                  <h2 className="text-4xl font-black text-white mb-6 tracking-tight leading-tight uppercase">
-                    {selectedEvent?.title}
-                  </h2>
-
-                  <div className="space-y-6 mb-10">
-                    <div className="flex items-start gap-4 text-gray-400">
-                      <div className="bg-white/5 p-3 rounded-xl border border-white/5">
-                        <Calendar className="text-green-500" size={20} />
-                      </div>
-                      <div>
-                        <p className="text-white font-bold text-sm uppercase tracking-wider">Date & Heure</p>
-                        <p className="text-sm font-light mt-1 text-gray-400">
-                          Du {selectedEvent && new Date(selectedEvent.dateStart).toLocaleDateString('fr-FR', { day: 'numeric', month: 'long', year: 'numeric' })}<br />
-                          au {selectedEvent && new Date(selectedEvent.dateEnd).toLocaleDateString('fr-FR', { day: 'numeric', month: 'long', year: 'numeric' })}
-                        </p>
-                      </div>
+                {/* Pricing Cards */}
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8">
+                  <div className="p-6 bg-gradient-to-br from-white/5 to-white/[0.02] rounded-2xl border border-white/10 hover:border-green-500/30 transition-all group">
+                    <div className="flex items-center gap-2 mb-2">
+                      <DollarSign className="text-green-500" size={16} />
+                      <p className="text-[10px] text-gray-500 uppercase tracking-[0.2em] font-bold">Pass Membre</p>
                     </div>
-
-                    <div className="flex items-start gap-4 text-gray-400">
-                      <div className="bg-white/5 p-3 rounded-xl border border-white/5">
-                        <MapPin className="text-green-500" size={20} />
-                      </div>
-                      <div>
-                        <p className="text-white font-bold text-sm uppercase tracking-wider">Localisation</p>
-                        <p className="text-sm font-light mt-1 text-gray-400">{selectedEvent?.location}</p>
-                      </div>
-                    </div>
-
-                    <div className="flex items-start gap-4 text-gray-400">
-                      <div className="bg-white/5 p-3 rounded-xl border border-white/5">
-                        <Info className="text-green-500" size={20} />
-                      </div>
-                      <div>
-                        <p className="text-white font-bold text-sm uppercase tracking-wider">À propos</p>
-                        <p className="text-sm font-light mt-1 text-gray-300 leading-relaxed">
-                          {selectedEvent?.shortDescription}
-                        </p>
-                      </div>
-                    </div>
-
-                    <div className="grid grid-cols-2 gap-4">
-                      <div className="p-4 bg-white/5 rounded-2xl border border-white/5 hover:border-green-500/20 transition-colors">
-                        <p className="text-[10px] text-gray-500 uppercase tracking-[0.2em] mb-1">Pass Membre</p>
-                        <p className="text-xl font-black text-white">{selectedEvent?.priceMember?.toLocaleString() || 0} <span className="text-[10px] font-normal text-gray-500">FCFA</span></p>
-                      </div>
-                      <div className="p-4 bg-white/5 rounded-2xl border border-white/5 hover:border-green-500/20 transition-colors">
-                        <p className="text-[10px] text-gray-500 uppercase tracking-[0.2em] mb-1">Standard</p>
-                        <p className="text-xl font-black text-white">{selectedEvent?.priceNonMember?.toLocaleString() || 0} <span className="text-[10px] font-normal text-gray-500">FCFA</span></p>
-                      </div>
-                    </div>
+                    <p className="text-3xl font-black text-white group-hover:text-green-400 transition-colors">
+                      {selectedEvent?.priceMember?.toLocaleString() || 0} <span className="text-sm font-normal text-gray-500">FCFA</span>
+                    </p>
                   </div>
-
-                  <div className="flex items-center justify-between gap-4">
-                    {user && selectedEvent?.registrations?.some((reg: any) => {
-                      if (!reg.user) return false;
-                      const registeredUserId = typeof reg.user === 'string'
-                        ? reg.user
-                        : reg.user._id?.toString() || reg.user.toString();
-                      return registeredUserId === user?._id;
-                    }) ? (
-                      <div className="w-full bg-green-500/10 border border-green-500/20 text-green-500 py-5 rounded-xl flex items-center justify-center gap-3 font-bold tracking-widest text-sm uppercase">
-                        <CheckCircle size={20} /> Inscription Confirmée
-                      </div>
-                    ) : (
-                      <button
-                        onClick={() => {
-                          if (selectedEvent) handleRegister(selectedEvent.slug);
-                        }}
-                        className="w-full bg-white text-black py-5 rounded-xl font-black tracking-[0.2em] text-sm uppercase hover:bg-green-500 hover:text-white transition-all transform hover:-translate-y-1 shadow-2xl shadow-black/50"
-                      >
-                        RÉSERVER MA PLACE
-                      </button>
-                    )}
+                  <div className="p-6 bg-gradient-to-br from-white/5 to-white/[0.02] rounded-2xl border border-white/10 hover:border-green-500/30 transition-all group">
+                    <div className="flex items-center gap-2 mb-2">
+                      <DollarSign className="text-gray-500" size={16} />
+                      <p className="text-[10px] text-gray-500 uppercase tracking-[0.2em] font-bold">Standard</p>
+                    </div>
+                    <p className="text-3xl font-black text-white group-hover:text-green-400 transition-colors">
+                      {selectedEvent?.priceNonMember?.toLocaleString() || 0} <span className="text-sm font-normal text-gray-500">FCFA</span>
+                    </p>
                   </div>
+                </div>
+
+                {/* CTA Button */}
+                <div className="flex items-center justify-center">
+                  {user && selectedEvent?.registrations?.some((reg: any) => {
+                    if (!reg.user) return false;
+                    const registeredUserId = typeof reg.user === 'string'
+                      ? reg.user
+                      : reg.user._id?.toString() || reg.user.toString();
+                    return registeredUserId === user?._id;
+                  }) ? (
+                    <div className="w-full bg-green-500/10 border-2 border-green-500/30 text-green-400 py-6 rounded-2xl flex items-center justify-center gap-3 font-bold tracking-widest text-sm uppercase">
+                      <CheckCircle size={24} /> Inscription Confirmée
+                    </div>
+                  ) : (
+                    <button
+                      onClick={() => {
+                        if (selectedEvent) handleRegister(selectedEvent.slug);
+                      }}
+                      className="w-full bg-gradient-to-r from-green-500 to-green-600 text-white py-6 rounded-2xl font-black tracking-[0.2em] text-sm uppercase hover:from-green-600 hover:to-green-700 transition-all transform hover:-translate-y-1 shadow-2xl shadow-green-900/50 hover:shadow-green-500/50"
+                    >
+                      RÉSERVER MA PLACE MAINTENANT
+                    </button>
+                  )}
                 </div>
               </div>
             </motion.div>
