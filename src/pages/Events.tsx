@@ -1,6 +1,6 @@
 // src/pages/Events.tsx
 import { useEffect, useState, useRef } from 'react';
-import { motion, Variants, AnimatePresence } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 import {
   Calendar, MapPin, Users, ArrowRight, TrendingUp, Globe,
   Award, CheckCircle, X, ChevronLeft, ChevronRight,

@@ -1,7 +1,6 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { path } from 'framer-motion/client';
 import { Target, Eye, Heart, Users, Award, Globe, TrendingUp, Handshake, Facebook, Linkedin } from 'lucide-react';
 
 const About = () => {

@@ -90,7 +90,7 @@ const Footer = () => {
     <footer className="relative overflow-hidden bg-gradient-to-br from-blue-950 to-blue-900">
       {/* Modern Grid Pattern */}
       <div className="absolute inset-0">
-        <div className="absolute inset-0 bg-[url('/grid-pattern.svg')] opacity-5" />
+        <div className="absolute inset-0 bg-white/5 opacity-5" />
         <div className="absolute bottom-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-green-500/20 to-transparent" />
       </div>
 
