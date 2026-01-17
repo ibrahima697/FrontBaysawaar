@@ -2014,51 +2014,134 @@ const AdminDashboard = () => {
               initial={{ scale: 0.95, opacity: 0, y: 20 }}
               animate={{ scale: 1, opacity: 1, y: 0 }}
               exit={{ scale: 0.95, opacity: 0, y: 20 }}
-              className="bg-white rounded-3xl shadow-2xl w-full max-w-4xl max-h-[90vh] overflow-hidden relative z-10 flex flex-col"
+              className="bg-white rounded-3xl shadow-2xl w-full max-w-5xl max-h-[90vh] overflow-hidden relative z-10 flex flex-col"
             >
-              <div className="p-6 border-b flex justify-between items-center bg-gray-50">
-                <h3 className="text-2xl font-bold text-gray-800">Détails de l'événement</h3>
+              <div className="relative h-48 md:h-64 bg-gray-900 flex-shrink-0">
+                <img
+                  src={selectedEventDetail.images?.[0]?.url || "https://res.cloudinary.com/drxouwbms/image/upload/v1765733341/african-kid-marketplace_zwl4xj.jpg"}
+                  alt={selectedEventDetail.title}
+                  className="w-full h-full object-cover opacity-60"
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent" />
                 <button
                   onClick={() => setShowEventDetailModal(false)}
-                  className="p-2 hover:bg-gray-200 rounded-full transition-colors"
+                  className="absolute top-4 right-4 p-2 bg-black/50 hover:bg-white text-white hover:text-black rounded-full transition-all backdrop-blur-sm"
                 >
-                  <XCircle className="w-6 h-6 text-gray-500" />
+                  <XCircle className="w-6 h-6" />
                 </button>
+                <div className="absolute bottom-6 left-6 right-6">
+                  <div className="flex flex-wrap gap-2 mb-2">
+                    <span className="bg-green-500 text-white text-xs font-bold px-2 py-1 rounded uppercase tracking-wider">
+                      {(selectedEventDetail.type || 'Événement').replace('_', ' ')}
+                    </span>
+                    <span className={`text-xs font-bold px-2 py-1 rounded uppercase tracking-wider ${new Date(selectedEventDetail.dateStart) > new Date() ? 'bg-blue-500 text-white' : 'bg-gray-700 text-gray-300'
+                      }`}>
+                      {new Date(selectedEventDetail.dateStart) > new Date() ? 'À venir' : 'Passé'}
+                    </span>
+                  </div>
+                  <h2 className="text-3xl md:text-4xl font-black text-white line-clamp-1">{selectedEventDetail.title}</h2>
+                  <div className="flex items-center gap-4 text-gray-300 text-sm mt-2">
+                    <span className="flex items-center gap-1"><Calendar size={14} /> {new Date(selectedEventDetail.dateStart).toLocaleDateString()}</span>
+                    <span className="flex items-center gap-1"><MapPin size={14} /> {selectedEventDetail.location}</span>
+                  </div>
+                </div>
               </div>
 
-              <div className="flex-1 overflow-y-auto p-6">
-                <h4 className="text-xl font-bold text-gray-900 mb-6 flex items-center gap-2">
-                  <Users className="w-6 h-6 text-green-600" />
-                  Inscriptions ({selectedEventDetail.registrations?.length || 0})
-                </h4>
+              <div className="flex-1 overflow-y-auto p-6 md:p-8 bg-gray-50">
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+                  {/* Stats / Gauge Card */}
+                  <div className="bg-white rounded-2xl p-6 shadow-sm border border-gray-100 flex items-center justify-between col-span-1 md:col-span-2">
+                    <div>
+                      <h4 className="text-gray-500 text-xs font-bold uppercase tracking-wider mb-1">Remplissage</h4>
+                      <div className="flex items-baseline gap-2">
+                        <span className="text-3xl font-black text-gray-900">{selectedEventDetail.registrations?.length || 0}</span>
+                        <span className="text-gray-400">/ {selectedEventDetail.maxParticipants} inscrits</span>
+                      </div>
+                      <div className="mt-2 text-sm">
+                        {(selectedEventDetail.registrations?.length || 0) >= selectedEventDetail.maxParticipants ? (
+                          <span className="text-red-600 font-bold flex items-center gap-1"><XCircle size={14} /> COMPLET</span>
+                        ) : (
+                          <span className="text-green-600 font-bold flex items-center gap-1"><CheckCircle size={14} /> Places disponibles</span>
+                        )}
+                      </div>
+                    </div>
+
+                    {/* Circular Gauge */}
+                    <div className="relative w-20 h-20 flex-shrink-0">
+                      <svg className="w-full h-full -rotate-90" viewBox="0 0 36 36">
+                        <path
+                          className="text-gray-100"
+                          d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"
+                          fill="none"
+                          stroke="currentColor"
+                          strokeWidth="3"
+                        />
+                        <path
+                          className={`${(selectedEventDetail.registrations?.length || 0) >= selectedEventDetail.maxParticipants
+                            ? 'text-red-500'
+                            : 'text-green-500'
+                            } transition-all duration-1000 ease-out`}
+                          strokeDasharray={`${selectedEventDetail.maxParticipants > 0
+                            ? ((selectedEventDetail.registrations?.length || 0) / selectedEventDetail.maxParticipants) * 100
+                            : 0
+                            }, 100`}
+                          d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"
+                          fill="none"
+                          stroke="currentColor"
+                          strokeWidth="3"
+                        />
+                      </svg>
+                      <div className="absolute inset-0 flex items-center justify-center text-xs font-bold text-gray-700">
+                        {selectedEventDetail.maxParticipants > 0
+                          ? Math.round(((selectedEventDetail.registrations?.length || 0) / selectedEventDetail.maxParticipants) * 100)
+                          : 0}%
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Price / Type Info */}
+                  <div className="bg-white rounded-2xl p-6 shadow-sm border border-gray-100 flex flex-col justify-center">
+                    <div className="mb-4">
+                      <h4 className="text-gray-500 text-xs font-bold uppercase tracking-wider mb-1">Prix Membre</h4>
+                      <span className="text-xl font-bold text-gray-900">{selectedEventDetail.priceMember} FCFA</span>
+                    </div>
+                    <div>
+                      <h4 className="text-gray-500 text-xs font-bold uppercase tracking-wider mb-1">Prix Standard</h4>
+                      <span className="text-xl font-bold text-gray-900">{selectedEventDetail.priceNonMember} FCFA</span>
+                    </div>
+                  </div>
+                </div>
+
+                <h3 className="text-lg font-bold text-gray-900 mb-4 flex items-center gap-2">
+                  <Users className="text-green-600" size={20} /> Liste des inscrits
+                </h3>
 
                 {selectedEventDetail.registrations && selectedEventDetail.registrations.length > 0 ? (
-                  <>
-                    <div className="overflow-x-auto min-h-[400px]">
+                  <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
+                    <div className="overflow-x-auto">
                       <table className="w-full">
-                        <thead className="bg-gray-50 border-b border-gray-200">
+                        <thead className="bg-gray-50 border-b border-gray-100">
                           <tr>
-                            <th className="px-6 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Utilisateur</th>
-                            <th className="px-6 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Date</th>
-                            <th className="px-6 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Statut</th>
-                            <th className="px-6 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Actions</th>
+                            <th className="px-6 py-4 text-left text-xs font-bold text-gray-500 uppercase tracking-wider">Participant</th>
+                            <th className="px-6 py-4 text-left text-xs font-bold text-gray-500 uppercase tracking-wider">Date</th>
+                            <th className="px-6 py-4 text-left text-xs font-bold text-gray-500 uppercase tracking-wider">Statut</th>
                           </tr>
                         </thead>
-                        <tbody className="divide-y divide-gray-100">
+                        <tbody className="divide-y divide-gray-50">
                           {selectedEventDetail.registrations
                             .slice((eventRegistrationsPage - 1) * eventRegistrationsPerPage, eventRegistrationsPage * eventRegistrationsPerPage)
                             .map((reg: any, index: number) => (
-                              <tr key={index} className="hover:bg-gray-50 transition-colors">
+                              <tr key={index} className="hover:bg-gray-50/50 transition-colors">
                                 <td className="px-6 py-4 whitespace-nowrap">
                                   <div className="flex items-center">
-                                    <div className="h-10 w-10 flex-shrink-0 bg-green-100 rounded-full flex items-center justify-center text-green-700 font-bold">
+                                    <div className="h-10 w-10 flex-shrink-0 bg-gradient-to-br from-green-500 to-green-600 rounded-full flex items-center justify-center text-white font-bold shadow-sm">
                                       {(reg.user?.firstName?.[0] || 'U')}{(reg.user?.lastName?.[0] || '')}
                                     </div>
                                     <div className="ml-4">
-                                      <div className="text-sm font-medium text-gray-900">
+                                      <div className="text-sm font-bold text-gray-900">
                                         {reg.user ? `${reg.user.firstName} ${reg.user.lastName}` : 'Utilisateur supprimé'}
                                       </div>
-                                      <div className="text-sm text-gray-500">{reg.user?.email || '-'}</div>
+                                      <div className="text-xs text-gray-500">{reg.user?.email || '-'}</div>
                                     </div>
                                   </div>
                                 </td>
@@ -2066,16 +2149,12 @@ const AdminDashboard = () => {
                                   {reg.registeredAt ? new Date(reg.registeredAt).toLocaleDateString() : '-'}
                                 </td>
                                 <td className="px-6 py-4 whitespace-nowrap">
-                                  <span className={`px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded-full ${reg.status === 'approved' ? 'bg-green-100 text-green-800' :
-                                    reg.status === 'rejected' ? 'bg-red-100 text-red-800' :
-                                      'bg-yellow-100 text-yellow-800'
+                                  <span className={`px-3 py-1 inline-flex text-xs leading-5 font-bold rounded-full border ${reg.status === 'approved' ? 'bg-green-50 text-green-700 border-green-200' :
+                                    reg.status === 'rejected' ? 'bg-red-50 text-red-700 border-red-200' :
+                                      'bg-yellow-50 text-yellow-700 border-yellow-200'
                                     }`}>
                                     {reg.status === 'approved' ? 'Confirmé' : reg.status === 'rejected' ? 'Refusé' : 'En attente'}
                                   </span>
-                                </td>
-                                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                                  {/* Actions placeholder - can add approve/reject buttons later if needed */}
-                                  -
                                 </td>
                               </tr>
                             ))}
@@ -2083,44 +2162,38 @@ const AdminDashboard = () => {
                       </table>
                     </div>
 
-                    {/* Pagination Controls for Registrations */}
+                    {/* Pagination */}
                     {selectedEventDetail.registrations.length > eventRegistrationsPerPage && (
-                      <div className="flex justify-center items-center mt-6 gap-2">
+                      <div className="px-6 py-4 border-t border-gray-100 flex items-center justify-between bg-gray-50/50">
                         <button
                           onClick={() => setEventRegistrationsPage(prev => Math.max(prev - 1, 1))}
                           disabled={eventRegistrationsPage === 1}
-                          className="p-2 rounded-lg border border-gray-200 text-gray-500 hover:bg-gray-50 disabled:opacity-30 disabled:cursor-not-allowed"
+                          className="p-2 rounded-lg hover:bg-white border border-transparent hover:border-gray-200 text-gray-500 disabled:opacity-30 disabled:hover:bg-transparent transition-all"
                         >
                           <ChevronLeft className="w-5 h-5" />
                         </button>
-                        <span className="text-sm text-gray-600 font-medium px-2">
-                          Page {eventRegistrationsPage} sur {Math.ceil(selectedEventDetail.registrations.length / eventRegistrationsPerPage)}
+                        <span className="text-sm text-gray-500 font-medium">
+                          Page {eventRegistrationsPage} / {Math.ceil(selectedEventDetail.registrations.length / eventRegistrationsPerPage)}
                         </span>
                         <button
                           onClick={() => setEventRegistrationsPage(prev => Math.min(prev + 1, Math.ceil((selectedEventDetail.registrations?.length || 0) / eventRegistrationsPerPage)))}
                           disabled={eventRegistrationsPage === Math.ceil(selectedEventDetail.registrations.length / eventRegistrationsPerPage)}
-                          className="p-2 rounded-lg border border-gray-200 text-gray-500 hover:bg-gray-50 disabled:opacity-30 disabled:cursor-not-allowed"
+                          className="p-2 rounded-lg hover:bg-white border border-transparent hover:border-gray-200 text-gray-500 disabled:opacity-30 disabled:hover:bg-transparent transition-all"
                         >
                           <ChevronRight className="w-5 h-5" />
                         </button>
                       </div>
                     )}
-                  </>
+                  </div>
                 ) : (
-                  <div className="text-center py-12 bg-gray-50 rounded-2xl border border-dashed border-gray-200">
-                    <Users className="w-12 h-12 text-gray-300 mx-auto mb-3" />
-                    <p className="text-gray-500">Aucune inscription pour le moment</p>
+                  <div className="text-center py-16 bg-white rounded-2xl border border-dashed border-gray-200">
+                    <div className="w-16 h-16 bg-gray-50 rounded-full flex items-center justify-center mx-auto mb-4">
+                      <Users className="w-8 h-8 text-gray-300" />
+                    </div>
+                    <p className="text-gray-900 font-medium">Aucune inscription</p>
+                    <p className="text-gray-500 text-sm mt-1">Les inscriptions apparaîtront ici.</p>
                   </div>
                 )}
-              </div>
-
-              <div className="p-6 border-t bg-gray-50 flex justify-end">
-                <button
-                  onClick={() => setShowEventDetailModal(false)}
-                  className="px-6 py-2 bg-white border border-gray-300 rounded-xl text-gray-700 hover:bg-gray-50 font-medium transition-colors"
-                >
-                  Fermer
-                </button>
               </div>
             </motion.div>
           </div>

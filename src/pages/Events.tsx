@@ -34,6 +34,7 @@ const Events = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [eventsPerPage] = useState(6);
   const [selectedEvent, setSelectedEvent] = useState<Event | null>(null);
+  const [isRegistering, setIsRegistering] = useState(false);
   const { user } = useAuth();
 
   useEffect(() => {
@@ -90,6 +91,7 @@ const Events = () => {
 
     if (!result.isConfirmed) return;
 
+    setIsRegistering(true);
     try {
       await eventsAPI.register(slug);
 
@@ -131,6 +133,8 @@ const Events = () => {
           confirmButtonColor: '#16a34a'
         });
       }
+    } finally {
+      setIsRegistering(false);
     }
   };
 
@@ -881,28 +885,108 @@ const Events = () => {
                   </div>
                 </div>
 
-                {/* CTA Button */}
-                <div className="flex items-center justify-center">
-                  {user && selectedEvent?.registrations?.some((reg: any) => {
-                    if (!reg.user) return false;
-                    const registeredUserId = typeof reg.user === 'string'
-                      ? reg.user
-                      : reg.user._id?.toString() || reg.user.toString();
-                    return registeredUserId === user?._id;
-                  }) ? (
-                    <div className="w-full bg-green-500/10 border-2 border-green-500/30 text-green-400 py-6 rounded-2xl flex items-center justify-center gap-3 font-bold tracking-widest text-sm uppercase">
-                      <CheckCircle size={24} /> Inscription Confirmée
+                {/* Places Gauge & CTA Section */}
+                <div className="flex flex-col gap-6">
+                  {/* Gauge Section */}
+                  {selectedEvent && (
+                    <div className="bg-[#151515] rounded-2xl p-6 border border-white/5 flex items-center justify-between gap-6">
+                      <div className="flex-1">
+                        <h4 className="text-white font-bold mb-2 uppercase tracking-wider text-sm">Places Disponibles</h4>
+                        <div className="flex items-baseline gap-2">
+                          <span className={`text-4xl font-black ${(selectedEvent.registrations?.length || 0) >= selectedEvent.maxParticipants
+                              ? 'text-red-500'
+                              : 'text-green-500'
+                            }`}>
+                            {Math.max(0, selectedEvent.maxParticipants - (selectedEvent.registrations?.length || 0))}
+                          </span>
+                          <span className="text-gray-500 font-medium">/ {selectedEvent.maxParticipants}</span>
+                        </div>
+                        <p className="text-sm text-gray-400 mt-1">
+                          {(selectedEvent.registrations?.length || 0) >= selectedEvent.maxParticipants
+                            ? "Cet événement est malheureusement complet."
+                            : "Dépêchez-vous, les places partent vite !"}
+                        </p>
+                      </div>
+
+                      {/* Circular Gauge */}
+                      <div className="relative w-20 h-20 flex-shrink-0">
+                        <svg className="w-full h-full -rotate-90" viewBox="0 0 36 36">
+                          <path
+                            className="text-gray-800"
+                            d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"
+                            fill="none"
+                            stroke="currentColor"
+                            strokeWidth="3"
+                          />
+                          <path
+                            className={`${(selectedEvent.registrations?.length || 0) >= selectedEvent.maxParticipants
+                                ? 'text-red-500'
+                                : 'text-green-500'
+                              } transition-all duration-1000 ease-out`}
+                            strokeDasharray={`${selectedEvent.maxParticipants > 0
+                                ? ((selectedEvent.registrations?.length || 0) / selectedEvent.maxParticipants) * 100
+                                : 0
+                              }, 100`}
+                            d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"
+                            fill="none"
+                            stroke="currentColor"
+                            strokeWidth="3"
+                          />
+                        </svg>
+                        <div className="absolute inset-0 flex items-center justify-center text-xs font-bold text-white">
+                          {selectedEvent.maxParticipants > 0
+                            ? Math.round(((selectedEvent.registrations?.length || 0) / selectedEvent.maxParticipants) * 100)
+                            : 0}%
+                        </div>
+                      </div>
                     </div>
-                  ) : (
-                    <button
-                      onClick={() => {
-                        if (selectedEvent) handleRegister(selectedEvent.slug);
-                      }}
-                      className="w-full bg-gradient-to-r from-green-500 to-green-600 text-white py-6 rounded-2xl font-black tracking-[0.2em] text-sm uppercase hover:from-green-600 hover:to-green-700 transition-all transform hover:-translate-y-1 shadow-2xl shadow-green-900/50 hover:shadow-green-500/50"
-                    >
-                      RÉSERVER MA PLACE MAINTENANT
-                    </button>
                   )}
+
+                  {/* CTA Button */}
+                  <div className="flex items-center justify-center">
+                    {user && selectedEvent?.registrations?.some((reg: any) => {
+                      if (!reg.user) return false;
+                      const registeredUserId = typeof reg.user === 'string'
+                        ? reg.user
+                        : reg.user._id?.toString() || reg.user.toString();
+                      return registeredUserId === user?._id;
+                    }) ? (
+                      <div className="w-full bg-green-500/10 border-2 border-green-500/30 text-green-400 py-6 rounded-2xl flex items-center justify-center gap-3 font-bold tracking-widest text-sm uppercase">
+                        <CheckCircle size={24} /> Inscription Confirmée
+                      </div>
+                    ) : (
+                      <button
+                        onClick={() => {
+                          if (selectedEvent) handleRegister(selectedEvent.slug);
+                        }}
+                        disabled={
+                          (selectedEvent?.registrations?.length || 0) >= (selectedEvent?.maxParticipants || 0) ||
+                          isRegistering
+                        }
+                        className={`w-full py-6 rounded-2xl font-black tracking-[0.2em] text-sm uppercase flex items-center justify-center gap-3 transition-all transform hover:-translate-y-1 shadow-2xl ${(selectedEvent?.registrations?.length || 0) >= (selectedEvent?.maxParticipants || 0)
+                            ? 'bg-gray-800 text-gray-500 cursor-not-allowed hover:transform-none'
+                            : isRegistering
+                              ? 'bg-green-600 text-white cursor-wait'
+                              : 'bg-gradient-to-r from-green-500 to-green-600 text-white hover:from-green-600 hover:to-green-700 shadow-green-900/50 hover:shadow-green-500/50'
+                          }`}
+                      >
+                        {isRegistering ? (
+                          <>
+                            <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                            Traitement...
+                          </>
+                        ) : (selectedEvent?.registrations?.length || 0) >= (selectedEvent?.maxParticipants || 0) ? (
+                          <>
+                            <X size={20} /> COMPLET
+                          </>
+                        ) : (
+                          <>
+                            RÉSERVER MA PLACE MAINTENANT
+                          </>
+                        )}
+                      </button>
+                    )}
+                  </div>
                 </div>
               </div>
             </motion.div>
