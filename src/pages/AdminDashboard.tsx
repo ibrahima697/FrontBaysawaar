@@ -150,6 +150,7 @@ const AdminDashboard = () => {
   const [usersCurrentPage, setUsersCurrentPage] = useState(1);
   const [usersPerPage] = useState(10);
   const [userSearchQuery, setUserSearchQuery] = useState('');
+  const [enrollmentSearchQuery, setEnrollmentSearchQuery] = useState('');
   const [eventRegistrationsPage, setEventRegistrationsPage] = useState(1);
   const [eventRegistrationsPerPage] = useState(5);
   const [userRoleFilter, setUserRoleFilter] = useState<'all' | 'member' | 'admin' | 'partner' | 'client'>('all');
@@ -869,21 +870,37 @@ const AdminDashboard = () => {
                     <h2 className="text-2xl font-bold text-gray-900">Demandes d'Enrôlement</h2>
                     <p className="text-gray-500 mt-1">Gérez et suivez les demandes d'inscription</p>
                   </div>
-                  <div className="flex bg-gray-100 p-1 rounded-xl">
-                    {['all', 'pending', 'approved', 'rejected'].map((status) => (
-                      <button
-                        key={status}
-                        onClick={() => setFilter(status as any)}
-                        className={`px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 capitalize ${filter === status
-                          ? 'bg-white text-gray-900 shadow-sm'
-                          : 'text-gray-500 hover:text-gray-700'
-                          }`}
-                      >
-                        {status === 'all' ? 'Tous' :
-                          status === 'pending' ? 'En attente' :
-                            status === 'approved' ? 'Approuvés' : 'Rejetés'}
-                      </button>
-                    ))}
+
+                  <div className="flex flex-col sm:flex-row gap-3">
+                    <div className="relative group">
+                      <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 group-focus-within:text-green-500 transition-colors" />
+                      <input
+                        type="text"
+                        placeholder="Rechercher..."
+                        value={enrollmentSearchQuery}
+                        onChange={(e) => {
+                          setEnrollmentSearchQuery(e.target.value);
+                          setEnrollmentsCurrentPage(1);
+                        }}
+                        className="pl-10 pr-4 py-2 bg-white border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-green-500/20 focus:border-green-500 transition-all w-full sm:w-64"
+                      />
+                    </div>
+                    <div className="flex bg-gray-100 p-1 rounded-xl">
+                      {['all', 'pending', 'approved', 'rejected'].map((status) => (
+                        <button
+                          key={status}
+                          onClick={() => setFilter(status as any)}
+                          className={`px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 capitalize ${filter === status
+                            ? 'bg-white text-gray-900 shadow-sm'
+                            : 'text-gray-500 hover:text-gray-700'
+                            }`}
+                        >
+                          {status === 'all' ? 'Tous' :
+                            status === 'pending' ? 'En attente' :
+                              status === 'approved' ? 'Approuvés' : 'Rejetés'}
+                        </button>
+                      ))}
+                    </div>
                   </div>
                 </div>
               </div>
@@ -905,6 +922,15 @@ const AdminDashboard = () => {
                 ) : (
                   <div className="space-y-4">
                     {enrollments
+                      .filter(enrollment => {
+                        const searchLower = enrollmentSearchQuery.toLowerCase();
+                        return (
+                          enrollment.firstName.toLowerCase().includes(searchLower) ||
+                          enrollment.lastName.toLowerCase().includes(searchLower) ||
+                          enrollment.email.toLowerCase().includes(searchLower) ||
+                          (enrollment.companyName && enrollment.companyName.toLowerCase().includes(searchLower))
+                        );
+                      })
                       .slice((enrollmentsCurrentPage - 1) * enrollmentsPerPage, enrollmentsCurrentPage * enrollmentsPerPage)
                       .map((enrollment) => (
                         <motion.div

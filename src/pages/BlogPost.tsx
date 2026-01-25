@@ -49,28 +49,28 @@ const BlogPost = () => {
     try {
       setLoading(true);
       setError(null);
-      
+
       // Récupérer l'article principal
       const response = await blogsAPI.getBlogById(id!);
-      
+
       if (!response.data.blog) {
         throw new Error('Article non trouvé');
       }
-      
+
       setPost(response.data.blog);
-      
+
       // Récupérer les articles liés (même catégorie, excluant l'article actuel)
       const relatedResponse = await blogsAPI.getAllBlogs();
       const allBlogs = relatedResponse.data.blogs || [];
       const related = allBlogs
-        .filter((relatedBlog: BlogPost) => 
-          relatedBlog._id !== id && 
-          relatedBlog.category === response.data.blog.category && 
+        .filter((relatedBlog: BlogPost) =>
+          relatedBlog._id !== id &&
+          relatedBlog.category === response.data.blog.category &&
           relatedBlog.isPublished
         )
         .slice(0, 2);
       setRelatedPosts(related);
-      
+
     } catch (error: any) {
       console.error('Erreur lors du chargement de l\'article:', error);
       setError('Article non trouvé ou erreur de chargement');
@@ -119,7 +119,7 @@ const BlogPost = () => {
   const handleShare = (platform: string) => {
     const url = window.location.href;
     const title = post.title;
-    
+
     const shareUrls = {
       facebook: `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(url)}`,
       twitter: `https://twitter.com/intent/tweet?text=${encodeURIComponent(title)}&url=${encodeURIComponent(url)}`,
@@ -192,7 +192,7 @@ const BlogPost = () => {
             <h1 className="text-4xl md:text-5xl font-bold text-gray-900 mb-6 leading-tight">
               {post.title}
             </h1>
-            
+
             <div className="flex flex-col sm:flex-row items-center justify-center space-y-4 sm:space-y-0 sm:space-x-8 text-gray-600 mb-8">
               <div className="flex items-center space-x-2">
                 <User size={16} />
@@ -268,6 +268,40 @@ const BlogPost = () => {
           />
         </div>
       </section>
+
+      {/* Gallery Section */}
+      {post.gallery && post.gallery.length > 0 && (
+        <section className="py-12 bg-white">
+          <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+            <h2 className="text-2xl font-bold text-gray-900 mb-8">Photos de l'Article</h2>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-8">
+              {post.gallery.map((image, index) => (
+                <motion.div
+                  key={index}
+                  initial={{ opacity: 0, y: 20 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  transition={{ delay: index * 0.1, duration: 0.5 }}
+                  viewport={{ once: true }}
+                  className="relative group rounded-3xl overflow-hidden shadow-xl"
+                  style={{ height: '300px' }}
+                >
+                  <img
+                    src={image.url}
+                    alt={image.alt || `Gallery image ${index + 1}`}
+                    className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                  {image.caption && (
+                    <div className="absolute bottom-0 left-0 right-0 p-6 text-white text-sm font-medium transform translate-y-4 group-hover:translate-y-0 transition-transform duration-300">
+                      {image.caption}
+                    </div>
+                  )}
+                </motion.div>
+              ))}
+            </div>
+          </div>
+        </section>
+      )}
 
       {/* Tags */}
       <section className="py-8 bg-gray-50">
