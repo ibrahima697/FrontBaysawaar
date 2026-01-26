@@ -35,7 +35,6 @@ const Enrollments: React.FC = () => {
   });
 
   const [companyLogoFiles, setCompanyLogoFiles] = useState<File[]>([]);
-  const [businessDocumentsFiles, setBusinessDocumentsFiles] = useState<File[]>([]);
 
   const location = useLocation();
   const formationId = (location.state as { formationId?: string } | undefined)?.formationId;
@@ -116,7 +115,6 @@ const Enrollments: React.FC = () => {
         userId: '',
         status: 'pending',
         companyLogo: companyLogoFiles[0],
-        businessDocuments: businessDocumentsFiles,
         formType: formType // Send form type to backend if needed
       };
 
@@ -138,7 +136,6 @@ const Enrollments: React.FC = () => {
         interests: [],
       });
       setCompanyLogoFiles([]);
-      setBusinessDocumentsFiles([]);
 
     } catch (error: any) {
       const errMsg = error?.response?.data?.error || error?.message || 'Erreur lors de la soumission';
@@ -404,12 +401,11 @@ const Enrollments: React.FC = () => {
                     </div>
                   </div>
 
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-8 pt-4">
-                    <div className="p-6 rounded-[2rem] bg-gray-50/50 border border-gray-200/50">
-                      <ImageUpload label="Logo entreprise" name="companyLogo" multiple={false} maxFiles={1} maxSize={5} onFilesChange={setCompanyLogoFiles} required={false} />
-                    </div>
-                    <div className="p-6 rounded-[2rem] bg-gray-50/50 border border-gray-200/50">
-                      <ImageUpload label="Documents officiels" name="businessDocuments" multiple={true} maxFiles={5} maxSize={5} onFilesChange={setBusinessDocumentsFiles} required={false} />
+                  <div className="grid grid-cols-1 gap-8 pt-4">
+                    <div className="p-6 rounded-[2rem] bg-gray-50/50 border border-gray-200/50 flex flex-col items-center">
+                      <div className="w-full max-w-sm">
+                        <ImageUpload label="Logo entreprise" name="companyLogo" multiple={false} maxFiles={1} maxSize={5} onFilesChange={setCompanyLogoFiles} required={false} />
+                      </div>
                     </div>
                   </div>
                 </motion.div>

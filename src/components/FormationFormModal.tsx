@@ -192,7 +192,7 @@ const FormationFormModal: React.FC<Props> = ({ isOpen, onClose, formation, onFor
                 type="number"
                 value={form.maxSeats}
                 onChange={e => {
-                  setForm({ ...form, maxSeats: parseInt(e.target.value) || 1 });
+                  setForm({ ...form, maxSeats: e.target.value === '' ? '' : parseInt(e.target.value) } as any);
                   if (errors.maxSeats) setErrors(prev => ({ ...prev, maxSeats: '' }));
                 }}
                 className={`w-full p-3 border rounded-lg focus:ring-2 focus:ring-green-500 transition-all ${errors.maxSeats ? 'border-red-500 bg-red-50' : 'border-gray-200 focus:border-transparent'}`}

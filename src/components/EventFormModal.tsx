@@ -290,7 +290,7 @@ const EventFormModal: React.FC<Props> = ({ isOpen, onClose, event, onEventSaved 
                                 type="number"
                                 value={form.maxParticipants}
                                 onChange={e => {
-                                    setForm({ ...form, maxParticipants: parseInt(e.target.value) || 0 });
+                                    setForm({ ...form, maxParticipants: e.target.value === '' ? '' : parseInt(e.target.value) } as any);
                                     if (errors.maxParticipants) setErrors(prev => ({ ...prev, maxParticipants: '' }));
                                 }}
                                 className={`w-full p-3 border rounded-lg focus:ring-2 focus:ring-green-500 transition-all ${errors.maxParticipants ? 'border-red-500 bg-red-50' : 'border-gray-200'}`}
@@ -306,7 +306,7 @@ const EventFormModal: React.FC<Props> = ({ isOpen, onClose, event, onEventSaved 
                             <input
                                 type="number"
                                 value={form.priceMember}
-                                onChange={e => setForm({ ...form, priceMember: parseFloat(e.target.value) || 0 })}
+                                onChange={e => setForm({ ...form, priceMember: e.target.value === '' ? '' : parseFloat(e.target.value) } as any)}
                                 className="w-full p-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-green-500"
                                 min="0"
                             />
@@ -316,7 +316,7 @@ const EventFormModal: React.FC<Props> = ({ isOpen, onClose, event, onEventSaved 
                             <input
                                 type="number"
                                 value={form.priceNonMember}
-                                onChange={e => setForm({ ...form, priceNonMember: parseFloat(e.target.value) || 0 })}
+                                onChange={e => setForm({ ...form, priceNonMember: e.target.value === '' ? '' : parseFloat(e.target.value) } as any)}
                                 className="w-full p-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-green-500"
                                 min="0"
                             />

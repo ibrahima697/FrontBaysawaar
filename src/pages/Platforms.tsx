@@ -1,6 +1,6 @@
 import { motion, AnimatePresence } from 'framer-motion';
 import { Link, useNavigate } from 'react-router-dom';
-import { Globe, ShoppingCart, BookOpen, Facebook, Instagram, Linkedin, ExternalLink, Users, TrendingUp, Shield, Zap, Youtube, X } from 'lucide-react';
+import { Globe, ShoppingCart, BookOpen, Facebook, Instagram, Linkedin, ExternalLink, Users, TrendingUp, Shield, Zap, Youtube, X, CheckCircle, ArrowRight } from 'lucide-react';
 import { useState } from 'react';
 
 const Platforms = () => {
@@ -11,72 +11,42 @@ const Platforms = () => {
     {
       id: 'fipa',
       title: 'Plateforme FIPA',
-      subtitle: 'Foire des Produits Africains',
-      description: 'Marché complet connectant les producteurs africains avec des acheteurs mondiaux. Découvrez des produits africains authentiques et connectez-vous avec des fournisseurs vérifiés.',
+      subtitle: 'Excellence Africaine',
+      description: 'Le carrefour d’élite connectant les producteurs locaux au marché mondial.',
       icon: Globe,
       color: 'from-green-500 to-emerald-600',
-      features: [
-        'Catalogue de produits avec 10 000+ annonces',
-        'Annuaire des fournisseurs vérifiés',
-        'Services de facilitation du commerce',
-        'Programmes de garantie de la qualité ',
-        'Support multilingue',
-        'Expérience mobile optimisée'
-      ],
-      stats: [
-        { label: 'Produits actifs', value: '10 000+' },
-        { label: 'Fournisseurs', value: '500+' },
-        { label: 'Pays', value: '25' },
-        { label: 'Visiteurs mensuels', value: '50K+' }
-      ],
+      glow: 'shadow-green-500/20',
+      accent: 'text-green-600',
+      features: ['Catalogue Global 10K+', 'Fournisseurs Vérifiés', 'Facilitation Export'],
+      stats: [{ label: 'Pays', value: '25' }, { label: 'Produits', value: '10K+' }],
       link: '/events',
       action: 'navigate'
     },
     {
       id: 'ecommerce',
-      title: 'Solutions e-commerce',
-      subtitle: 'Outils de commerce numérique complets',
-      description: 'Plateforme e-commerce conçue pour les entreprises africaines. Créez votre présence en ligne avec notre suite complète d\'outils numériques.',
+      title: 'Site E-commerce',
+      subtitle: 'Vente en ligne',
+      description: 'Notre plateforme de vente en ligne pour les produits africains.',
       icon: ShoppingCart,
       color: 'from-blue-500 to-cyan-600',
-      features: [
-        'Constructeur de magasins en ligne personnalisés',
-        'Traitement de paiement sécurisé',
-        'Système de gestion d\'inventaire',
-        'Suivi des commandes et livraison',
-        'Outils de marketing digital',
-        'Soutien client 24h/24'
-      ],
-      stats: [
-        { label: 'Magasins actifs', value: '1,200+' },
-        { label: 'Transactions', value: '$2M+' },
-        { label: 'Taux de réussite', value: '99,8%' },
-        { label: 'Note de satisfaction', value: '4,9/5' }
-      ],
+      glow: 'shadow-blue-500/20',
+      accent: 'text-blue-600',
+      features: ['Boutiques Perso', 'Paiements Sécurisés', 'Logistique Intégrée'],
+      stats: [{ label: 'Magasins', value: '1.2K+' }, { label: 'Score HT', value: '4.9/5' }],
       link: '#',
       action: 'coming-soon'
     },
     {
       id: 'blog',
-      title: 'Blog des Affaires & Actualités',
-      subtitle: 'Tendances, analyses et actualités des marchés africains',
-      description: 'Restez informé avec les dernières tendances, analyses et actualités des marchés africains. Des conseils et des analyses d\'experts.',
+      title: 'Blog & Actualités',
+      subtitle: 'Veille Stratégique',
+      description: 'Soyez informé de nos activités à travers notre blog et nos actualités.',
       icon: BookOpen,
       color: 'from-purple-500 to-indigo-600',
-      features: [
-        'Mises à jour quotidiennes',
-        'Analyses d\'experts sur les secteurs',
-        'Histoires de réussite et études de cas',
-        'Conseils de développement des affaires',
-        'Mises à jour réglementaires',
-        'Abonnements à la newsletter'
-      ],
-      stats: [
-        { label: 'Articles publiés', value: '500+' },
-        { label: 'Lecteurs mensuels', value: '25K+' },
-        { label: 'Contributeurs experts', value: '50+' },
-        { label: 'Sujets couverts', value: '100+' }
-      ],
+      glow: 'shadow-purple-500/20',
+      accent: 'text-purple-600',
+      features: ['Actualités', 'Success Stories', 'Voyages et visites'],
+      stats: [{ label: 'Articles', value: '500+' }, { label: 'Lecteurs', value: '25K+' }],
       link: '/blog',
       action: 'navigate'
     }
@@ -184,175 +154,135 @@ const Platforms = () => {
         </div>
       </section>
 
-      {/* Main Platforms */}
-      <section className="py-12 sm:py-16 bg-white">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      {/* Plateformes Clés - Elaborated Glassmorphism */}
+      <section className="py-24 bg-white relative overflow-hidden">
+        {/* Animated Background Ambience */}
+        <div className="absolute top-0 left-0 w-full h-full pointer-events-none">
+          <div className="absolute top-1/4 left-1/4 w-[600px] h-[600px] bg-green-100/20 rounded-full blur-[120px] animate-pulse" />
+          <div className="absolute bottom-1/4 right-1/4 w-[600px] h-[600px] bg-blue-100/20 rounded-full blur-[120px] animate-pulse" style={{ animationDelay: '3s' }} />
+        </div>
+
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10 text-center">
           <motion.div
             initial={{ y: 30, opacity: 0 }}
             whileInView={{ y: 0, opacity: 1 }}
             transition={{ duration: 0.8 }}
             viewport={{ once: true }}
-            className="text-center mb-8 sm:mb-12"
+            className="mb-20"
           >
-            <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-gray-900 mb-2 sm:mb-4">Plateformes clés</h2>
-            <p className="text-base sm:text-lg md:text-xl text-gray-600 px-2 sm:px-0">Des outils puissants pour chaque aspect de votre entreprise</p>
+            <h2 className="text-4xl md:text-6xl font-black text-gray-900 mb-6 tracking-tighter uppercase">
+              Écosystème <span className="text-green-600">Premium</span>
+            </h2>
+            <p className="text-lg text-gray-500 font-medium max-w-xl mx-auto">
+              Des outils puissants distillés pour votre succès.
+            </p>
           </motion.div>
 
-          <div className="space-y-8 sm:space-y-12 md:space-y-16">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
             {platforms.map((platform, index) => (
               <motion.div
                 key={platform.id}
-                initial={{ y: 50, opacity: 0 }}
+                initial={{ y: 40, opacity: 0 }}
                 whileInView={{ y: 0, opacity: 1 }}
-                transition={{ delay: index * 0.2, duration: 0.8 }}
+                transition={{ delay: index * 0.1, duration: 0.6 }}
                 viewport={{ once: true }}
-                className={`relative overflow-hidden rounded-2xl sm:rounded-3xl bg-gradient-to-r ${platform.color} text-white`}
+                className="group relative"
               >
-                <div className="absolute inset-0 bg-black/10"></div>
-                <div className="relative p-4 sm:p-6 md:p-10 lg:p-12">
-                  <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 sm:gap-8 lg:gap-12 items-center">
-                    <div className="space-y-6 sm:space-y-8">
-                      <div className="flex items-center space-x-3 sm:space-x-4">
-                        <div className="w-10 h-10 sm:w-12 sm:h-12 md:w-16 md:h-16 bg-white/20 rounded-xl sm:rounded-2xl flex items-center justify-center">
-                          <platform.icon size={20} />
-                        </div>
-                        <div>
-                          <h3 className="text-xl sm:text-2xl md:text-3xl font-bold mb-1 sm:mb-2">{platform.title}</h3>
-                          <p className="text-white/80 text-sm sm:text-base md:text-lg">{platform.subtitle}</p>
-                        </div>
-                      </div>
+                {/* Main Card Structure */}
+                <div className={`h-full bg-white/40 backdrop-blur-xl rounded-[2.5rem] border border-gray-100 p-10 shadow-2xl transition-all duration-500 group-hover:-translate-y-4 hover:shadow-green-900/5 relative overflow-hidden ${platform.glow}`}>
 
-                      <p className="text-sm sm:text-base md:text-lg leading-relaxed text-white/90">
-                        {platform.description}
-                      </p>
+                  {/* Elaborated: Decorative Corner Accent */}
+                  <div className={`absolute top-0 right-0 w-32 h-32 bg-gradient-to-br ${platform.color} opacity-[0.03] rounded-bl-[5rem] group-hover:opacity-[0.08] transition-opacity`} />
+                  <div className={`absolute top-8 right-8 w-2 h-2 rounded-full bg-gradient-to-r ${platform.color} opacity-20 group-hover:scale-150 transition-transform`} />
 
-                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
-                        {platform.features.slice(0, 4).map((feature, featureIndex) => (
-                          <div key={featureIndex} className="flex items-center space-x-2 sm:space-x-3">
-                            <div className="w-1.5 h-1.5 sm:w-2 sm:h-2 bg-white rounded-full flex-shrink-0"></div>
-                            <span className="text-white/90 text-xs sm:text-sm md:text-base">{feature}</span>
-                          </div>
-                        ))}
-                      </div>
+                  {/* Elaborated: Inner Border Glow Effect */}
+                  <div className={`absolute inset-[1px] rounded-[2.4rem] border border-white/50 pointer-events-none`} />
 
-                      <div className="flex flex-col sm:flex-row gap-3 sm:gap-4">
-                        <button
-                          onClick={() => handlePlatformClick(platform)}
-                          className="bg-white text-gray-900 px-4 sm:px-6 py-2.5 sm:py-3 rounded-full font-semibold hover:bg-gray-100 transition-colors duration-200 flex items-center justify-center space-x-2 w-full sm:w-auto text-sm sm:text-base"
-                        >
-                          <span>Explorer la plateforme</span>
-                          <ExternalLink size={14} className="sm:w-4 sm:h-4" />
-                        </button>
-                        <Link
-                          to="/enrollments"
-                          className="border border-white/30 text-white px-4 sm:px-6 py-2.5 sm:py-3 rounded-full font-semibold hover:bg-white/10 transition-colors duration-200 text-center w-full sm:w-auto text-sm sm:text-base"
-                        >
-                          S'inscrire maintenant
-                        </Link>
-                      </div>
-                    </div>
-
-                    <div className="grid grid-cols-2 gap-3 sm:gap-4 md:gap-6">
-                      {platform.stats.map((stat, statIndex) => (
-                        <motion.div
-                          key={statIndex}
-                          initial={{ scale: 0.8, opacity: 0 }}
-                          whileInView={{ scale: 1, opacity: 1 }}
-                          transition={{ delay: statIndex * 0.1, duration: 0.5 }}
-                          viewport={{ once: true }}
-                          className="bg-white/10 backdrop-blur-sm p-3 sm:p-4 md:p-6 rounded-xl sm:rounded-2xl text-center"
-                        >
-                          <h4 className="text-lg sm:text-xl md:text-2xl lg:text-3xl font-bold mb-1 sm:mb-2">{stat.value}</h4>
-                          <p className="text-white/80 text-xs sm:text-sm md:text-base">{stat.label}</p>
-                        </motion.div>
-                      ))}
+                  {/* Icon with Dynamic Glow & Layered Container */}
+                  <div className="relative mb-8 group-hover:rotate-3 transition-transform duration-500 flex justify-center md:justify-start">
+                    <div className={`absolute -inset-2 bg-gradient-to-br ${platform.color} rounded-3xl blur-xl opacity-20 group-hover:opacity-40 transition-opacity`} />
+                    <div className={`relative w-20 h-20 rounded-3xl bg-gradient-to-br ${platform.color} flex items-center justify-center text-white shadow-lg`}>
+                      <platform.icon size={36} strokeWidth={2.5} />
                     </div>
                   </div>
+
+                  <div className="mb-6 text-center md:text-left">
+                    <h3 className="text-2xl font-black text-gray-900 mb-1 leading-tight">{platform.title}</h3>
+                    <p className={`text-[10px] font-black uppercase tracking-[0.2em] ${platform.accent}`}>{platform.subtitle}</p>
+                  </div>
+
+                  <p className="text-gray-500 text-sm leading-relaxed mb-8 font-medium text-center md:text-left">
+                    {platform.description}
+                  </p>
+
+                  <div className="space-y-3 mb-10">
+                    {platform.features.map((feature, fIdx) => (
+                      <div key={fIdx} className="flex items-center gap-3 justify-center md:justify-start">
+                        <div className={`w-1.5 h-1.5 rounded-full bg-gradient-to-r ${platform.color} shadow-sm shadow-current`} />
+                        <span className="text-[11px] font-bold text-gray-800 tracking-wide uppercase opacity-80">{feature}</span>
+                      </div>
+                    ))}
+                  </div>
+
+                  <button
+                    onClick={() => handlePlatformClick(platform)}
+                    className="w-full py-5 rounded-2xl bg-gray-900 text-white font-black text-xs uppercase tracking-widest hover:scale-[1.02] active:scale-[0.98] transition-all flex items-center justify-center gap-2 group/btn relative overflow-hidden shadow-xl"
+                  >
+                    <div className={`absolute inset-0 bg-gradient-to-r ${platform.color} opacity-0 group-hover/btn:opacity-10 transition-opacity`} />
+                    <span className="relative z-10">{platform.action === 'coming-soon' ? 'Bientôt' : 'Explorer'}</span>
+                    <ArrowRight size={16} className="group-hover/btn:translate-x-1 transition-transform relative z-10" />
+                  </button>
                 </div>
+                {/* Visual Accent Glow Backdrop */}
+                <div className={`absolute -inset-1 bg-gradient-to-br ${platform.color} rounded-[2.8rem] blur-2xl opacity-0 group-hover:opacity-[0.12] transition-opacity -z-10`} />
               </motion.div>
             ))}
           </div>
         </div>
       </section>
 
-      {/* Benefits Section */}
-      <section className="py-12 sm:py-16 bg-gray-50">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <motion.div
-            initial={{ y: 30, opacity: 0 }}
-            whileInView={{ y: 0, opacity: 1 }}
-            transition={{ duration: 0.8 }}
-            viewport={{ once: true }}
-            className="text-center mb-8 sm:mb-12"
-          >
-            <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-gray-900 mb-2 sm:mb-4">Pourquoi choisir nos plateformes ?</h2>
-            <p className="text-base sm:text-lg md:text-xl text-gray-600 px-2 sm:px-0">Conçues spécifiquement pour les entreprises africaines</p>
-          </motion.div>
+      {/* Benefits - Elaborated Bento */}
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 sm:gap-8">
-            {benefits.map((benefit, index) => (
-              <motion.div
-                key={index}
-                initial={{ y: 30, opacity: 0 }}
-                whileInView={{ y: 0, opacity: 1 }}
-                transition={{ delay: index * 0.1, duration: 0.5 }}
-                viewport={{ once: true }}
-                className="bg-white p-6 sm:p-8 rounded-xl sm:rounded-2xl shadow-lg hover:shadow-xl transition-shadow duration-300 text-center"
-              >
-                <div className="w-12 h-12 sm:w-16 sm:h-16 bg-green-100 rounded-xl sm:rounded-2xl flex items-center justify-center mx-auto mb-4 sm:mb-6">
-                  <benefit.icon className="text-green-600" size={24} />
-                </div>
-                <h3 className="text-lg sm:text-xl font-bold text-gray-900 mb-3 sm:mb-4">{benefit.title}</h3>
-                <p className="text-gray-600 leading-relaxed text-sm sm:text-base">{benefit.description}</p>
-              </motion.div>
-            ))}
-          </div>
-        </div>
-      </section>
 
-      {/* Social Media Platforms */}
-      <section className="py-12 sm:py-16 bg-white">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <motion.div
-            initial={{ y: 30, opacity: 0 }}
-            whileInView={{ y: 0, opacity: 1 }}
-            transition={{ duration: 0.8 }}
-            viewport={{ once: true }}
-            className="text-center mb-8 sm:mb-12"
-          >
-            <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-gray-900 mb-2 sm:mb-4">Rejoignez-nous</h2>
-            <p className="text-base sm:text-lg md:text-xl text-gray-600 px-2 sm:px-0">Rejoignez notre communauté en pleine croissance sur les plateformes sociales</p>
-          </motion.div>
+      {/* Social Media - Elaborated Communities */}
+      <section className="py-24 bg-white">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+          <h2 className="text-3xl font-black text-gray-900 mb-16 uppercase tracking-tighter">Nos réseaux sociaux</h2>
 
-          <div className="flex flex-wrap justify-center gap-4 sm:gap-6">
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-6">
             {socialPlatforms.map((social, index) => (
               <motion.a
                 key={social.name}
                 href={social.link}
                 target="_blank"
                 rel="noopener noreferrer"
-                initial={{ y: 30, opacity: 0 }}
-                whileInView={{ y: 0, opacity: 1 }}
-                transition={{ delay: index * 0.1, duration: 0.5 }}
-                viewport={{ once: true }}
-                whileHover={{ y: -10, scale: 1.05 }}
-                className="block bg-white border border-gray-200 rounded-xl sm:rounded-2xl p-6 sm:p-8 hover:shadow-xl transition-all duration-300 text-center group flex flex-col items-center justify-center w-full max-w-xs sm:max-w-sm md:w-80 lg:w-72"
+                whileHover={{ y: -8, scale: 1.02 }}
+                className="relative group p-10 rounded-[3rem] bg-gray-50/50 border border-transparent hover:bg-white hover:border-gray-200 transition-all duration-500 overflow-hidden"
               >
-                <div className={`w-12 h-12 sm:w-16 sm:h-16 ${social.color} rounded-xl sm:rounded-2xl flex items-center justify-center mb-4 sm:mb-6 group-hover:scale-110 transition-transform duration-300`}>
-                  <social.icon className="text-white" size={24} />
+                {/* Elaborated: Individual Brand Gradient Glow */}
+                <div className={`absolute -bottom-10 -right-10 w-40 h-40 ${social.color} opacity-0 group-hover:opacity-[0.08] rounded-full blur-3xl transition-all duration-700`} />
+
+                {/* Complex Icon Plate */}
+                <div className="relative w-20 h-20 mx-auto mb-8">
+                  <div className={`absolute inset-0 ${social.color} rounded-[2rem] blur-xl opacity-20 group-hover:opacity-40 animate-pulse`} />
+                  <div className={`relative w-full h-full rounded-[2rem] ${social.color} flex items-center justify-center text-white shadow-xl transition-transform duration-500 group-hover:scale-105 group-hover:-rotate-3`}>
+                    <social.icon size={32} strokeWidth={2.5} />
+                  </div>
                 </div>
-                <h3 className="text-lg sm:text-xl font-bold text-gray-900 mb-2 text-center">{social.name}</h3>
-                <p className="text-gray-600 mb-4 leading-relaxed text-center max-w-xs text-sm sm:text-base">{social.description}</p>
-                <div className="flex items-center justify-center space-x-2 text-center">
-                  <span className="text-xl sm:text-2xl font-bold text-gray-900">{social.followers}</span>
-                  <span className="text-gray-500 text-sm sm:text-base">followers</span>
+
+                <div className="relative z-10">
+                  <h3 className="text-xl font-black text-gray-900 mb-2">{social.name}</h3>
+                  <div className="inline-block px-4 py-1.5 rounded-full bg-white border border-gray-100 shadow-sm text-[10px] font-black uppercase tracking-[0.25em] text-gray-400 group-hover:text-gray-900 group-hover:border-gray-200 transition-all">
+                    {social.followers} Followers
+                  </div>
                 </div>
               </motion.a>
             ))}
           </div>
         </div>
       </section>
-      {/* Coming Soon Modal */}
+
+      {/* Coming Soon Modal - Elaborated Tech-Look */}
       <AnimatePresence>
         {showComingSoon && (
           <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
@@ -361,75 +291,46 @@ const Platforms = () => {
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
               onClick={() => setShowComingSoon(false)}
-              className="absolute inset-0 bg-black/60 backdrop-blur-sm"
+              className="absolute inset-0 bg-gray-900/95 backdrop-blur-2xl"
             />
             <motion.div
               initial={{ scale: 0.9, opacity: 0, y: 20 }}
               animate={{ scale: 1, opacity: 1, y: 0 }}
               exit={{ scale: 0.9, opacity: 0, y: 20 }}
-              className="relative bg-white rounded-[2.5rem] shadow-2xl overflow-hidden max-w-lg w-full p-8 md:p-12 text-center"
+              className="relative bg-white rounded-[3.5rem] shadow-[0_30px_100px_rgba(0,0,0,0.3)] overflow-hidden max-w-md w-full p-12 text-center border border-white/20"
             >
+              {/* Pattern Accent */}
+              <div className="absolute top-0 left-0 w-full h-2 bg-gradient-to-r from-green-400 via-blue-500 to-purple-600" />
+
               <button
                 onClick={() => setShowComingSoon(false)}
-                className="absolute top-6 right-6 p-2 rounded-full hover:bg-gray-100 transition-colors text-gray-400 hover:text-gray-900"
+                className="absolute top-8 right-8 p-3 rounded-2xl bg-gray-50 hover:bg-gray-100 transition-colors text-gray-400"
               >
-                <X size={24} />
+                <X size={20} />
               </button>
 
-              <div className="mb-8">
-                <div className="w-24 h-24 bg-blue-100 rounded-3xl flex items-center justify-center mx-auto mb-6 relative">
-                  <motion.div
-                    animate={{
-                      scale: [1, 1.1, 1],
-                      rotate: [0, 5, -5, 0]
-                    }}
-                    transition={{
-                      duration: 4,
-                      repeat: Infinity,
-                      ease: "easeInOut"
-                    }}
-                  >
-                    <ShoppingCart size={48} className="text-blue-600" />
-                  </motion.div>
-                  <motion.div
-                    animate={{ scale: [1, 1.2, 1], opacity: [0.5, 1, 0.5] }}
-                    transition={{ duration: 2, repeat: Infinity }}
-                    className="absolute -top-2 -right-2 w-8 h-8 bg-green-500 rounded-full flex items-center justify-center border-4 border-white"
-                  >
-                    <Zap size={14} className="text-white fill-current" />
-                  </motion.div>
+              <div className="mb-10 text-center relative">
+                <div className="relative w-28 h-28 mx-auto mb-10">
+                  <div className="absolute inset-0 bg-green-500/10 rounded-[2.5rem] animate-ping opacity-20" />
+
                 </div>
-                <h2 className="text-3xl font-extrabold text-gray-900 mb-4 italic">
-                  Bientôt <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-cyan-500">Disponible</span>
+
+                <h2 className="text-4xl font-black text-gray-900 mb-4 tracking-tighter uppercase">
+                  Soon <span className="text-green-600 underline decoration-4 underline-offset-8 decoration-green-100">Impact</span>
                 </h2>
-                <p className="text-gray-600 text-lg leading-relaxed">
-                  Notre équipe travaille d'arrache-pied pour vous offrir la meilleure expérience e-commerce en Afrique.
-                  Soyez les premiers à être informés du lancement !
+                <p className="text-gray-500 font-bold text-sm leading-relaxed px-2 uppercase tracking-widest opacity-60">
+                  Le futur du commerce africain arrive
                 </p>
               </div>
 
               <div className="space-y-4">
                 <button
                   onClick={() => setShowComingSoon(false)}
-                  className="w-full bg-blue-600 text-white py-4 rounded-2xl font-bold hover:bg-blue-700 transition-all shadow-lg shadow-blue-200 hover:shadow-blue-300 transform hover:-translate-y-1 active:translate-y-0"
+                  className="w-full py-6 rounded-3xl bg-gray-900 text-white font-black text-xs uppercase tracking-[0.3em] hover:bg-green-600 transition-all shadow-2xl shadow-gray-900/20 transform hover:-translate-y-1 active:translate-y-0"
                 >
-                  D'accord, j'attendrais !
+                  Alertez-moi
                 </button>
-                <Link
-                  to="/enrollments"
-                  className="block text-blue-600 font-semibold hover:underline"
-                  onClick={() => setShowComingSoon(false)}
-                >
-                  S'inscrire pour les mises à jour
-                </Link>
-              </div>
-
-              <div className="mt-8 pt-8 border-t border-gray-100 grid grid-cols-3 gap-4">
-                {['Paiement Sécurisé', 'Support 24/7', 'Livraison Rapide'].map((text, i) => (
-                  <div key={i} className="text-center">
-                    <div className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">{text}</div>
-                  </div>
-                ))}
+                <p className="text-[9px] font-black text-gray-300 uppercase tracking-[0.4em]">Stay Powered • Stay Ready</p>
               </div>
             </motion.div>
           </div>
