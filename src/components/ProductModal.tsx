@@ -139,23 +139,7 @@ const ProductModal = ({ product, isOpen, onClose }: ProductModalProps) => {
                     </p>
                   </div>
 
-                  {/* Features Grid */}
-                  <div className="grid grid-cols-2 gap-4">
-                    <div className="flex items-start gap-3 p-4 rounded-2xl bg-gray-50/50 border border-gray-100 group hover:bg-white hover:shadow-lg transition-all duration-300">
-                      <div className="p-2 bg-white rounded-xl shadow-sm text-green-600"><ShieldCheck size={20} /></div>
-                      <div>
-                        <p className="text-xs font-black text-gray-800 uppercase">Garantie</p>
-                        <p className="text-[10px] text-gray-500">Qualité certifiée</p>
-                      </div>
-                    </div>
-                    <div className="flex items-start gap-3 p-4 rounded-2xl bg-gray-50/50 border border-gray-100 group hover:bg-white hover:shadow-lg transition-all duration-300">
-                      <div className="p-2 bg-white rounded-xl shadow-sm text-blue-600"><Truck size={20} /></div>
-                      <div>
-                        <p className="text-xs font-black text-gray-800 uppercase">Livraison</p>
-                        <p className="text-[10px] text-gray-500">Expédition rapide</p>
-                      </div>
-                    </div>
-                  </div>
+
 
                   {/* Specifications */}
                   {product.specifications && Object.keys(product.specifications).length > 0 && (
@@ -187,12 +171,12 @@ const ProductModal = ({ product, isOpen, onClose }: ProductModalProps) => {
                     <MessageCircle size={22} className="fill-current" />
                     <span>Commander via WhatsApp</span>
                   </button>
-                  <button
+                  {/* <button
                     className="bg-white border-2 border-gray-100 text-gray-900 hover:border-[#2d8755] hover:text-[#2d8755] px-8 py-5 rounded-[1.5rem] font-bold transition-all duration-300 flex items-center justify-center gap-3 shadow-md hover:shadow-lg"
                   >
                     <ExternalLink size={20} />
                     <span className="hidden sm:inline">Partager</span>
-                  </button>
+                  </button> */}
                 </div>
                 <p className="text-[10px] text-gray-400 mt-4 text-center font-bold tracking-widest uppercase">
                   Prix affiché à titre indicatif • BAY SA WARR © 2026

@@ -30,6 +30,8 @@ interface Event {
 
 const Events = () => {
   const [events, setEvents] = useState<Event[]>([]);
+  const [upcomingEvents, setUpcomingEvents] = useState<Event[]>([]);
+  const [pastEvents, setPastEvents] = useState<Event[]>([]);
   const [loading, setLoading] = useState(true);
   const [currentPage, setCurrentPage] = useState(1);
   const [eventsPerPage] = useState(6);
@@ -40,7 +42,15 @@ const Events = () => {
   useEffect(() => {
     eventsAPI.getAll()
       .then(res => {
-        setEvents(res.data.events);
+        const allEvents = res.data.events;
+        setEvents(allEvents);
+
+        const now = new Date();
+        const upcoming = allEvents.filter((e: Event) => new Date(e.dateEnd) >= now);
+        const past = allEvents.filter((e: Event) => new Date(e.dateEnd) < now);
+
+        setUpcomingEvents(upcoming);
+        setPastEvents(past.sort((a: Event, b: Event) => new Date(b.dateStart).getTime() - new Date(a.dateStart).getTime())); // Latest past events first
         setLoading(false);
       })
       .catch((err) => {
@@ -295,7 +305,7 @@ const Events = () => {
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {events.slice((currentPage - 1) * eventsPerPage, currentPage * eventsPerPage).map((event, idx) => (
+            {upcomingEvents.slice((currentPage - 1) * eventsPerPage, currentPage * eventsPerPage).map((event, idx) => (
               <motion.div
                 key={event._id}
                 initial={{ opacity: 0, y: 20 }}
@@ -366,7 +376,7 @@ const Events = () => {
               </button>
 
               <div className="flex gap-2">
-                {Array.from({ length: Math.ceil(events.length / eventsPerPage) }, (_, i) => i + 1).map((page) => (
+                {Array.from({ length: Math.ceil(upcomingEvents.length / eventsPerPage) }, (_, i) => i + 1).map((page) => (
                   <button
                     key={page}
                     onClick={() => setCurrentPage(page)}
@@ -381,8 +391,8 @@ const Events = () => {
               </div>
 
               <button
-                onClick={() => setCurrentPage(prev => Math.min(prev + 1, Math.ceil(events.length / eventsPerPage)))}
-                disabled={currentPage === Math.ceil(events.length / eventsPerPage)}
+                onClick={() => setCurrentPage(prev => Math.min(prev + 1, Math.ceil(upcomingEvents.length / eventsPerPage)))}
+                disabled={currentPage === Math.ceil(upcomingEvents.length / eventsPerPage)}
                 className="p-3 rounded-full border border-white/10 text-white disabled:opacity-30 hover:bg-white/5 transition-all"
               >
                 <ChevronRight size={24} />
@@ -392,6 +402,111 @@ const Events = () => {
         </div>
       </section>
 
+      {/* Past Events Archive - Futuristic Carousel */}
+      {pastEvents.length > 0 && (
+        <section className="py-32 bg-[#080808] border-t border-white/5 relative overflow-hidden">
+          {/* Background Aura */}
+          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[1000px] h-[400px] bg-green-900/5 blur-[120px] rounded-full pointer-events-none" />
+
+          <div className="max-w-[90rem] mx-auto px-6 relative z-10">
+            <div className="mb-16">
+              <span className="text-gray-500 font-bold tracking-[0.4em] uppercase text-[10px] mb-4 block">Archives Digitales</span>
+              <h2 className="text-4xl md:text-6xl font-black text-white mb-2">
+                Événements <span className="text-green-500/50 italic">Passés</span>
+              </h2>
+            </div>
+
+            {/* Carousel Container */}
+            <div className="relative group/carousel">
+              <div className="flex overflow-x-auto gap-8 pb-12 snap-x snap-mandatory scroll-smooth custom-h-scrollbar no-scrollbar-none">
+                <style>
+                  {`
+                  .custom-h-scrollbar::-webkit-scrollbar {
+                    height: 5px;
+                    display: block !important;
+                  }
+                  .custom-h-scrollbar::-webkit-scrollbar-track {
+                    background: rgba(255, 255, 255, 0.02);
+                    border-radius: 20px;
+                    margin-inline: 2rem;
+                  }
+                  .custom-h-scrollbar::-webkit-scrollbar-thumb {
+                    background: linear-gradient(to right, #166534, #16a34a);
+                    border-radius: 20px;
+                    box-shadow: 0 0 10px rgba(22, 163, 74, 0.4);
+                  }
+                  .custom-h-scrollbar {
+                    scrollbar-width: thin;
+                    scrollbar-color: #16a34a rgba(255, 255, 255, 0.02);
+                    padding-bottom: 24px !important;
+                  }
+                  `}
+                </style>
+                {pastEvents.map((event, idx) => (
+                  <motion.div
+                    key={event._id}
+                    initial={{ opacity: 0, x: 20 }}
+                    whileInView={{ opacity: 1, x: 0 }}
+                    viewport={{ once: true, margin: "-50px" }}
+                    transition={{ delay: idx * 0.05, duration: 0.5, ease: "easeOut" }}
+                    className="min-w-[320px] md:min-w-[500px] h-[400px] rounded-[2.5rem] overflow-hidden relative snap-center border border-white/5 group/item hover:border-green-500/50 transition-all duration-500 shadow-2xl"
+                  >
+                    {/* Background Image - Higher quality feel */}
+                    <img
+                      src={event.images?.[0]?.url || "https://images.unsplash.com/photo-1540575467063-178a50c2df87?q=80&w=800&auto=format&fit=crop"}
+                      alt={event.title}
+                      className="absolute inset-0 w-full h-full object-cover grayscale opacity-30 group-hover/item:grayscale-0 group-hover/item:opacity-80 group-hover/item:scale-105 transition-all duration-1000 ease-out"
+                    />
+
+                    {/* Deep Gradient for Visibility */}
+                    <div className="absolute inset-0 bg-gradient-to-t from-black via-black/80 to-transparent z-10 opacity-90 group-hover/item:opacity-100 transition-opacity" />
+                    <div className="absolute inset-0 bg-gradient-to-b from-black/40 via-transparent to-transparent z-10" />
+
+                    {/* Content */}
+                    <div className="absolute inset-0 z-20 p-10 flex flex-col justify-end">
+
+
+                      <h3 className="text-3xl md:text-4xl font-black text-white mb-4 line-clamp-2 leading-[1.1] tracking-tighter group-hover/item:text-green-400 transition-colors duration-300">
+                        {event.title}
+                      </h3>
+
+                      <p className="text-gray-400 text-sm font-light line-clamp-2 mb-6 group-hover/item:text-gray-200 transition-colors opacity-0 group-hover/item:opacity-100 duration-500">
+                        {event.shortDescription}
+                      </p>
+
+                      <div className="flex items-center justify-between mt-2 pt-6 border-t border-white/10">
+                        <div className="flex flex-col">
+                          <span className="text-[8px] uppercase text-gray-500 font-black tracking-widest mb-1">Date Initiale</span>
+                          <span className="text-xs text-gray-300 font-bold tracking-wide">
+                            {new Date(event.dateStart).toLocaleDateString('fr-FR', { year: 'numeric', month: 'long' })}
+                          </span>
+                        </div>
+                        <button
+                          onClick={() => setSelectedEvent(event)}
+                          className="flex items-center gap-2 px-6 py-3 bg-white/5 hover:bg-green-600 rounded-full text-[10px] font-black text-white uppercase tracking-widest transition-all hover:scale-105 active:scale-95 group/btn"
+                        >
+                          Ouvrir Capsule
+                          <ArrowRight size={14} className="group-hover/btn:translate-x-1 transition-transform" />
+                        </button>
+                      </div>
+                    </div>
+                  </motion.div>
+                ))}
+              </div>
+
+              {/* Modern Scroll Hint */}
+              <div className="flex justify-center items-center gap-6 mt-4 text-gray-700">
+                <div className="h-[1px] w-12 bg-white/5" />
+                <div className="flex items-center gap-3">
+                  <span className="text-[9px] uppercase tracking-[0.4em] font-black">Naviguer temporellement</span>
+                  <ArrowRight size={10} className="animate-pulse" />
+                </div>
+                <div className="h-[1px] w-12 bg-white/5" />
+              </div>
+            </div>
+          </div>
+        </section>
+      )}
       {/* Why Attend - Expanded Bento Grid Style */}
       <section className="py-32 bg-[#0a0a0a] relative overflow-hidden">
         {/* Background Elements */}
@@ -863,39 +978,41 @@ const Events = () => {
                   </p>
                 </div>
 
-                {/* Pricing Cards */}
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8">
-                  <div className="p-6 bg-gradient-to-br from-white/5 to-white/[0.02] rounded-2xl border border-white/10 hover:border-green-500/30 transition-all group">
-                    <div className="flex items-center gap-2 mb-2">
-                      <DollarSign className="text-green-500" size={16} />
-                      <p className="text-[10px] text-gray-500 uppercase tracking-[0.2em] font-bold">Pass Membre</p>
+                {/* Pricing Cards - Conditional */}
+                {!(new Date(selectedEvent?.dateEnd || '') < new Date()) && (
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8">
+                    <div className="p-6 bg-gradient-to-br from-white/5 to-white/[0.02] rounded-2xl border border-white/10 hover:border-green-500/30 transition-all group">
+                      <div className="flex items-center gap-2 mb-2">
+                        <DollarSign className="text-green-500" size={16} />
+                        <p className="text-[10px] text-gray-500 uppercase tracking-[0.2em] font-bold">Pass Membre</p>
+                      </div>
+                      <p className="text-3xl font-black text-white group-hover:text-green-400 transition-colors">
+                        {selectedEvent?.priceMember?.toLocaleString() || 0} <span className="text-sm font-normal text-gray-500">FCFA</span>
+                      </p>
                     </div>
-                    <p className="text-3xl font-black text-white group-hover:text-green-400 transition-colors">
-                      {selectedEvent?.priceMember?.toLocaleString() || 0} <span className="text-sm font-normal text-gray-500">FCFA</span>
-                    </p>
-                  </div>
-                  <div className="p-6 bg-gradient-to-br from-white/5 to-white/[0.02] rounded-2xl border border-white/10 hover:border-green-500/30 transition-all group">
-                    <div className="flex items-center gap-2 mb-2">
-                      <DollarSign className="text-gray-500" size={16} />
-                      <p className="text-[10px] text-gray-500 uppercase tracking-[0.2em] font-bold">Standard</p>
+                    <div className="p-6 bg-gradient-to-br from-white/5 to-white/[0.02] rounded-2xl border border-white/10 hover:border-green-500/30 transition-all group">
+                      <div className="flex items-center gap-2 mb-2">
+                        <DollarSign className="text-gray-500" size={16} />
+                        <p className="text-[10px] text-gray-500 uppercase tracking-[0.2em] font-bold">Standard</p>
+                      </div>
+                      <p className="text-3xl font-black text-white group-hover:text-green-400 transition-colors">
+                        {selectedEvent?.priceNonMember?.toLocaleString() || 0} <span className="text-sm font-normal text-gray-500">FCFA</span>
+                      </p>
                     </div>
-                    <p className="text-3xl font-black text-white group-hover:text-green-400 transition-colors">
-                      {selectedEvent?.priceNonMember?.toLocaleString() || 0} <span className="text-sm font-normal text-gray-500">FCFA</span>
-                    </p>
                   </div>
-                </div>
+                )}
 
                 {/* Places Gauge & CTA Section */}
                 <div className="flex flex-col gap-6">
-                  {/* Gauge Section */}
-                  {selectedEvent && (
+                  {/* Gauge Section - Only for upcoming */}
+                  {selectedEvent && !(new Date(selectedEvent.dateEnd) < new Date()) && (
                     <div className="bg-[#151515] rounded-2xl p-6 border border-white/5 flex items-center justify-between gap-6">
                       <div className="flex-1">
                         <h4 className="text-white font-bold mb-2 uppercase tracking-wider text-sm">Places Disponibles</h4>
                         <div className="flex items-baseline gap-2">
                           <span className={`text-4xl font-black ${(selectedEvent.registrations?.length || 0) >= selectedEvent.maxParticipants
-                              ? 'text-red-500'
-                              : 'text-green-500'
+                            ? 'text-red-500'
+                            : 'text-green-500'
                             }`}>
                             {Math.max(0, selectedEvent.maxParticipants - (selectedEvent.registrations?.length || 0))}
                           </span>
@@ -920,12 +1037,12 @@ const Events = () => {
                           />
                           <path
                             className={`${(selectedEvent.registrations?.length || 0) >= selectedEvent.maxParticipants
-                                ? 'text-red-500'
-                                : 'text-green-500'
+                              ? 'text-red-500'
+                              : 'text-green-500'
                               } transition-all duration-1000 ease-out`}
                             strokeDasharray={`${selectedEvent.maxParticipants > 0
-                                ? ((selectedEvent.registrations?.length || 0) / selectedEvent.maxParticipants) * 100
-                                : 0
+                              ? ((selectedEvent.registrations?.length || 0) / selectedEvent.maxParticipants) * 100
+                              : 0
                               }, 100`}
                             d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"
                             fill="none"
@@ -944,7 +1061,11 @@ const Events = () => {
 
                   {/* CTA Button */}
                   <div className="flex items-center justify-center">
-                    {user && selectedEvent?.registrations?.some((reg: any) => {
+                    {new Date(selectedEvent?.dateEnd || '') < new Date() ? (
+                      <div className="w-full bg-gray-900 border-2 border-white/5 text-gray-500 py-6 rounded-2xl flex items-center justify-center gap-3 font-bold tracking-widest text-sm uppercase">
+                        <Clock size={24} /> Événement Terminé
+                      </div>
+                    ) : user && selectedEvent?.registrations?.some((reg: any) => {
                       if (!reg.user) return false;
                       const registeredUserId = typeof reg.user === 'string'
                         ? reg.user
@@ -964,10 +1085,10 @@ const Events = () => {
                           isRegistering
                         }
                         className={`w-full py-6 rounded-2xl font-black tracking-[0.2em] text-sm uppercase flex items-center justify-center gap-3 transition-all transform hover:-translate-y-1 shadow-2xl ${(selectedEvent?.registrations?.length || 0) >= (selectedEvent?.maxParticipants || 0)
-                            ? 'bg-gray-800 text-gray-500 cursor-not-allowed hover:transform-none'
-                            : isRegistering
-                              ? 'bg-green-600 text-white cursor-wait'
-                              : 'bg-gradient-to-r from-green-500 to-green-600 text-white hover:from-green-600 hover:to-green-700 shadow-green-900/50 hover:shadow-green-500/50'
+                          ? 'bg-gray-800 text-gray-500 cursor-not-allowed hover:transform-none'
+                          : isRegistering
+                            ? 'bg-green-600 text-white cursor-wait'
+                            : 'bg-gradient-to-r from-green-500 to-green-600 text-white hover:from-green-600 hover:to-green-700 shadow-green-900/50 hover:shadow-green-500/50'
                           }`}
                       >
                         {isRegistering ? (
