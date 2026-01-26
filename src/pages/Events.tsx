@@ -36,6 +36,7 @@ const Events = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [eventsPerPage] = useState(6);
   const [selectedEvent, setSelectedEvent] = useState<Event | null>(null);
+  const [showFullImage, setShowFullImage] = useState(false);
   const [isRegistering, setIsRegistering] = useState(false);
   const { user } = useAuth();
 
@@ -869,246 +870,195 @@ const Events = () => {
               initial={{ scale: 0.9, opacity: 0, y: 20 }}
               animate={{ scale: 1, opacity: 1, y: 0 }}
               exit={{ scale: 0.9, opacity: 0, y: 20 }}
-              className="bg-[#101010] w-full max-w-5xl max-h-[95vh] overflow-y-auto rounded-3xl border border-white/10 shadow-2xl relative scrollbar-hide"
+              className="bg-[#101010] w-full max-w-6xl h-[85vh] lg:h-[75vh] min-h-[500px] rounded-[2.5rem] border border-white/10 shadow-2xl relative overflow-hidden flex flex-col lg:flex-row"
               onClick={e => e.stopPropagation()}
             >
               <button
                 onClick={() => setSelectedEvent(null)}
-                className="absolute top-6 right-6 z-50 p-3 bg-black/70 backdrop-blur-sm text-white rounded-full hover:bg-white hover:text-black transition-all shadow-xl"
+                className="absolute top-4 right-4 z-50 p-2 bg-black/50 backdrop-blur-md text-white rounded-full hover:bg-white hover:text-black transition-all shadow-xl"
               >
-                <X size={24} />
+                <X size={20} />
               </button>
 
-              {/* Full-Width Image Section with Adaptive Height */}
-              <div className="relative w-full overflow-hidden bg-black">
-                <div className="relative w-full flex items-center justify-center" style={{
-                  maxHeight: '60vh',
-                  minHeight: '300px'
-                }}>
-                  <img
-                    src={selectedEvent.images?.[0]?.url || "https://images.unsplash.com/photo-1540575467063-178a50c2df87?q=80&w=800&auto=format&fit=crop"}
-                    alt={selectedEvent.title}
-                    className="w-full h-auto object-contain"
-                    style={{
-                      maxHeight: '60vh',
-                      objectFit: 'contain'
-                    }}
-                  />
-                  {/* Gradient Overlay */}
-                  {/* <div className="absolute inset-0 bg-gradient-to-t from-[#101010] via-[#101010]/40 to-transparent" /> */}
-
-                  {/* Event Type Badge */}
-                  <div className="absolute top-6 left-6">
-                    <span className="bg-green-600 text-white text-xs font-bold px-4 py-2 uppercase tracking-widest shadow-xl">
-                      {selectedEvent?.type.replace('_', ' ')}
-                    </span>
+              {/* Left Column: Fixed Image Section */}
+              <div
+                className="w-full lg:w-[45%] h-[250px] lg:h-full relative overflow-hidden bg-black flex-shrink-0 cursor-zoom-in group/imgSection"
+                onClick={() => setShowFullImage(true)}
+              >
+                <img
+                  src={selectedEvent.images?.[0]?.url || "https://images.unsplash.com/photo-1540575467063-178a50c2df87?q=80&w=800&auto=format&fit=crop"}
+                  alt={selectedEvent.title}
+                  className="w-full h-full object-cover group-hover/imgSection:scale-105 transition-transform duration-700"
+                />
+                {/* Expand Icon Overlay */}
+                <div className="absolute inset-0 bg-black/20 opacity-0 group-hover/imgSection:opacity-100 transition-opacity flex items-center justify-center">
+                  <div className="bg-white/10 backdrop-blur-md p-4 rounded-full border border-white/20 text-white transform scale-90 group-hover/imgSection:scale-100 transition-transform">
+                    <Globe size={24} />
                   </div>
                 </div>
+                <div className="absolute top-4 left-4">
+                  <span className="bg-green-600/90 backdrop-blur-sm text-white text-[10px] font-black px-3 py-1.5 uppercase tracking-widest rounded-lg shadow-2xl">
+                    {selectedEvent?.type.replace('_', ' ')}
+                  </span>
+                </div>
+                {/* Subtle Gradient Overlay */}
+                <div className="absolute inset-0 bg-gradient-to-r from-transparent to-[#101010]/20 pointer-events-none" />
               </div>
 
-              {/* Content Section */}
-              <div className="p-8 md:p-12">
-                {/* Title */}
-                <h2 className="text-4xl md:text-5xl font-black text-white mb-8 tracking-tight leading-tight uppercase">
-                  {selectedEvent?.title}
-                </h2>
+              {/* Right Column: Scrollable Info Section (if needed, but aim for none) */}
+              <div className="flex-1 flex flex-col p-6 lg:p-10 overflow-y-auto lg:overflow-hidden scrollbar-hide">
+                <div className="flex-1">
+                  {/* Title */}
+                  <h2 className="text-2xl lg:text-3xl font-black text-white mb-4 tracking-tighter leading-none uppercase">
+                    {selectedEvent?.title}
+                  </h2>
 
-                {/* Event Details Grid */}
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-10">
-                  {/* Date */}
-                  <div className="flex items-start gap-4">
-                    <div className="bg-white/5 p-3 rounded-xl border border-white/5 flex-shrink-0">
-                      <Calendar className="text-green-500" size={24} />
-                    </div>
-                    <div>
-                      <p className="text-white font-bold text-sm uppercase tracking-wider mb-1">Date & Heure</p>
-                      <p className="text-sm font-light text-gray-400 leading-relaxed">
-                        Du {selectedEvent && new Date(selectedEvent.dateStart).toLocaleDateString('fr-FR', { day: 'numeric', month: 'long', year: 'numeric' })}<br />
-                        au {selectedEvent && new Date(selectedEvent.dateEnd).toLocaleDateString('fr-FR', { day: 'numeric', month: 'long', year: 'numeric' })}
-                      </p>
-                    </div>
-                  </div>
-
-                  {/* Location */}
-                  <div className="flex items-start gap-4">
-                    <div className="bg-white/5 p-3 rounded-xl border border-white/5 flex-shrink-0">
-                      <MapPin className="text-green-500" size={24} />
-                    </div>
-                    <div>
-                      <p className="text-white font-bold text-sm uppercase tracking-wider mb-1">Localisation</p>
-                      <p className="text-sm font-light text-gray-400">{selectedEvent?.location}</p>
-                    </div>
-                  </div>
-
-                  {/* Participants */}
-                  <div className="flex items-start gap-4">
-                    <div className="bg-white/5 p-3 rounded-xl border border-white/5 flex-shrink-0">
-                      <Users className="text-green-500" size={24} />
-                    </div>
-                    <div>
-                      <p className="text-white font-bold text-sm uppercase tracking-wider mb-1">Participants</p>
-                      <p className="text-sm font-light text-gray-400">{selectedEvent?.maxParticipants} places maximum</p>
-                    </div>
-                  </div>
-
-                  {/* Duration/Time */}
-                  <div className="flex items-start gap-4">
-                    <div className="bg-white/5 p-3 rounded-xl border border-white/5 flex-shrink-0">
-                      <Clock className="text-green-500" size={24} />
-                    </div>
-                    <div>
-                      <p className="text-white font-bold text-sm uppercase tracking-wider mb-1">Durée</p>
-                      <p className="text-sm font-light text-gray-400">
-                        {Math.ceil((new Date(selectedEvent.dateEnd).getTime() - new Date(selectedEvent.dateStart).getTime()) / (1000 * 60 * 60 * 24))} jour(s)
-                      </p>
-                    </div>
-                  </div>
-                </div>
-
-                {/* Description Section */}
-                <div className="mb-10">
-                  <div className="flex items-center gap-3 mb-4">
-                    <div className="bg-white/5 p-2 rounded-lg border border-white/5">
-                      <Info className="text-green-500" size={20} />
-                    </div>
-                    <h3 className="text-white font-bold text-lg uppercase tracking-wider">À propos de l'événement</h3>
-                  </div>
-                  <p className="text-base font-light text-gray-300 leading-relaxed whitespace-pre-line">
-                    {selectedEvent?.description || selectedEvent?.shortDescription || "Aucune description disponible."}
-                  </p>
-                </div>
-
-                {/* Pricing Cards - Conditional */}
-                {!(new Date(selectedEvent?.dateEnd || '') < new Date()) && (
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8">
-                    <div className="p-6 bg-gradient-to-br from-white/5 to-white/[0.02] rounded-2xl border border-white/10 hover:border-green-500/30 transition-all group">
-                      <div className="flex items-center gap-2 mb-2">
-                        <DollarSign className="text-green-500" size={16} />
-                        <p className="text-[10px] text-gray-500 uppercase tracking-[0.2em] font-bold">Pass Membre</p>
-                      </div>
-                      <p className="text-3xl font-black text-white group-hover:text-green-400 transition-colors">
-                        {selectedEvent?.priceMember?.toLocaleString() || 0} <span className="text-sm font-normal text-gray-500">FCFA</span>
-                      </p>
-                    </div>
-                    <div className="p-6 bg-gradient-to-br from-white/5 to-white/[0.02] rounded-2xl border border-white/10 hover:border-green-500/30 transition-all group">
-                      <div className="flex items-center gap-2 mb-2">
-                        <DollarSign className="text-gray-500" size={16} />
-                        <p className="text-[10px] text-gray-500 uppercase tracking-[0.2em] font-bold">Standard</p>
-                      </div>
-                      <p className="text-3xl font-black text-white group-hover:text-green-400 transition-colors">
-                        {selectedEvent?.priceNonMember?.toLocaleString() || 0} <span className="text-sm font-normal text-gray-500">FCFA</span>
-                      </p>
-                    </div>
-                  </div>
-                )}
-
-                {/* Places Gauge & CTA Section */}
-                <div className="flex flex-col gap-6">
-                  {/* Gauge Section - Only for upcoming */}
-                  {selectedEvent && !(new Date(selectedEvent.dateEnd) < new Date()) && (
-                    <div className="bg-[#151515] rounded-2xl p-6 border border-white/5 flex items-center justify-between gap-6">
-                      <div className="flex-1">
-                        <h4 className="text-white font-bold mb-2 uppercase tracking-wider text-sm">Places Disponibles</h4>
-                        <div className="flex items-baseline gap-2">
-                          <span className={`text-4xl font-black ${(selectedEvent.registrations?.length || 0) >= selectedEvent.maxParticipants
-                            ? 'text-red-500'
-                            : 'text-green-500'
-                            }`}>
-                            {Math.max(0, selectedEvent.maxParticipants - (selectedEvent.registrations?.length || 0))}
-                          </span>
-                          <span className="text-gray-500 font-medium">/ {selectedEvent.maxParticipants}</span>
-                        </div>
-                        <p className="text-sm text-gray-400 mt-1">
-                          {(selectedEvent.registrations?.length || 0) >= selectedEvent.maxParticipants
-                            ? "Cet événement est malheureusement complet."
-                            : "Dépêchez-vous, les places partent vite !"}
+                  {/* Metadata Grid - Compact */}
+                  <div className="grid grid-cols-2 gap-4 mb-6">
+                    <div className="flex items-center gap-3">
+                      <div className="bg-white/5 p-2 rounded-lg border border-white/5 text-green-500"><Calendar size={18} /></div>
+                      <div>
+                        <p className="text-white font-black text-[9px] uppercase tracking-wider">Date</p>
+                        <p className="text-[11px] text-gray-400">
+                          {selectedEvent && new Date(selectedEvent.dateStart).toLocaleDateString('fr-FR', { day: 'numeric', month: 'short' })}
                         </p>
                       </div>
+                    </div>
+                    <div className="flex items-center gap-3">
+                      <div className="bg-white/5 p-2 rounded-lg border border-white/5 text-green-500"><MapPin size={18} /></div>
+                      <div>
+                        <p className="text-white font-black text-[9px] uppercase tracking-wider">Lieu</p>
+                        <p className="text-[11px] text-gray-400 line-clamp-1">{selectedEvent?.location}</p>
+                      </div>
+                    </div>
+                    <div className="flex items-center gap-3">
+                      <div className="bg-white/5 p-2 rounded-lg border border-white/5 text-green-500"><Users size={18} /></div>
+                      <div>
+                        <p className="text-white font-black text-[9px] uppercase tracking-wider">Places</p>
+                        <p className="text-[11px] text-gray-400">{selectedEvent?.maxParticipants} max</p>
+                      </div>
+                    </div>
+                    <div className="flex items-center gap-3">
+                      <div className="bg-white/5 p-2 rounded-lg border border-white/5 text-green-500"><Clock size={18} /></div>
+                      <div>
+                        <p className="text-white font-black text-[9px] uppercase tracking-wider">Durée</p>
+                        <p className="text-[11px] text-gray-400">
+                          {Math.ceil((new Date(selectedEvent.dateEnd).getTime() - new Date(selectedEvent.dateStart).getTime()) / (1000 * 60 * 60 * 24))} j
+                        </p>
+                      </div>
+                    </div>
+                  </div>
 
-                      {/* Circular Gauge */}
-                      <div className="relative w-20 h-20 flex-shrink-0">
-                        <svg className="w-full h-full -rotate-90" viewBox="0 0 36 36">
-                          <path
-                            className="text-gray-800"
-                            d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"
-                            fill="none"
-                            stroke="currentColor"
-                            strokeWidth="3"
-                          />
-                          <path
-                            className={`${(selectedEvent.registrations?.length || 0) >= selectedEvent.maxParticipants
-                              ? 'text-red-500'
-                              : 'text-green-500'
-                              } transition-all duration-1000 ease-out`}
-                            strokeDasharray={`${selectedEvent.maxParticipants > 0
-                              ? ((selectedEvent.registrations?.length || 0) / selectedEvent.maxParticipants) * 100
-                              : 0
-                              }, 100`}
-                            d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"
-                            fill="none"
-                            stroke="currentColor"
-                            strokeWidth="3"
-                          />
-                        </svg>
-                        <div className="absolute inset-0 flex items-center justify-center text-xs font-bold text-white">
-                          {selectedEvent.maxParticipants > 0
-                            ? Math.round(((selectedEvent.registrations?.length || 0) / selectedEvent.maxParticipants) * 100)
-                            : 0}%
-                        </div>
+                  {/* Description - More compact */}
+                  <div className="mb-6">
+                    <h3 className="text-white font-black text-[10px] uppercase tracking-widest mb-2 opacity-50">À propos de l'activité</h3>
+                    <p className="text-xs font-light text-gray-400 leading-relaxed line-clamp-4 lg:line-clamp-6">
+                      {selectedEvent?.description || selectedEvent?.shortDescription || "Aucune description disponible."}
+                    </p>
+                  </div>
+
+                  {/* Pricing - Conditional & Compact */}
+                  {!(new Date(selectedEvent?.dateEnd || '') < new Date()) && (
+                    <div className="grid grid-cols-2 gap-3 mb-6">
+                      <div className="p-3 bg-white/5 rounded-xl border border-white/5">
+                        <p className="text-[8px] text-gray-500 uppercase font-black mb-1">Pass Membre</p>
+                        <p className="text-lg font-black text-white leading-none">
+                          {selectedEvent?.priceMember?.toLocaleString() || 0} <span className="text-[10px] font-normal text-gray-500">FCFA</span>
+                        </p>
+                      </div>
+                      <div className="p-3 bg-white/5 rounded-xl border border-white/5">
+                        <p className="text-[8px] text-gray-500 uppercase font-black mb-1">Standard</p>
+                        <p className="text-lg font-black text-white leading-none">
+                          {selectedEvent?.priceNonMember?.toLocaleString() || 0} <span className="text-[10px] font-normal text-gray-500">FCFA</span>
+                        </p>
                       </div>
                     </div>
                   )}
+                </div>
 
-                  {/* CTA Button */}
-                  <div className="flex items-center justify-center">
-                    {new Date(selectedEvent?.dateEnd || '') < new Date() ? (
-                      <div className="w-full bg-gray-900 border-2 border-white/5 text-gray-500 py-6 rounded-2xl flex items-center justify-center gap-3 font-bold tracking-widest text-sm uppercase">
-                        <Clock size={24} /> Événement Terminé
+                {/* Footer Action Area */}
+                <div className="mt-auto pt-4 border-t border-white/5 flex items-center justify-between gap-4">
+                  {new Date(selectedEvent?.dateEnd || '') < new Date() ? (
+                    <div className="w-full bg-gray-900 border border-white/5 text-gray-500 py-4 rounded-xl flex items-center justify-center gap-3 font-black tracking-widest text-[10px] uppercase">
+                      <Clock size={16} /> Événement Terminé
+                    </div>
+                  ) : (
+                    <>
+                      {/* Compact Availability */}
+                      <div className="flex items-center gap-3">
+                        <div className="relative w-10 h-10">
+                          <svg className="w-full h-full -rotate-90" viewBox="0 0 36 36">
+                            <circle cx="18" cy="18" r="16" fill="none" stroke="#ffffff10" strokeWidth="4" />
+                            <circle
+                              cx="18" cy="18" r="16" fill="none" stroke="#16a34a" strokeWidth="4"
+                              strokeDasharray={`${selectedEvent.maxParticipants > 0 ? ((selectedEvent.registrations?.length || 0) / selectedEvent.maxParticipants) * 100 : 0}, 100`}
+                            />
+                          </svg>
+                        </div>
+                        <div className="hidden sm:block">
+                          <p className="text-[8px] text-gray-500 uppercase font-black">Disponibilité</p>
+                          <p className="text-xs font-bold text-white leading-none">
+                            {Math.max(0, selectedEvent.maxParticipants - (selectedEvent.registrations?.length || 0))} places
+                          </p>
+                        </div>
                       </div>
-                    ) : user && selectedEvent?.registrations?.some((reg: any) => {
-                      if (!reg.user) return false;
-                      const registeredUserId = typeof reg.user === 'string'
-                        ? reg.user
-                        : reg.user._id?.toString() || reg.user.toString();
-                      return registeredUserId === user?._id;
-                    }) ? (
-                      <div className="w-full bg-green-500/10 border-2 border-green-500/30 text-green-400 py-6 rounded-2xl flex items-center justify-center gap-3 font-bold tracking-widest text-sm uppercase">
-                        <CheckCircle size={24} /> Inscription Confirmée
-                      </div>
-                    ) : (
+
                       <button
-                        onClick={() => {
-                          if (selectedEvent) handleRegister(selectedEvent.slug);
-                        }}
-                        disabled={
-                          (selectedEvent?.registrations?.length || 0) >= (selectedEvent?.maxParticipants || 0) ||
-                          isRegistering
-                        }
-                        className={`w-full py-6 rounded-2xl font-black tracking-[0.2em] text-sm uppercase flex items-center justify-center gap-3 transition-all transform hover:-translate-y-1 shadow-2xl ${(selectedEvent?.registrations?.length || 0) >= (selectedEvent?.maxParticipants || 0)
-                          ? 'bg-gray-800 text-gray-500 cursor-not-allowed hover:transform-none'
+                        onClick={() => selectedEvent && handleRegister(selectedEvent.slug)}
+                        disabled={(selectedEvent?.registrations?.length || 0) >= (selectedEvent?.maxParticipants || 0) || isRegistering}
+                        className={`flex-1 py-4 rounded-xl font-black tracking-[0.2em] text-[10px] uppercase flex items-center justify-center gap-2 transition-all ${(selectedEvent?.registrations?.length || 0) >= (selectedEvent?.maxParticipants || 0)
+                          ? 'bg-gray-800 text-gray-500'
                           : isRegistering
-                            ? 'bg-green-600 text-white cursor-wait'
-                            : 'bg-gradient-to-r from-green-500 to-green-600 text-white hover:from-green-600 hover:to-green-700 shadow-green-900/50 hover:shadow-green-500/50'
+                            ? 'bg-green-600 text-white'
+                            : 'bg-green-600 text-white hover:bg-green-700 shadow-lg shadow-green-900/40'
                           }`}
                       >
-                        {isRegistering ? (
-                          <>
-                            <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
-                            Traitement...
-                          </>
-                        ) : (selectedEvent?.registrations?.length || 0) >= (selectedEvent?.maxParticipants || 0) ? (
-                          <>
-                            <X size={20} /> COMPLET
-                          </>
-                        ) : (
-                          <>
-                            RÉSERVER MA PLACE MAINTENANT
-                          </>
-                        )}
+                        {isRegistering ? 'Traitement...' : (selectedEvent?.registrations?.length || 0) >= (selectedEvent?.maxParticipants || 0) ? 'COMPLET' : 'RÉSERVER'}
                       </button>
-                    )}
-                  </div>
+                    </>
+                  )}
                 </div>
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* Full Screen Image Lightbox */}
+      <AnimatePresence>
+        {showFullImage && selectedEvent && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-[200] bg-black/95 backdrop-blur-2xl flex items-center justify-center p-4 md:p-10"
+            onClick={() => setShowFullImage(false)}
+          >
+            <motion.button
+              initial={{ opacity: 0, y: -20 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="absolute top-10 right-10 z-[210] p-4 bg-white/10 hover:bg-white text-white hover:text-black rounded-full transition-all border border-white/10"
+              onClick={() => setShowFullImage(false)}
+            >
+              <X size={32} />
+            </motion.button>
+
+            <motion.div
+              initial={{ scale: 0.8, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.8, opacity: 0 }}
+              transition={{ type: "spring", damping: 25, stiffness: 200 }}
+              className="relative max-w-7xl max-h-screen flex items-center justify-center"
+              onClick={(e) => e.stopPropagation()}
+            >
+              <img
+                src={selectedEvent.images?.[0]?.url || "https://images.unsplash.com/photo-1540575467063-178a50c2df87?q=80&w=800&auto=format&fit=crop"}
+                alt={selectedEvent.title}
+                className="w-full h-auto max-h-[90vh] object-contain shadow-2xl rounded-lg"
+              />
+              <div className="absolute -bottom-16 left-0 right-0 text-center">
+                <h4 className="text-white font-black text-xl uppercase tracking-tighter">{selectedEvent.title}</h4>
+                <p className="text-gray-500 text-xs uppercase tracking-[0.3em] mt-2">Vue immersive plein écran</p>
               </div>
             </motion.div>
           </motion.div>
