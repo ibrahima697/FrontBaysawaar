@@ -81,7 +81,7 @@ const ProductCarousel = () => {
 
     const timer = setInterval(() => {
       setCurrentSlide((prev) => (prev + 1) % products.length);
-    }, 5000);
+    }, 10000);
     return () => clearInterval(timer);
   }, [products.length]);
 
@@ -179,46 +179,56 @@ const ProductCarousel = () => {
                   <div className="max-w-[90rem] mx-auto px-6 sm:px-8 lg:px-12 w-full">
                     <div className="max-w-2xl lg:max-w-3xl">
                       <motion.div
-                        initial={{ y: 40, opacity: 0 }}
-                        animate={{ y: 0, opacity: 1 }}
-                        transition={{ delay: 0.3, duration: 0.6 }}
+                        initial={{ x: -60, opacity: 0 }}
+                        animate={{ x: 0, opacity: 1 }}
+                        transition={{ delay: 0.4, duration: 0.7, type: "spring", damping: 20 }}
                         className="relative"
                       >
-                        {/* Glassmorphic Card */}
-                        <div className="bg-white/10 backdrop-blur-2xl border border-white/20 rounded-3xl p-8 sm:p-10 shadow-2xl hover:bg-white/15 transition-all duration-500">
-                          {/* Category Tags */}
-                          <div className="flex flex-wrap items-center gap-2 sm:gap-3 mb-4 sm:mb-6">
-                            <span className="bg-green-500/90 backdrop-blur-md px-4 py-2 rounded-full text-sm sm:text-base font-bold text-white shadow-lg shadow-green-500/30">
+                        {/* Glassmorphic Card - Refined */}
+                        <div className="bg-black/20 backdrop-blur-3xl border border-white/10 rounded-[2.5rem] p-8 sm:p-12 shadow-[0_20px_50px_rgba(0,0,0,0.3)] hover:bg-black/25 transition-all duration-500 group/card overflow-hidden">
+                          {/* Animated inner glow */}
+                          <div className="absolute -top-24 -left-24 w-48 h-48 bg-green-500/10 rounded-full blur-[80px] group-hover/card:bg-green-500/20 transition-all duration-700" />
+
+                          {/* Category and Brand tags */}
+                          <div className="relative flex flex-wrap items-center gap-3 mb-6">
+                            <span className="flex items-center gap-2 bg-green-500/20 backdrop-blur-md px-4 py-1.5 rounded-full text-xs sm:text-sm font-black text-green-400 border border-green-500/30 uppercase tracking-widest">
+                              <span className="w-1.5 h-1.5 rounded-full bg-green-400 animate-pulse" />
                               {products[currentSlide].category}
                             </span>
                             {products[currentSlide].brand && (
-                              <span className="bg-blue-500/90 backdrop-blur-md px-4 py-2 rounded-full text-sm sm:text-base font-bold text-white shadow-lg shadow-blue-500/30">
+                              <span className="bg-white/5 backdrop-blur-md px-4 py-1.5 rounded-full text-xs sm:text-sm font-bold text-gray-300 border border-white/10 uppercase tracking-wider">
                                 {products[currentSlide].brand}
                               </span>
                             )}
                           </div>
 
-                          {/* Product Name */}
-                          <h3 className="text-4xl sm:text-5xl md:text-7xl font-black mb-4 sm:mb-6 text-white leading-tight tracking-tight">
+                          {/* Product Name - Ultra Modern */}
+                          <h3 className="relative text-4xl sm:text-5xl md:text-7xl font-black mb-6 text-white leading-[1.1] tracking-tighter drop-shadow-2xl">
                             {products[currentSlide].name}
                           </h3>
 
                           {/* Description */}
-                          <p className="text-lg sm:text-xl md:text-2xl mb-6 sm:mb-8 text-white/90 leading-relaxed font-light">
+                          <p className="relative text-lg sm:text-xl md:text-2xl mb-8 text-white/70 leading-relaxed font-light line-clamp-3">
                             {products[currentSlide].description}
                           </p>
 
                           {/* Price and CTA */}
-                          <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4 sm:gap-6">
-                            <span className="text-3xl sm:text-4xl font-black text-yellow-400 drop-shadow-lg">
-                              {formatPrice(products[currentSlide].price)}
-                            </span>
+                          <div className="relative flex flex-col sm:flex-row items-start sm:items-center gap-6 md:gap-10">
+                            <div className="flex flex-col">
+                              <span className="text-gray-400 text-xs font-bold uppercase tracking-[0.3em] mb-1">Prix Estimé</span>
+                              <span className="text-3xl sm:text-5xl font-black text-white flex items-baseline gap-2">
+                                {formatPrice(products[currentSlide].price)}
+                                <span className="text-green-500 text-sm font-bold">*</span>
+                              </span>
+                            </div>
+
                             <button
                               onClick={handleExploreClick}
-                              className="bg-white text-gray-900 px-8 py-4 rounded-full font-bold hover:bg-green-500 hover:text-white transition-all duration-300 flex items-center gap-3 shadow-xl hover:shadow-2xl hover:scale-105 group"
+                              className="relative overflow-hidden group/btn bg-white text-gray-900 px-10 py-5 rounded-2xl font-black hover:scale-105 transition-all duration-300 flex items-center gap-4 shadow-[0_15px_30px_-5px_rgba(255,255,255,0.2)]"
                             >
-                              <span>Explorer</span>
-                              <ExternalLink size={20} className="group-hover:rotate-12 transition-transform" />
+                              <div className="absolute inset-0 bg-gradient-to-r from-green-500 to-emerald-600 opacity-0 group-hover/btn:opacity-100 transition-opacity duration-300" />
+                              <span className="relative z-10 group-hover/btn:text-white transition-colors">Explorer l'excellence</span>
+                              <ExternalLink size={22} className="relative z-10 group-hover/btn:text-white group-hover/btn:rotate-12 transition-all" />
                             </button>
                           </div>
                         </div>
@@ -252,8 +262,8 @@ const ProductCarousel = () => {
                 key={index}
                 onClick={() => goToSlide(index)}
                 className={`transition-all duration-300 rounded-full ${index === currentSlide
-                    ? 'w-10 h-3 bg-white shadow-lg shadow-white/50'
-                    : 'w-3 h-3 bg-white/40 hover:bg-white/60'
+                  ? 'w-10 h-3 bg-white shadow-lg shadow-white/50'
+                  : 'w-3 h-3 bg-white/40 hover:bg-white/60'
                   }`}
               />
             ))}

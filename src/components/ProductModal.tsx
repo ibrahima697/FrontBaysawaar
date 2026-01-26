@@ -1,8 +1,7 @@
+import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { X, Tag, Package } from 'lucide-react';
+import { X, Tag, Package, Box, MessageCircle, ExternalLink, ShieldCheck, Truck, ChevronRight } from 'lucide-react';
 import { Product } from '../types';
-
-
 
 interface ProductModalProps {
   product: Product | null;
@@ -11,7 +10,8 @@ interface ProductModalProps {
 }
 
 const ProductModal = ({ product, isOpen, onClose }: ProductModalProps) => {
-  // Le modal ne s'affiche que si un produit existe (mode affichage uniquement)
+  const [activeImage, setActiveImage] = useState(0);
+
   if (!product) return null;
 
   const formatPrice = (price: number) => {
@@ -22,7 +22,10 @@ const ProductModal = ({ product, isOpen, onClose }: ProductModalProps) => {
     }).format(price);
   };
 
-
+  const handleWhatsAppEnquiry = () => {
+    const message = `Bonjour, je suis intéressé par le produit "${product.name}" vu sur BAY SA WARR. Pouvez-vous me donner plus d'informations ?`;
+    window.open(`https://wa.me/221770000000?text=${encodeURIComponent(message)}`, '_blank');
+  };
 
   return (
     <AnimatePresence>
@@ -31,150 +34,169 @@ const ProductModal = ({ product, isOpen, onClose }: ProductModalProps) => {
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
-          className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm"
+          className="fixed inset-0 z-[60] flex items-center justify-center p-4 sm:p-6 bg-black/80 backdrop-blur-md"
           onClick={onClose}
         >
           <motion.div
-            initial={{ scale: 0.9, opacity: 0 }}
-            animate={{ scale: 1, opacity: 1 }}
-            exit={{ scale: 0.9, opacity: 0 }}
-            transition={{ type: "spring", damping: 25, stiffness: 300 }}
-            className="relative w-full max-w-4xl max-h-[90vh] bg-white rounded-2xl shadow-2xl overflow-hidden"
+            initial={{ scale: 0.95, opacity: 0, y: 20 }}
+            animate={{ scale: 1, opacity: 1, y: 0 }}
+            exit={{ scale: 0.95, opacity: 0, y: 20 }}
+            transition={{ type: "spring", damping: 30, stiffness: 300 }}
+            className="relative w-full max-w-6xl aspect-video min-h-[500px] max-h-[90vh] bg-[#FDFDFD] rounded-[2.5rem] shadow-[0_30px_100px_rgba(0,0,0,0.5)] overflow-hidden flex flex-col lg:flex-row"
             onClick={(e) => e.stopPropagation()}
           >
-            {/* Header */}
-            <div className="flex items-center justify-between p-6 border-b border-gray-200">
-              <h2 className="text-2xl font-bold text-gray-900">Détails du produit</h2>
+            {/* 1. Left Section: Visuals (55%) */}
+            <div className="relative w-full lg:w-[55%] h-64 lg:h-auto bg-gray-100/50 flex flex-col">
+              {/* Main Image Viewport */}
+              <div className="flex-1 relative overflow-hidden group/main">
+                <AnimatePresence mode="wait">
+                  <motion.img
+                    key={activeImage}
+                    src={product.images[activeImage]?.url}
+                    alt={product.name}
+                    initial={{ opacity: 0, scale: 1.05 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    exit={{ opacity: 0, scale: 0.95 }}
+                    transition={{ duration: 0.4 }}
+                    className="w-full h-full object-cover"
+                  />
+                </AnimatePresence>
+
+                {/* Image Overlay Badge */}
+                <div className="absolute top-6 left-6 flex flex-col gap-2">
+                  <span className="bg-white/90 backdrop-blur-md px-4 py-1.5 rounded-full text-[10px] font-black uppercase tracking-widest text-[#2d8755] shadow-sm border border-green-100/50">
+                    Premium Quality
+                  </span>
+                </div>
+              </div>
+
+              {/* Thumbnail Bar */}
+              {product.images && product.images.length > 1 && (
+                <div className="absolute bottom-6 left-1/2 -translate-x-1/2 flex gap-3 p-2 bg-white/20 backdrop-blur-xl rounded-2xl border border-white/30 shadow-2xl">
+                  {product.images.map((img, idx) => (
+                    <button
+                      key={idx}
+                      onClick={() => setActiveImage(idx)}
+                      className={`relative w-14 h-14 sm:w-16 sm:h-16 rounded-xl overflow-hidden transition-all duration-300 ${activeImage === idx ? 'ring-2 ring-[#2d8755] scale-105 shadow-lg' : 'opacity-60 hover:opacity-100 hover:scale-105'}`}
+                    >
+                      <img src={img.url} className="w-full h-full object-cover" alt="" />
+                    </button>
+                  ))}
+                </div>
+              )}
+
+              {/* Close (Mobile) */}
               <button
                 onClick={onClose}
-                className="p-2 hover:bg-gray-100 rounded-full transition-colors"
+                className="lg:hidden absolute top-4 right-4 p-2 bg-black/20 backdrop-blur-md rounded-full text-white"
               >
-                <X size={24} className="text-gray-500" />
+                <X size={20} />
               </button>
             </div>
 
-            {/* Content */}
-            <div className="overflow-y-auto max-h-[calc(90vh-80px)]">
-              <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 p-6">
-                {/* Images */}
-                <div className="space-y-4">
-                  <div className="aspect-square rounded-xl overflow-hidden bg-gray-100">
-                    {product.images && product.images.length > 0 ? (
-                      <img
-                        src={product.images[0].url}
-                        alt={product.images[0].alt || product.name}
-                        className="w-full h-full object-cover"
-                      />
-                    ) : (
-                      <div className="w-full h-full flex items-center justify-center text-gray-400">
-                        <Package size={64} />
-                      </div>
-                    )}
-                  </div>
+            {/* 2. Right Section: Context (45%) */}
+            <div className="w-full lg:w-[45%] flex flex-col h-full bg-white relative">
+              {/* Desktop Close */}
+              <button
+                onClick={onClose}
+                className="hidden lg:flex absolute top-8 right-8 p-3 hover:bg-gray-100 rounded-2xl transition-all text-gray-400 hover:text-gray-900 z-10"
+              >
+                <X size={24} />
+              </button>
 
-                  {/* Gallery thumbnails */}
-                  {product.images && product.images.length > 1 && (
-                    <div className="grid grid-cols-4 gap-2">
-                      {product.images.slice(1, 5).map((image, index) => (
-                        <div key={index} className="aspect-square rounded-lg overflow-hidden bg-gray-100">
-                          <img
-                            src={image.url}
-                            alt={image.alt || `${product.name} ${index + 2}`}
-                            className="w-full h-full object-cover"
-                          />
-                        </div>
-                      ))}
-                    </div>
-                  )}
+              <div className="flex-1 overflow-y-auto custom-scrollbar p-8 lg:p-12">
+                {/* Breadcrumb / Category */}
+                <div className="flex items-center gap-2 text-xs font-bold text-gray-400 uppercase tracking-widest mb-4">
+                  <span className="text-[#2d8755]">{product.category}</span>
+                  <ChevronRight size={12} />
+                  <span>{product.brand || 'Baysawaar'}</span>
                 </div>
 
-                {/* Product Info */}
-                <div className="space-y-6">
-                  {/* Title and Category */}
-                  <div>
-                    <div className="flex items-center space-x-2 mb-2">
-                      <span className="bg-green-100 text-green-800 px-3 py-1 rounded-full text-sm font-medium">
-                        {product.category}
-                      </span>
-                      {product.brand && (
-                        <span className="bg-blue-100 text-blue-800 px-3 py-1 rounded-full text-sm font-medium">
-                          {product.brand}
-                        </span>
-                      )}
+                {/* Title & Stats */}
+                <h1 className="text-3xl lg:text-4xl font-black text-gray-900 leading-tight mb-4">
+                  {product.name}
+                </h1>
+
+                <div className="flex items-center gap-6 mb-8 pb-8 border-b border-gray-100">
+                  <div className="flex items-baseline gap-1">
+                    <span className="text-3xl font-black text-[#2d8755]">{formatPrice(product.price)}</span>
+                    <span className="text-gray-400 text-xs font-bold uppercase tracking-tighter">HT</span>
+                  </div>
+                  <div className={`px-3 py-1 rounded-lg text-[10px] font-black uppercase tracking-wider ${product.stock > 0 ? 'bg-orange-50 text-orange-600' : 'bg-red-50 text-red-600'}`}>
+                    {product.stock > 0 ? `Stock: ${product.stock} unités` : 'Épuisé'}
+                  </div>
+                </div>
+
+                {/* Tabs / Description Section */}
+                <div className="space-y-10">
+                  <div className="space-y-4">
+                    <h3 className="text-sm font-black text-gray-900 uppercase tracking-widest flex items-center gap-2">
+                      <Box size={16} className="text-[#2d8755]" />
+                      Description
+                    </h3>
+                    <p className="text-gray-600 text-lg leading-relaxed font-light">
+                      {product.description}
+                    </p>
+                  </div>
+
+                  {/* Features Grid */}
+                  <div className="grid grid-cols-2 gap-4">
+                    <div className="flex items-start gap-3 p-4 rounded-2xl bg-gray-50/50 border border-gray-100 group hover:bg-white hover:shadow-lg transition-all duration-300">
+                      <div className="p-2 bg-white rounded-xl shadow-sm text-green-600"><ShieldCheck size={20} /></div>
+                      <div>
+                        <p className="text-xs font-black text-gray-800 uppercase">Garantie</p>
+                        <p className="text-[10px] text-gray-500">Qualité certifiée</p>
+                      </div>
                     </div>
-                    <h1 className="text-3xl font-bold text-gray-900 mb-2">{product.name}</h1>
-                    <p className="text-gray-600 text-lg leading-relaxed">{product.description}</p>
+                    <div className="flex items-start gap-3 p-4 rounded-2xl bg-gray-50/50 border border-gray-100 group hover:bg-white hover:shadow-lg transition-all duration-300">
+                      <div className="p-2 bg-white rounded-xl shadow-sm text-blue-600"><Truck size={20} /></div>
+                      <div>
+                        <p className="text-xs font-black text-gray-800 uppercase">Livraison</p>
+                        <p className="text-[10px] text-gray-500">Expédition rapide</p>
+                      </div>
+                    </div>
                   </div>
 
-                  {/* Price */}
-                  <div className="flex items-center space-x-4">
-                    <span className="text-4xl font-bold text-green-600">
-                      {formatPrice(product.price)}
-                    </span>
-                  </div>
-
-                  {/* Stock Status */}
-                  <div className="flex items-center space-x-2">
-                    <div className={`w-3 h-3 rounded-full ${product.stock > 0 ? 'bg-green-500' : 'bg-red-500'}`} />
-                    <span className={`font-medium ${product.stock > 0 ? 'text-green-600' : 'text-red-600'}`}>
-                      {product.stock > 0 ? `${product.stock} en stock` : 'Rupture de stock'}
-                    </span>
-                  </div>
-
-                  {/* Tags */}
-                  {product.tags && product.tags.length > 0 && (
-                    <div>
-                      <h3 className="text-lg font-semibold text-gray-900 mb-3">Tags</h3>
-                      <div className="flex flex-wrap gap-2">
-                        {product.tags.map((tag, index) => (
-                          <span
-                            key={index}
-                            className="bg-gray-100 text-gray-700 px-3 py-1 rounded-full text-sm flex items-center space-x-1"
-                          >
-                            <Tag size={14} />
-                            <span>{tag}</span>
-                          </span>
+                  {/* Specifications */}
+                  {product.specifications && Object.keys(product.specifications).length > 0 && (
+                    <div className="space-y-4 pt-6">
+                      <h3 className="text-sm font-black text-gray-900 uppercase tracking-widest flex items-center gap-2">
+                        <Package size={16} className="text-[#2d8755]" />
+                        Spécifications
+                      </h3>
+                      <div className="space-y-3">
+                        {Object.entries(product.specifications).map(([key, value]) => (
+                          <div key={key} className="flex justify-between items-center py-3 border-b border-dashed border-gray-100 group">
+                            <span className="text-xs font-bold text-gray-400 uppercase tracking-wider">{key.replace(/([A-Z])/g, ' $1').trim()}</span>
+                            <span className="text-sm font-black text-gray-900">{String(value)}</span>
+                          </div>
                         ))}
                       </div>
                     </div>
                   )}
-
-                  {/* Specifications */}
-                  {product.specifications && (
-                    <div>
-                      <h3 className="text-lg font-semibold text-gray-900 mb-3">Spécifications</h3>
-                      <div className="space-y-2">
-                        {Array.isArray(product.specifications) ? (
-                          product.specifications.map((spec: any, index: number) => (
-                            <div key={index} className="flex justify-between py-2 border-b border-gray-100">
-                              <span className="font-medium text-gray-700 capitalize">
-                                {spec.name}:
-                              </span>
-                              <span className="text-gray-600">{spec.value}</span>
-                            </div>
-                          ))
-                        ) : (
-                          // Legacy support for object format
-                          Object.entries(product.specifications).map(([key, value]) => (
-                            <div key={key} className="flex justify-between py-2 border-b border-gray-100">
-                              <span className="font-medium text-gray-700 capitalize">
-                                {key.replace(/([A-Z])/g, ' $1').trim()}:
-                              </span>
-                              <span className="text-gray-600">{String(value)}</span>
-                            </div>
-                          ))
-                        )}
-                      </div>
-                    </div>
-                  )}
-
-                  {/* Action Buttons */}
-
-
-
-                  {/* Product Info */}
-
                 </div>
+              </div>
+
+              {/* Footer Actions */}
+              <div className="p-8 lg:p-12 border-t border-gray-100 bg-[#FAFAFA]">
+                <div className="flex flex-col sm:flex-row gap-4">
+                  <button
+                    onClick={handleWhatsAppEnquiry}
+                    className="flex-1 bg-[#25D366] hover:bg-[#128C7E] text-white px-8 py-5 rounded-[1.5rem] font-bold transition-all duration-300 flex items-center justify-center gap-3 shadow-xl hover:scale-[1.02] active:scale-95"
+                  >
+                    <MessageCircle size={22} className="fill-current" />
+                    <span>Commander via WhatsApp</span>
+                  </button>
+                  <button
+                    className="bg-white border-2 border-gray-100 text-gray-900 hover:border-[#2d8755] hover:text-[#2d8755] px-8 py-5 rounded-[1.5rem] font-bold transition-all duration-300 flex items-center justify-center gap-3 shadow-md hover:shadow-lg"
+                  >
+                    <ExternalLink size={20} />
+                    <span className="hidden sm:inline">Partager</span>
+                  </button>
+                </div>
+                <p className="text-[10px] text-gray-400 mt-4 text-center font-bold tracking-widest uppercase">
+                  Prix affiché à titre indicatif • BAY SA WARR © 2026
+                </p>
               </div>
             </div>
           </motion.div>

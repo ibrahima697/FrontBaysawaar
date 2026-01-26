@@ -116,14 +116,21 @@ const Navbar = () => {
       >
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-16">
-            <Link to="/" className="flex items-center space-x-3">
-              <img
-                src="https://res.cloudinary.com/drxouwbms/image/upload/v1755777328/369470771_801733008414799_8805271754561376909_n_c4laj2.jpg"
-                alt="BAY SA WARR Logo"
-                className="w-10 h-10 rounded-xl object-cover"
-              />
-              <div>
-                <h1 className="text-xl font-bold text-gray-900">BAY SA WARR</h1>
+            <Link to="/" className="flex items-center space-x-3 group transition-transform duration-200 hover:scale-[1.02]">
+              <div className="relative">
+                <img
+                  src="https://res.cloudinary.com/drxouwbms/image/upload/v1755777328/369470771_801733008414799_8805271754561376909_n_c4laj2.jpg"
+                  alt="BAY SA WARR Logo"
+                  className="w-11 h-11 rounded-xl object-cover shadow-md border border-gray-100 group-hover:border-green-200 transition-colors duration-200"
+                />
+                <div className="absolute inset-0 rounded-xl ring-1 ring-inset ring-black/5 pointer-events-none" />
+              </div>
+              <div className="flex flex-col">
+                <h1 className="text-xl font-black tracking-tight flex items-center">
+                  <span className="text-blue-900 transition-colors duration-200 group-hover:text-green-700">BAY SA</span>
+                  <span className="text-green-600 ml-1.5">WARR</span>
+                </h1>
+
               </div>
             </Link>
 
