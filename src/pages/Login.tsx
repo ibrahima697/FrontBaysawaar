@@ -293,14 +293,17 @@ const Login = () => {
                 </motion.form>
 
                 {/* Sign Up Link */}
-                {/* Sign Up Link */}
-                <div className="mt-6 text-center">
-                  <p className="text-slate-600 text-xs xs:text-sm">
-                    Pas encore membre ?{' '}
-                    <Link to="/enrollments" className="text-green-600 font-semibold hover:text-green-700 transition-colors">
-                      Rejoignez-nous
-                    </Link>
+                <div className="mt-8 pt-6 border-t border-slate-100/60 text-center">
+                  <p className="text-slate-500 text-xs xs:text-sm mb-4">
+                    Pas encore membre ?
                   </p>
+                  <Link
+                    to="/enrollments"
+                    className="inline-flex items-center justify-center space-x-2 w-full py-3 px-6 rounded-xl border-2 border-green-600 text-green-600 font-bold hover:bg-green-600 hover:text-white transition-all duration-300 group/reg"
+                  >
+                    <span>CRÉER UN COMPTE</span>
+                    <ArrowRight size={16} className="group-hover/reg:translate-x-1 transition-transform" />
+                  </Link>
                 </div>
               </div>
             </div>
@@ -310,7 +313,7 @@ const Login = () => {
             - En dessous du formulaire sur mobile
             - À gauche en sticky sur desktop */}
         <button
-          onClick={() => navigate(-1)}
+          onClick={() => navigate('/')}
           aria-label="Retour"
           className={`
             flex items-center justify-center
