@@ -1,6 +1,6 @@
 import { motion } from 'framer-motion';
 import { Link } from 'react-router-dom';
-import { ArrowRight, Users, Globe, TrendingUp, Star, ShoppingCart, Building2, Handshake, Quote, Check } from 'lucide-react';
+import { ArrowRight, Users, Globe, TrendingUp, Star, ShoppingCart, Building2, Handshake, Quote, Check, BookOpen } from 'lucide-react';
 import ProductCarousel from '../components/ProductCarousel';
 import TestimonialSlider from '../components/TestimonialSlider';
 
@@ -8,31 +8,47 @@ const Home = () => {
   const quickAccessCards = [
     {
       title: 'A propos de BAY SA WAAR',
-      description: 'Apprenez-en plus sur notre mission, notre vision et notre engagement',
+      subtitle: 'NOTRE HISTOIRE',
+      description: 'Apprenez-en plus sur notre mission, notre vision et notre engagement.',
       icon: Building2,
       path: '/about',
-      color: 'bg-green-600',
+      color: 'from-green-500 to-emerald-600',
+      glow: 'shadow-green-500/20',
+      accent: 'text-green-600',
+      features: ['Mission Clé', 'Vision 2030', 'Engagement'],
     },
     {
-      title: 'Plateforme FIPA',
-      description: 'Découvrez les produits africains et connectez-vous avec les fabricants du continent.',
-      icon: Globe,
-      path: '/platforms',
-      color: 'bg-blue-600',
+      title: 'Nos Événements',
+      subtitle: 'PROCHAINS RENDEZ-VOUS',
+      description: 'Participez à nos événements exclusifs et développez votre réseau.',
+      icon: TrendingUp,
+      path: '/events',
+      color: 'from-blue-500 to-cyan-600',
+      glow: 'shadow-blue-500/20',
+      accent: 'text-blue-600',
+      features: ['Sommet FIPA', 'Webinaires', 'Networking'],
     },
     {
-      title: 'Solutions e-commerce',
-      description: 'Outils de commerce en ligne pour développer votre présence numérique.',
-      icon: ShoppingCart,
-      path: '/platforms',
-      color: 'bg-purple-600',
+      title: 'Nos Activités',
+      subtitle: 'ACTION SUR LE TERRAIN',
+      description: 'Découvrez les actions concrètes que nous menons pour le développement.',
+      icon: Users,
+      path: '/activities',
+      color: 'from-purple-500 to-indigo-600',
+      glow: 'shadow-purple-500/20',
+      accent: 'text-purple-600',
+      features: ['Formations', 'Accompagnement', 'Projets'],
     },
     {
-      title: 'Programme de partenariat',
-      description: 'Rejoignez notre réseau de distributeurs et partenaires pour une croissance mutuelle.',
-      icon: Handshake,
-      path: '/enrollments',
-      color: 'bg-orange-600',
+      title: 'Blog & Actualités',
+      subtitle: 'VEILLE STRATÉGIQUE',
+      description: 'Soyez informé de nos activités à travers notre blog et nos actualités.',
+      icon: BookOpen,
+      path: '/blog',
+      color: 'from-orange-500 to-amber-600',
+      glow: 'shadow-orange-500/20',
+      accent: 'text-orange-600',
+      features: ['Articles récents', 'Success Stories', 'Événements'],
     },
   ];
 
@@ -151,11 +167,11 @@ const Home = () => {
                 <ArrowRight size={20} />
               </Link>
               <Link
-                to="/platforms"
+                to="/events"
                 className="bg-white text-green-600 border-2 border-green-600 px-6 sm:px-8 py-3 sm:py-4 rounded-full font-semibold hover:bg-green-50 transition-all duration-300 flex items-center justify-center space-x-2"
               >
-                <span>Découvrez les plateformes</span>
-                <Globe size={20} />
+                <span>Nos Événements</span>
+                <TrendingUp size={20} />
               </Link>
             </motion.div>
           </motion.div>
@@ -318,52 +334,60 @@ const Home = () => {
             </p>
           </motion.div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 sm:gap-8">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
             {quickAccessCards.map((card, index) => (
               <motion.div
                 key={index}
-                initial={{ y: 30, opacity: 0 }}
+                initial={{ y: 40, opacity: 0 }}
                 whileInView={{ y: 0, opacity: 1 }}
-                transition={{ delay: index * 0.1, duration: 0.5 }}
+                transition={{ delay: index * 0.1, duration: 0.6 }}
                 viewport={{ once: true }}
                 className="group relative"
               >
-                <Link to={card.path}>
-                  {/* Glassmorphic Card */}
-                  <div className="relative p-6 sm:p-8 rounded-3xl bg-white/50 backdrop-blur-xl border border-white/60 shadow-xl transition-all duration-500 group-hover:shadow-2xl group-hover:-translate-y-3 group-hover:bg-white/60 h-full">
-                    {/* Gradient Overlay */}
-                    <div className="absolute inset-0 bg-gradient-to-br from-white/20 via-transparent to-transparent rounded-3xl opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+                <Link to={card.path} className="block h-full">
+                  {/* Main Card Structure */}
+                  <div className={`h-full bg-white/40 backdrop-blur-xl rounded-[2.5rem] border border-gray-100 p-8 shadow-2xl transition-all duration-500 group-hover:-translate-y-4 hover:shadow-xl relative overflow-hidden ${card.glow}`}>
 
-                    {/* Card Header with Icon */}
-                    <div className="relative mb-8">
-                      <div className={`absolute inset-0 ${card.color} opacity-30 blur-2xl transition-all duration-500 group-hover:opacity-50`} />
-                      <div className={`relative w-14 h-14 sm:w-16 sm:h-16 ${card.color} rounded-2xl flex items-center justify-center transform transition-all duration-500 group-hover:rotate-12 group-hover:scale-110 shadow-lg`}>
-                        <card.icon className="text-white" size={28} />
+                    {/* Elaborated: Decorative Corner Accent */}
+                    <div className={`absolute top-0 right-0 w-32 h-32 bg-gradient-to-br ${card.color} opacity-[0.03] rounded-bl-[5rem] group-hover:opacity-[0.08] transition-opacity`} />
+                    <div className={`absolute top-8 right-8 w-2 h-2 rounded-full bg-gradient-to-r ${card.color} opacity-20 group-hover:scale-150 transition-transform`} />
+
+                    {/* Elaborated: Inner Border Glow Effect */}
+                    <div className={`absolute inset-[1px] rounded-[2.4rem] border border-white/50 pointer-events-none`} />
+
+                    {/* Icon with Dynamic Glow & Layered Container */}
+                    <div className="relative mb-8 group-hover:rotate-3 transition-transform duration-500 flex justify-center md:justify-start">
+                      <div className={`absolute -inset-2 bg-gradient-to-br ${card.color} rounded-3xl blur-xl opacity-20 group-hover:opacity-40 transition-opacity`} />
+                      <div className={`relative w-20 h-20 rounded-3xl bg-gradient-to-br ${card.color} flex items-center justify-center text-white shadow-lg`}>
+                        <card.icon size={36} strokeWidth={2.5} />
                       </div>
                     </div>
 
-                    {/* Card Content */}
-                    <h3 className="text-xl sm:text-2xl font-bold text-gray-900 mb-3 sm:mb-4 transition-colors duration-300 group-hover:text-green-600 relative">
-                      {card.title}
-                    </h3>
-                    <p className="text-gray-700 mb-4 sm:mb-6 leading-relaxed overflow-hidden h-24">
+                    <div className="mb-6 text-center md:text-left">
+                      <h3 className="text-xl font-black text-gray-900 mb-1 leading-tight group-hover:text-green-600 transition-colors">{card.title}</h3>
+                      <p className={`text-[10px] font-black uppercase tracking-[0.2em] ${card.accent}`}>{card.subtitle}</p>
+                    </div>
+
+                    <p className="text-gray-500 text-sm leading-relaxed mb-8 font-medium text-center md:text-left h-20 overflow-hidden">
                       {card.description}
                     </p>
 
-                    {/* Card Footer */}
-                    <div className="flex items-center text-green-600 font-bold">
-                      <span className="mr-2">En savoir plus</span>
-                      <motion.div
-                        className="transform transition-transform duration-300 group-hover:translate-x-2"
-                      >
-                        <ArrowRight size={20} />
-                      </motion.div>
+                    <div className="space-y-3 mb-10">
+                      {card.features.map((feature, fIdx) => (
+                        <div key={fIdx} className="flex items-center gap-3 justify-center md:justify-start">
+                          <div className={`w-1.5 h-1.5 rounded-full bg-gradient-to-r ${card.color} shadow-sm shadow-current`} />
+                          <span className="text-[11px] font-bold text-gray-800 tracking-wide uppercase opacity-80">{feature}</span>
+                        </div>
+                      ))}
                     </div>
 
-                    {/* Decorative Elements */}
-                    <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-green-400/20 to-transparent rounded-full translate-x-12 -translate-y-12 opacity-0 group-hover:opacity-100 transition-all duration-500 blur-xl" />
-                    <div className="absolute bottom-0 left-0 right-0 h-1 bg-gradient-to-r from-transparent via-green-500/40 to-transparent transform scale-x-0 group-hover:scale-x-100 transition-transform duration-500" />
+                    <div className="flex items-center justify-center md:justify-start text-green-600 font-bold text-xs uppercase tracking-widest group/btn">
+                      <span className="mr-2">En savoir plus</span>
+                      <ArrowRight size={16} className="group-hover/btn:translate-x-1 transition-transform" />
+                    </div>
                   </div>
+                  {/* Visual Accent Glow Backdrop */}
+                  <div className={`absolute -inset-1 bg-gradient-to-br ${card.color} rounded-[2.8rem] blur-2xl opacity-0 group-hover:opacity-[0.12] transition-opacity -z-10`} />
                 </Link>
               </motion.div>
             ))}

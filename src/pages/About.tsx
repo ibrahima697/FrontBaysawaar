@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Target, Eye, Heart, Users, Award, Globe, TrendingUp, Handshake, Facebook, Linkedin } from 'lucide-react';
+import { Target, Eye, Heart, Users, Award, Globe, TrendingUp, Handshake, Facebook, Linkedin, Instagram, Youtube } from 'lucide-react';
 
 const About = () => {
   const navigate = useNavigate();
@@ -28,30 +28,38 @@ const About = () => {
     },
   ];
 
-  const activities = [
+  const socialPlatforms = [
     {
-      icon: Globe,
-      title: 'Plateforme FIPA',
-      description: 'Place de marché complète connectant les producteurs africains aux acheteurs mondiaux.',
-      features: ['Catalogue Produits', 'Annuaire Fournisseurs', 'Facilitation Commerciale', 'Assurance Qualité'],
+      name: 'Facebook',
+      icon: Facebook,
+      description: 'Rejoignez notre communauté de leaders d\'affaires africains',
+      followers: '2,2K+',
+      color: 'bg-blue-600',
+      link: 'https://www.facebook.com/baysawarr'
     },
     {
-      icon: TrendingUp,
-      title: 'Solutions E-commerce',
-      description: 'Outils de commerce digital complets pour les entreprises africaines modernes.',
-      features: ['Création de Boutique en Ligne', 'Traitement des Paiements', 'Support Logistique', 'Marketing Digital'],
+      name: 'Instagram',
+      icon: Instagram,
+      description: 'Histoires visuelles de réussite des entreprises africaines',
+      followers: '100+',
+      color: 'bg-pink-600',
+      link: 'https://www.instagram.com/plateforme_bay_sa_war/?fbclid=IwY2xjawMWgrlleHRuA2FlbQIxMABicmlkETFIM0Q1RkpEUlBXYWtkTm1MAR49Io3FB650UIqas5PzCal3eudmDsKiNqHWJxD9tz95S2bpzLjDEOctol4Jqg_aem_vyO-Noh6CZKOFMJkKb7TVA#'
     },
     {
-      icon: Handshake,
-      title: 'Programmes de Partenariat',
-      description: 'Alliances stratégiques favorisant la croissance mutuelle et l\'expansion du marché.',
-      features: ['Réseau de Distributeurs', 'Programmes d\'Agents', 'Coentreprises', 'Renforcement des Capacités'],
+      name: 'LinkedIn',
+      icon: Linkedin,
+      description: 'Réseau professionnel pour la croissance des affaires',
+      followers: '100+',
+      color: 'bg-blue-700',
+      link: 'https://www.linkedin.com/in/plateforme-bay-sa-waar-3a899737b/'
     },
     {
-      icon: Award,
-      title: 'Conseil aux Entreprises',
-      description: 'Conseils experts pour le développement durable des entreprises.',
-      features: ['Analyse de Marché', 'Développement Stratégique', 'Optimisation des Processus', 'Programmes de Formation'],
+      name: 'Youtube',
+      icon: Youtube,
+      description: 'Rejoignez notre chaîne YouTube pour des vidéos de qualité',
+      followers: '500+',
+      color: 'bg-red-600',
+      link: 'https://www.youtube.com/@fabiratv2023'
     },
   ];
 
@@ -247,12 +255,20 @@ const About = () => {
                   </p>
                 </div>
 
-                <div className="mt-12">
+                <div className="mt-12 flex flex-wrap gap-4">
                   <button
                     onClick={() => navigate('/enrollments')}
                     className="group relative px-8 py-4 bg-[#182656] text-white rounded-2xl font-black uppercase tracking-widest text-sm overflow-hidden transition-all hover:pr-12"
                   >
                     <span className="relative z-10 transition-all group-hover:mr-2">Nous rejoindre</span>
+                    <TrendingUp className="absolute right-4 top-1/2 -translate-y-1/2 opacity-0 group-hover:opacity-100 transition-all rotate-45" size={20} />
+                  </button>
+
+                  <button
+                    onClick={() => navigate('/contact')}
+                    className="group relative px-8 py-4 bg-green-600 text-white rounded-2xl font-black uppercase tracking-widest text-sm overflow-hidden transition-all hover:pr-12"
+                  >
+                    <span className="relative z-10 transition-all group-hover:mr-2">Nous contacter</span>
                     <TrendingUp className="absolute right-4 top-1/2 -translate-y-1/2 opacity-0 group-hover:opacity-100 transition-all rotate-45" size={20} />
                   </button>
                 </div>
@@ -475,127 +491,6 @@ const About = () => {
         </div>
       </section>
 
-      {/* Activities - Redesigned Bento Grid */}
-      <section className="py-24 bg-white relative overflow-hidden">
-        <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_right,rgba(34,197,94,0.02)_0%,transparent_50%)]"></div>
-
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
-          <div className="text-center mb-20">
-            <h2 className="text-3xl sm:text-4xl md:text-5xl font-black text-slate-900 mb-6 uppercase tracking-tight">
-              Nos <span className="text-green-600">Activités</span>
-            </h2>
-            <div className="w-24 h-1.5 bg-green-600 mx-auto rounded-full mb-4"></div>
-            <p className="text-slate-500 text-lg max-w-2xl mx-auto font-medium">
-              Des solutions innovantes pour propulser l'excellence entrepreneuriale africaine.
-            </p>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 auto-rows-[320px] md:auto-rows-[280px]">
-            {/* 1. Plateforme FIPA - TALL CARD */}
-            <motion.div
-              initial={{ opacity: 0, y: 30 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              className="md:row-span-2 group relative overflow-hidden rounded-[40px] bg-gray-50 p-10 border border-gray-100 hover:shadow-2xl hover:shadow-green-900/10 transition-all duration-500"
-            >
-              <div className="h-full flex flex-col">
-                <div className="w-16 h-16 bg-white rounded-2xl shadow-sm flex items-center justify-center mb-8 group-hover:scale-110 transition-transform duration-500">
-                  <Globe className="text-green-600 w-8 h-8" />
-                </div>
-                <h3 className="text-3xl font-black text-slate-900 mb-4 uppercase tracking-tighter leading-none">
-                  {activities[0].title}
-                </h3>
-                <p className="text-slate-500 font-medium mb-8 leading-relaxed">
-                  {activities[0].description}
-                </p>
-                <div className="mt-auto space-y-3">
-                  {activities[0].features.map((feature, idx) => (
-                    <div key={idx} className="flex items-center gap-2 text-sm font-bold text-slate-700">
-                      <div className="w-1.5 h-1.5 rounded-full bg-green-500"></div>
-                      {feature}
-                    </div>
-                  ))}
-                </div>
-              </div>
-              <div className="absolute -bottom-10 -right-10 w-40 h-40 bg-green-500/5 rounded-full blur-3xl group-hover:bg-green-500/10 transition-colors"></div>
-            </motion.div>
-
-            {/* 2. Solutions E-commerce - WIDE CARD */}
-            <motion.div
-              initial={{ opacity: 0, y: 30 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ delay: 0.1 }}
-              className="md:col-span-2 group relative overflow-hidden rounded-[40px] bg-[#182656] p-10 text-white hover:shadow-2xl hover:shadow-slate-900/40 transition-all duration-500"
-            >
-              <div className="flex flex-col md:flex-row gap-10 h-full">
-                <div className="flex-1 flex flex-col justify-center">
-                  <div className="w-14 h-14 bg-white/10 rounded-2xl flex items-center justify-center mb-6 group-hover:rotate-12 transition-transform">
-                    <TrendingUp className="text-green-400 w-7 h-7" />
-                  </div>
-                  <h3 className="text-3xl font-black mb-4 uppercase tracking-tighter">
-                    {activities[1].title}
-                  </h3>
-                  <p className="text-gray-400 font-medium leading-relaxed">
-                    {activities[1].description}
-                  </p>
-                </div>
-                <div className="flex-1 flex flex-wrap gap-3 content-center justify-center md:justify-end">
-                  {activities[1].features.map((feature, idx) => (
-                    <span key={idx} className="px-4 py-2 bg-white/5 border border-white/10 rounded-xl text-xs font-bold uppercase tracking-widest hover:bg-green-500 hover:text-slate-950 transition-colors">
-                      {feature}
-                    </span>
-                  ))}
-                </div>
-              </div>
-            </motion.div>
-
-            {/* 3. Programmes de Partenariat - STANDARD CARD */}
-            <motion.div
-              initial={{ opacity: 0, y: 30 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ delay: 0.2 }}
-              className="group relative overflow-hidden rounded-[40px] bg-green-50 p-8 border border-green-100 hover:shadow-2xl hover:shadow-green-900/10 transition-all duration-500"
-            >
-              <div className="w-14 h-14 bg-white rounded-2xl shadow-sm flex items-center justify-center mb-6 group-hover:-translate-y-2 transition-transform">
-                <Handshake className="text-green-600 w-7 h-7" />
-              </div>
-              <h3 className="text-xl font-black text-slate-900 mb-3 uppercase tracking-tighter">
-                {activities[2].title}
-              </h3>
-              <p className="text-slate-600 text-sm font-medium leading-relaxed">
-                {activities[2].description}
-              </p>
-              <div className="absolute top-4 right-4 text-green-200/50 group-hover:text-green-300/50 transition-colors">
-                <Handshake size={64} strokeWidth={1} />
-              </div>
-            </motion.div>
-
-            {/* 4. Conseil aux Entreprises - STANDARD CARD */}
-            <motion.div
-              initial={{ opacity: 0, y: 30 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ delay: 0.3 }}
-              className="group relative overflow-hidden rounded-[40px] bg-gray-50 p-8 border border-gray-100 hover:shadow-2xl hover:shadow-slate-900/10 transition-all duration-500"
-            >
-              <div className="w-14 h-14 bg-white rounded-2xl shadow-sm flex items-center justify-center mb-6 group-hover:rotate-12 transition-transform">
-                <Award className="text-green-600 w-7 h-7" />
-              </div>
-              <h3 className="text-xl font-black text-slate-900 mb-3 uppercase tracking-tighter">
-                {activities[3].title}
-              </h3>
-              <p className="text-slate-600 text-sm font-medium leading-relaxed">
-                {activities[3].description}
-              </p>
-              <div className="absolute top-4 right-4 text-gray-200 group-hover:text-green-200 transition-colors">
-                <Award size={64} strokeWidth={1} />
-              </div>
-            </motion.div>
-          </div>
-        </div>
-      </section>
 
       {/* Team Section - Carousel Slide Mode */}
       <section className="py-24 bg-gray-50 relative overflow-hidden">
@@ -715,55 +610,128 @@ const About = () => {
         <div className="absolute bottom-0 left-0 w-full h-1 bg-green-500/10"></div>
       </section>
 
-      {/* Partners - Tiled Design Light Mode */}
-      <section className="py-24 bg-white relative overflow-hidden">
-        <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(34,197,94,0.03)_0%,transparent_100%)]"></div>
+      {/* Partners - Slick & Modern Elaborated Section */}
+      <section className="py-32 bg-white relative overflow-hidden">
+        {/* Animated Background Ambience */}
+        <div className="absolute top-0 left-0 w-full h-full pointer-events-none">
+          <div className="absolute top-1/4 right-1/4 w-[600px] h-[600px] bg-green-50/30 rounded-full blur-[120px] animate-pulse" />
+          <div className="absolute bottom-1/4 left-1/4 w-[600px] h-[600px] bg-blue-50/20 rounded-full blur-[120px] animate-pulse" style={{ animationDelay: '2s' }} />
+        </div>
 
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
-          <div className="text-center mb-16">
-            <h2 className="text-3xl md:text-5xl font-black text-slate-900 mb-6 uppercase tracking-tight">
-              Nos <span className="text-green-600">Partenaires</span>
+          <motion.div
+            initial={{ y: 30, opacity: 0 }}
+            whileInView={{ y: 0, opacity: 1 }}
+            transition={{ duration: 0.8 }}
+            viewport={{ once: true }}
+            className="text-center mb-24"
+          >
+            <h2 className="text-4xl md:text-6xl font-black text-gray-900 mb-6 tracking-tighter uppercase ">
+              Écosystème de <span className="text-green-600">Confiance</span>
             </h2>
-            <div className="w-20 h-1.5 bg-green-600 mx-auto rounded-full"></div>
+            <div className="w-24 h-2 bg-gradient-to-r from-green-600 to-emerald-400 mx-auto rounded-full mb-8" />
+            <p className="text-lg text-gray-500 font-medium max-w-2xl mx-auto uppercase tracking-[0.2em]">
+              Collaborer avec les meilleurs pour propulser l'Afrique
+            </p>
+          </motion.div>
+
+          <div className="relative group/marquee mt-10">
+            {/* Soft Edge Blurs */}
+            <div className="absolute inset-y-0 left-0 w-32 bg-gradient-to-r from-white to-transparent z-20 pointer-events-none" />
+            <div className="absolute inset-y-0 right-0 w-32 bg-gradient-to-l from-white to-transparent z-20 pointer-events-none" />
+
+            <div className="flex overflow-hidden py-12">
+              <motion.div
+                className="flex gap-8 px-4"
+                animate={{ x: ["0%", "-50%"] }}
+                transition={{
+                  x: {
+                    repeat: Infinity,
+                    repeatType: "loop",
+                    duration: 40,
+                    ease: "linear",
+                  },
+                }}
+                whileHover={{ animationPlayState: "paused" }}
+                style={{ width: "fit-content" }}
+              >
+                {[...partners, ...partners, ...partners, ...partners].map((partner, index) => (
+                  <motion.div
+                    key={index}
+                    whileHover={{ y: -10, scale: 1.05 }}
+                    className="w-72 h-44 flex-shrink-0 relative group/card"
+                  >
+                    {/* Glassmorphic Card */}
+                    <div className="absolute inset-0 bg-white/40 backdrop-blur-xl rounded-[2.5rem] border border-gray-100 shadow-xl group-hover/card:shadow-2xl transition-all duration-500 flex items-center justify-center p-12 overflow-hidden">
+                      {/* Decorative corner */}
+                      <div className="absolute top-0 right-0 w-16 h-16 bg-gradient-to-br from-green-500/5 to-transparent rounded-bl-[3rem] opacity-0 group-hover/card:opacity-100 transition-opacity" />
+
+                      <img
+                        src={partner.logo}
+                        alt={partner.name}
+                        className="max-h-16 w-auto filter grayscale opacity-40 group-hover/card:grayscale-0 group-hover/card:opacity-100 group-hover/card:scale-110 transition-all duration-500 ease-out relative z-10"
+                      />
+
+                      {/* Inner border glow */}
+                      <div className="absolute inset-[1px] rounded-[2.4rem] border border-white/50 pointer-events-none" />
+                    </div>
+                    {/* Visual Accent Glow */}
+                    <div className="absolute -inset-1 bg-gradient-to-br from-green-500/20 to-blue-500/10 rounded-[2.8rem] blur-2xl opacity-0 group-hover/card:opacity-100 transition-opacity -z-10" />
+                  </motion.div>
+                ))}
+              </motion.div>
+            </div>
           </div>
 
-          <div className="relative overflow-hidden py-10">
-            {/* Edge Fades */}
-            <div className="absolute inset-y-0 left-0 w-20 sm:w-40 bg-gradient-to-r from-white to-transparent z-20"></div>
-            <div className="absolute inset-y-0 right-0 w-20 sm:w-40 bg-gradient-to-l from-white to-transparent z-20"></div>
+          <motion.div
+            initial={{ opacity: 0 }}
+            whileInView={{ opacity: 1 }}
+            transition={{ delay: 0.5 }}
+            viewport={{ once: true }}
+            className="text-center mt-12"
+          >
+            <p className="text-[10px] font-black text-gray-300 uppercase tracking-[0.5em]">
+              Partnering for Impact • Building the Future
+            </p>
+          </motion.div>
+        </div>
+      </section>
 
-            <motion.div
-              className="flex gap-8 px-4"
-              initial={{ x: "-50%" }}
-              animate={{ x: "0%" }}
-              transition={{
-                x: {
-                  repeat: Infinity,
-                  repeatType: "loop",
-                  duration: 30,
-                  ease: "linear",
-                },
-              }}
-              style={{ width: "max-content" }}
-            >
-              {[...partners, ...partners, ...partners, ...partners].map((partner, index) => (
-                <div
-                  key={index}
-                  className="w-56 h-32 flex-shrink-0 bg-white border border-gray-100 rounded-3xl shadow-sm flex items-center justify-center p-8 group hover:border-green-500/20 hover:shadow-xl hover:shadow-green-900/5 transition-all duration-500"
-                >
-                  <img
-                    src={partner.logo}
-                    alt={partner.name}
-                    className="max-h-12 w-auto filter grayscale opacity-40 group-hover:grayscale-0 group-hover:opacity-100 group-hover:scale-110 transition-all duration-500 ease-out"
-                  />
+      {/* Social Media - Elaborated Communities */}
+      <section className="py-24 bg-white">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+          <h2 className="text-3xl font-black text-gray-900 mb-16 uppercase tracking-tighter">Nos réseaux sociaux</h2>
+
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-6">
+            {socialPlatforms.map((social) => (
+              <motion.a
+                key={social.name}
+                href={social.link}
+                target="_blank"
+                rel="noopener noreferrer"
+                whileHover={{ y: -8, scale: 1.02 }}
+                className="relative group p-10 rounded-[3rem] bg-gray-50/50 border border-transparent hover:bg-white hover:border-gray-200 transition-all duration-500 overflow-hidden"
+              >
+                {/* Elaborated: Individual Brand Gradient Glow */}
+                <div className={`absolute -bottom-10 -right-10 w-40 h-40 ${social.color} opacity-0 group-hover:opacity-[0.08] rounded-full blur-3xl transition-all duration-700`} />
+
+                {/* Complex Icon Plate */}
+                <div className="relative w-20 h-20 mx-auto mb-8">
+                  <div className={`absolute inset-0 ${social.color} rounded-[2rem] blur-xl opacity-20 group-hover:opacity-40 animate-pulse`} />
+                  <div className={`relative w-full h-full rounded-[2rem] ${social.color} flex items-center justify-center text-white shadow-xl transition-transform duration-500 group-hover:scale-105 group-hover:-rotate-3`}>
+                    <social.icon size={32} strokeWidth={2.5} />
+                  </div>
                 </div>
-              ))}
-            </motion.div>
-          </div>
 
-          <p className="text-center mt-8 text-slate-400 font-medium uppercase tracking-widest text-xs sm:text-sm">
-            Faisons rayonner l'Afrique ensemble
-          </p>
+                <div className="relative z-10">
+                  <h3 className="text-xl font-black text-gray-900 mb-2">{social.name}</h3>
+                  <div className="inline-block px-4 py-1.5 rounded-full bg-white border border-gray-100 shadow-sm text-[10px] font-black uppercase tracking-[0.25em] text-gray-400 group-hover:text-gray-900 group-hover:border-gray-200 transition-all">
+                    {social.followers} Followers
+                  </div>
+                </div>
+              </motion.a>
+            ))}
+          </div>
         </div>
       </section>
     </motion.div>

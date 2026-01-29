@@ -107,9 +107,8 @@ const Activities = () => {
   return (
     <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="min-h-screen bg-gradient-to-b from-green-50 to-white">
       {/* Hero */}
-      {/* Hero */}
       <section className="relative pt-16 pb-12 sm:py-20 md:py-24 bg-cover bg-center bg-no-repeat" style={{ backgroundImage: 'url(https://res.cloudinary.com/drxouwbms/image/upload/v1755949759/Screenshot_2025-08-23_at_11_41_05_1_-Picsart-AiImageEnhancer_kfsp1y.png)' }}>
-        <div className="absolute inset-0 bg-black/50"></div>
+        <div className="absolute inset-0 bg-black/60 backdrop-blur-[2px]"></div>
 
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center relative z-10">
           <motion.div
@@ -117,111 +116,122 @@ const Activities = () => {
             animate={{ y: 0, opacity: 1 }}
             transition={{ duration: 0.8 }}
           >
-            <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold text-white mb-4 sm:mb-6">
-              Nos <span className="text-transparent bg-clip-text bg-gradient-to-r from-green-400 to-blue-400">Activités Sociales</span>
+            <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-black text-white mb-6 tracking-tighter uppercase whitespace-pre-line leading-[0.9]">
+              IMPACT <span className="text-green-400">SOCIAL</span>
             </h1>
-            <p className="text-base sm:text-lg md:text-xl text-white/90 max-w-3xl mx-auto mb-6 sm:mb-8 px-2 sm:px-0">
-              Formations gratuites, autonomisation des femmes, formalisation des entreprises — tout pour votre réussite.
+            <p className="text-base sm:text-lg md:text-xl text-white/80 max-w-2xl mx-auto mb-10 font-medium px-4">
+              Explorez nos initiatives dédiées à l'autonomisation et à la croissance durable des entreprises africaines.
             </p>
             <Link
               to={token ? "/dashboard" : "/enrollments"}
-              className="inline-flex items-center space-x-2 bg-green-600 text-white px-6 sm:px-8 py-3 sm:py-4 rounded-full font-semibold hover:bg-green-700 transition-all duration-300 shadow-lg hover:shadow-xl text-sm sm:text-base"
+              className="inline-flex items-center space-x-3 bg-green-600 text-white px-8 py-4 rounded-2xl font-black text-xs uppercase tracking-[0.2em] hover:bg-green-700 transition-all shadow-2xl hover:shadow-green-500/20 active:scale-95"
             >
-              <span>{token ? "Accéder à mon espace" : "Rejoindre la communauté"}</span>
-              <ExternalLink size={18} className="sm:w-5 sm:h-5" />
+              <span>{token ? "Mon Espace Personnel" : "Devenir Partenaire"}</span>
+              <ExternalLink size={18} />
             </Link>
           </motion.div>
         </div>
       </section>
 
       {/* Sections */}
-      <section className="py-16 px-4 max-w-7xl mx-auto space-y-16">
+      <section className="py-24 px-4 max-w-7xl mx-auto space-y-12">
         {/* Formations */}
         <ActivityCard
           title="Formations Gratuites"
-          subtitle="Pour tous les membres BAY SA WAAR"
-          description="Transformation des céréales locales, fruits et légumes, entrepreneuriat — gratuit pour les membres."
+          subtitle="Compétences & Excellence"
+          description="Des cycles de formation intensifs conçus pour transformer vos idées en entreprises prospères."
           icon={BookOpen}
           color="from-green-500 to-emerald-600"
-          ctaText={token ? "Voir mes formations" : "Devenir membre"}
+          ctaText={token ? "Gérer mes formations" : "S'inscrire"}
           ctaLink={token ? "/dashboard" : "/enrollments"}
           ctaState={{ type: 'formation' }}
         >
           {loading ? (
-            <p className="text-white/80">Chargement...</p>
+            <div className="flex justify-center p-12">
+              <div className="w-8 h-8 border-4 border-green-200 border-t-green-600 rounded-full animate-spin" />
+            </div>
           ) : formations.length === 0 ? (
-            <p className="text-white/80">Aucune formation prévue pour le moment.</p>
+            <div className="bg-gray-50 rounded-2xl p-8 border border-gray-100 text-center">
+              <p className="text-gray-400 font-bold uppercase tracking-widest text-xs">Aucun cycle actif pour le moment</p>
+            </div>
           ) : (
-            <div className="space-y-6">
-              <div className="space-y-4">
+            <div className="space-y-4">
+              <div className="grid gap-4">
                 {formations
                   .slice((formationsCurrentPage - 1) * formationsPerPage, formationsCurrentPage * formationsPerPage)
                   .map(formation => (
-                    <div key={formation._id} className="bg-white/20 backdrop-blur-sm p-4 rounded-xl border border-white/10 hover:bg-white/30 transition-all duration-300">
-                      <h4 className="font-bold text-lg">{formation.title}</h4>
-                      <div className="flex flex-wrap gap-3 text-sm mt-2 text-white/90">
-                        <span className="flex items-center gap-1">
-                          <Calendar size={14} /> {new Date(formation.date).toLocaleDateString('fr-FR')}
-                        </span>
-                        <span className="flex items-center gap-1">
-                          <MapPin size={14} /> {formation.location}
-                        </span>
-                      </div>
-                      <div className="mt-3 flex items-center justify-between">
-                        <span className="text-sm text-white/80">
-                          Places restantes : {formation.maxSeats - formation.enrolledUsers.length}
-                        </span>
-                        {user?.role !== 'admin' && (
-                          <>
-                            {registeredFormationIds.has(formation._id) ? (
-                              <button
-                                disabled
-                                className={`px-6 py-2 font-bold rounded-full cursor-not-allowed border ${rejectedFormationIds.has(formation._id)
-                                  ? 'bg-red-500/20 text-red-200 border-red-500/30'
-                                  : 'bg-white/20 text-white/60 border-white/20'
-                                  }`}
-                              >
-                                {approvedFormationIds.has(formation._id) ? 'Inscrit (Validé)' :
-                                  rejectedFormationIds.has(formation._id) ? 'Demande rejetée' : 'En attente'}
-                              </button>
-                            ) : (
-                              <button
-                                onClick={() => handleRegister(formation._id)}
-                                className="px-6 py-2 bg-white text-green-600 font-bold rounded-full hover:bg-green-50 transition shadow-md hover:scale-105"
-                              >
-                                S’inscrire
-                              </button>
-                            )}
-                          </>
-                        )}
+                    <div key={formation._id} className="group/item relative bg-gray-50/50 p-6 rounded-2xl border border-gray-100 hover:bg-white hover:shadow-xl transition-all duration-300">
+                      <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
+                        <div>
+                          <h4 className="font-black text-xl mb-2 text-gray-900">{formation.title}</h4>
+                          <div className="flex flex-wrap gap-4 text-xs font-black uppercase tracking-widest text-gray-400">
+                            <span className="flex items-center gap-1.5 group-hover/item:text-green-600 transition-colors">
+                              <Calendar size={14} className="text-green-500" /> {new Date(formation.date).toLocaleDateString('fr-FR')}
+                            </span>
+                            <span className="flex items-center gap-1.5 group-hover/item:text-green-600 transition-colors">
+                              <MapPin size={14} className="text-green-500" /> {formation.location}
+                            </span>
+                          </div>
+                        </div>
+
+                        <div className="flex items-center gap-6">
+                          <div className="text-right hidden sm:block">
+                            <p className="text-gray-900 font-black text-lg">{formation.maxSeats - formation.enrolledUsers.length}</p>
+                            <p className="text-[10px] font-black uppercase tracking-widest text-gray-400">Places Disponibles</p>
+                          </div>
+
+                          {user?.role !== 'admin' && (
+                            <>
+                              {registeredFormationIds.has(formation._id) ? (
+                                <button
+                                  disabled
+                                  className={`px-6 py-3 font-black text-[10px] uppercase tracking-widest rounded-xl cursor-not-allowed border ${rejectedFormationIds.has(formation._id)
+                                    ? 'bg-red-50 text-red-600 border-red-100'
+                                    : 'bg-gray-100 text-gray-400 border-gray-200'
+                                    }`}
+                                >
+                                  {approvedFormationIds.has(formation._id) ? 'Validé' :
+                                    rejectedFormationIds.has(formation._id) ? 'Rejeté' : 'Attente'}
+                                </button>
+                              ) : (
+                                <button
+                                  onClick={() => handleRegister(formation._id)}
+                                  className="px-6 py-3 bg-gray-900 text-white font-black text-[10px] uppercase tracking-widest rounded-xl hover:bg-green-600 transition-all shadow-lg active:scale-95"
+                                >
+                                  Réserver
+                                </button>
+                              )}
+                            </>
+                          )}
+                        </div>
                       </div>
                     </div>
                   ))}
               </div>
 
-              {/* Pagination UI */}
+              {/* Enhanced Pagination */}
               {formations.length > formationsPerPage && (
-                <div className="pt-4 flex flex-col sm:flex-row items-center justify-between gap-4 border-t border-white/10">
-                  <span className="text-sm text-white/70">
-                    Page <span className="font-bold text-white">{formationsCurrentPage}</span> sur {Math.ceil(formations.length / formationsPerPage)}
+                <div className="pt-8 flex flex-col sm:flex-row items-center justify-between gap-6">
+                  <span className="text-xs font-black uppercase tracking-[0.2em] text-gray-400">
+                    Séquence <span className="text-gray-900">{formationsCurrentPage}</span> / {Math.ceil(formations.length / formationsPerPage)}
                   </span>
-                  <nav className="flex items-center space-x-1">
+                  <nav className="flex items-center space-x-2">
                     <button
                       onClick={() => setFormationsCurrentPage(formationsCurrentPage - 1)}
                       disabled={formationsCurrentPage === 1}
-                      className="p-2 rounded-lg bg-white/10 text-white hover:bg-white/20 disabled:opacity-30 disabled:cursor-not-allowed transition-all"
+                      className="p-3 rounded-xl bg-gray-100 text-gray-400 hover:bg-gray-200 disabled:opacity-30 disabled:cursor-not-allowed transition-all"
                     >
                       <ChevronLeft className="w-4 h-4" />
                     </button>
 
-                    <div className="flex items-center space-x-1 px-1">
+                    <div className="flex items-center gap-1">
                       {Array.from({ length: Math.ceil(formations.length / formationsPerPage) }, (_, i) => i + 1).map((pageNum) => (
                         <button
                           key={pageNum}
                           onClick={() => setFormationsCurrentPage(pageNum)}
-                          className={`w-8 h-8 flex items-center justify-center rounded-lg text-xs font-bold transition-all ${formationsCurrentPage === pageNum
-                            ? 'bg-white text-green-600 shadow-lg'
-                            : 'bg-white/10 text-white hover:bg-white/20'
+                          className={`w-10 h-10 flex items-center justify-center rounded-xl text-xs font-black transition-all ${formationsCurrentPage === pageNum
+                            ? 'bg-green-600 text-white shadow-xl scale-110'
+                            : 'bg-gray-100 text-gray-400 hover:bg-gray-200'
                             }`}
                         >
                           {pageNum}
@@ -232,7 +242,7 @@ const Activities = () => {
                     <button
                       onClick={() => setFormationsCurrentPage(formationsCurrentPage + 1)}
                       disabled={formationsCurrentPage === Math.ceil(formations.length / formationsPerPage)}
-                      className="p-2 rounded-lg bg-white/10 text-white hover:bg-white/20 disabled:opacity-30 disabled:cursor-not-allowed transition-all"
+                      className="p-3 rounded-xl bg-gray-100 text-gray-400 hover:bg-gray-200 disabled:opacity-30 disabled:cursor-not-allowed transition-all"
                     >
                       <ChevronRight className="w-4 h-4" />
                     </button>
@@ -243,57 +253,64 @@ const Activities = () => {
           )}
         </ActivityCard>
 
-        {/* Autonomisation Femmes */}
-        <ActivityCard
-          title="Autonomisation des Femmes"
-          subtitle="Programmes dédiés à l'entrepreneuriat féminin"
-          description="Ateliers, mentorat, financement — #MadeInSénégal pour les femmes leaders de demain."
-          icon={Users}
-          color="from-purple-500 to-pink-600"
-          ctaText="Rejoindre le programme"
-          ctaLink="/enrollments"
-          ctaState={{ type: 'women_empowerment' }}
-        >
-          <div className="space-y-4">
-            <div className="bg-white/20 p-4 rounded-xl">
-              <h4 className="font-bold">Programme "Femme Leader 2025"</h4>
-              <p className="text-sm mt-1">6 mois de mentorat + fonds de démarrage jusqu'à 2M FCFA</p>
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+          {/* Autonomisation Femmes */}
+          <ActivityCard
+            title="Autonomisation"
+            subtitle="Leadership Féminin"
+            description="Accélérez votre trajectoire entrepreneuriale avec nos programmes de mentorat stratégique."
+            icon={Users}
+            color="from-purple-500 to-pink-600"
+            ctaText="Postuler"
+            ctaLink="/enrollments"
+            ctaState={{ type: 'women_empowerment' }}
+          >
+            <div className="space-y-4">
+              <div className="group/bento relative bg-purple-50 p-6 rounded-2xl border border-purple-100 hover:bg-white hover:shadow-xl transition-all">
+                <h4 className="font-black text-lg text-purple-900 mb-2">Femme Leader 2025</h4>
+                <p className="text-xs uppercase font-black tracking-widest text-purple-600">Mentorat + Fonds de 2M FCFA</p>
+              </div>
+              <div className="bg-gray-50 p-6 rounded-2xl border-l-4 border-pink-500">
+                <p className="text-xs font-bold text-gray-700 leading-relaxed uppercase tracking-wide">
+                  "Grâce à BAY SA WAAR, j'ai lancé mon atelier de transformation de fruits."
+                </p>
+                <div className="flex items-center gap-2 mt-4">
+                  <div className="w-4 h-px bg-pink-500" />
+                  <p className="text-[10px] font-black uppercase tracking-widest text-gray-400">Fatou, Entrepreneure à Thiès</p>
+                </div>
+              </div>
             </div>
-            <div className="bg-white/20 p-4 rounded-xl">
-              <p className="italic">"Grâce à BAY SA WAAR, j'ai lancé mon atelier de transformation de fruits."</p>
-              <p className="text-xs mt-1">— Fatou, Thiès</p>
-            </div>
-          </div>
-        </ActivityCard>
+          </ActivityCard>
 
-        {/* Formalisation */}
-        <ActivityCard
-          title="Formalisation des Entreprises"
-          subtitle="Passez de l'informel au formel"
-          description="Guide gratuit, accompagnement pas à pas, partenariats APIX/ANPEJ."
-          icon={FileText}
-          color="from-blue-500 to-cyan-600"
-          ctaText="Demander un accompagnement"
-          ctaLink="/enrollments"
-          ctaState={{ type: 'formalization' }}
-        >
-          <ol className="space-y-2 text-sm">
-            {[
-              'Évaluation gratuite de votre activité',
-              'Choix de la forme juridique',
-              'Dépôt au guichet unique',
-              'Obtention NINEA/RCCM',
-              'Ouverture compte + fiscalité'
-            ].map((step, i) => (
-              <li key={i} className="flex items-center gap-2">
-                <span className="w-6 h-6 bg-white/30 rounded-full flex items-center justify-center text-xs font-bold">
-                  {i + 1}
-                </span>
-                {step}
-              </li>
-            ))}
-          </ol>
-        </ActivityCard>
+          {/* Formalisation */}
+          <ActivityCard
+            title="Formalisation"
+            subtitle="Structure & Légalité"
+            description="Passez de l'informel au formel avec notre guide d'accompagnement juridique étape par étape."
+            icon={FileText}
+            color="from-blue-500 to-cyan-600"
+            ctaText="Démarrer le guide"
+            ctaLink="/enrollments"
+            ctaState={{ type: 'formalization' }}
+          >
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              {[
+                'Évaluation Activité',
+                'Forme Juridique',
+                'Guichet Unique',
+                'NINEA / RCCM',
+                'Fiscalité'
+              ].map((step, i) => (
+                <div key={i} className="flex items-center gap-3 bg-blue-50 p-3 rounded-xl border border-blue-100">
+                  <span className="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center text-xs font-black text-white shrink-0">
+                    0{i + 1}
+                  </span>
+                  <span className="text-[10px] font-black uppercase tracking-widest text-blue-900">{step}</span>
+                </div>
+              ))}
+            </div>
+          </ActivityCard>
+        </div>
       </section>
 
       {/* Bandeau FIPA */}

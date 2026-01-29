@@ -7,7 +7,7 @@ import Home from './pages/Home';
 import About from './pages/About';
 import Enrollments from './pages/Enrollments';
 import DashboardWrapper from './components/DashboardWrapper';
-import Platforms from './pages/Platforms';
+// import Platforms from './pages/Platforms';
 import Activities from './pages/Activities';
 import Contact from './pages/Contact';
 import Blog from './pages/Blog';
@@ -38,7 +38,7 @@ const AppContent = () => {
               <DashboardWrapper />
             </ProtectedRoute>
           } />
-          <Route path="/platforms" element={<Platforms />} />
+          {/* <Route path="/platforms" element={<Platforms />} /> */}
           <Route path="/activities" element={<Activities />} />
           <Route path="/fabira-trading" element={<FabiraTrading />} />
           <Route path="/events" element={<Events />} />

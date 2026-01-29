@@ -40,18 +40,21 @@ const Events = () => {
   const [isRegistering, setIsRegistering] = useState(false);
   const { user } = useAuth();
 
+  const updateEventsState = (allEvents: Event[]) => {
+    setEvents(allEvents);
+
+    const now = new Date();
+    const upcoming = allEvents.filter((e: Event) => new Date(e.dateEnd) >= now);
+    const past = allEvents.filter((e: Event) => new Date(e.dateEnd) < now);
+
+    setUpcomingEvents(upcoming);
+    setPastEvents(past.sort((a: Event, b: Event) => new Date(b.dateStart).getTime() - new Date(a.dateStart).getTime()));
+  };
+
   useEffect(() => {
     eventsAPI.getAll()
       .then(res => {
-        const allEvents = res.data.events;
-        setEvents(allEvents);
-
-        const now = new Date();
-        const upcoming = allEvents.filter((e: Event) => new Date(e.dateEnd) >= now);
-        const past = allEvents.filter((e: Event) => new Date(e.dateEnd) < now);
-
-        setUpcomingEvents(upcoming);
-        setPastEvents(past.sort((a: Event, b: Event) => new Date(b.dateStart).getTime() - new Date(a.dateStart).getTime())); // Latest past events first
+        updateEventsState(res.data.events);
         setLoading(false);
       })
       .catch((err) => {
@@ -108,7 +111,7 @@ const Events = () => {
 
       const { data } = await eventsAPI.getAll();
       const updatedEvents = data.events;
-      setEvents(updatedEvents);
+      updateEventsState(updatedEvents);
 
       // Mettre à jour l'événement sélectionné pour refléter le nouveau statut dans la modale
       if (selectedEvent) {
@@ -135,7 +138,7 @@ const Events = () => {
           confirmButtonColor: '#16a34a'
         });
         const { data } = await eventsAPI.getAll();
-        setEvents(data.events);
+        updateEventsState(data.events);
       } else {
         Swal.fire({
           title: 'Erreur',
@@ -147,6 +150,15 @@ const Events = () => {
     } finally {
       setIsRegistering(false);
     }
+  };
+
+  const isRegistered = (event: Event) => {
+    if (!user || !event.registrations) return false;
+    const userId = user.id || (user as any)._id;
+    return event.registrations.some(r => {
+      const regUserId = r.user?._id || r.user || r.userId || r;
+      return String(regUserId) === String(userId);
+    });
   };
 
   const stats = [
@@ -224,14 +236,20 @@ const Events = () => {
                     VOIR LES DÉTAILS <ArrowRight size={20} />
                   </motion.button>
 
-                  <motion.button
-                    onClick={() => handleRegister(featuredEvent.slug)}
-                    whileHover={{ scale: 1.02 }}
-                    whileTap={{ scale: 0.98 }}
-                    className="text-white px-10 py-5 border border-white/20 hover:border-white hover:bg-white/5 transition-all duration-300 flex items-center gap-3 text-lg font-medium"
-                  >
-                    S'INSCRIRE MAINTENANT
-                  </motion.button>
+                  {isRegistered(featuredEvent) ? (
+                    <div className="bg-green-600/10 border border-green-500/50 text-green-400 px-10 py-5 flex items-center gap-3 text-lg font-bold tracking-wide">
+                      <CheckCircle size={20} /> DÉJÀ INSCRIT
+                    </div>
+                  ) : (
+                    <motion.button
+                      onClick={() => handleRegister(featuredEvent.slug)}
+                      whileHover={{ scale: 1.02 }}
+                      whileTap={{ scale: 0.98 }}
+                      className="text-white px-10 py-5 border border-white/20 hover:border-white hover:bg-white/5 transition-all duration-300 flex items-center gap-3 text-lg font-medium"
+                    >
+                      S'INSCRIRE MAINTENANT
+                    </motion.button>
+                  )}
                 </div>
               </motion.div>
             </div>
@@ -1003,18 +1021,24 @@ const Events = () => {
                         </div>
                       </div>
 
-                      <button
-                        onClick={() => selectedEvent && handleRegister(selectedEvent.slug)}
-                        disabled={(selectedEvent?.registrations?.length || 0) >= (selectedEvent?.maxParticipants || 0) || isRegistering}
-                        className={`flex-1 py-4 rounded-xl font-black tracking-[0.2em] text-[10px] uppercase flex items-center justify-center gap-2 transition-all ${(selectedEvent?.registrations?.length || 0) >= (selectedEvent?.maxParticipants || 0)
-                          ? 'bg-gray-800 text-gray-500'
-                          : isRegistering
-                            ? 'bg-green-600 text-white'
-                            : 'bg-green-600 text-white hover:bg-green-700 shadow-lg shadow-green-900/40'
-                          }`}
-                      >
-                        {isRegistering ? 'Traitement...' : (selectedEvent?.registrations?.length || 0) >= (selectedEvent?.maxParticipants || 0) ? 'COMPLET' : 'RÉSERVER'}
-                      </button>
+                      {isRegistered(selectedEvent) ? (
+                        <div className="flex-1 py-4 rounded-xl font-black tracking-[0.2em] text-[10px] uppercase flex items-center justify-center gap-2 bg-green-600/20 text-green-400 border border-green-500/30">
+                          <CheckCircle size={16} /> DÉJÀ INSCRIT
+                        </div>
+                      ) : (
+                        <button
+                          onClick={() => selectedEvent && handleRegister(selectedEvent.slug)}
+                          disabled={(selectedEvent?.registrations?.length || 0) >= (selectedEvent?.maxParticipants || 0) || isRegistering}
+                          className={`flex-1 py-4 rounded-xl font-black tracking-[0.2em] text-[10px] uppercase flex items-center justify-center gap-2 transition-all ${(selectedEvent?.registrations?.length || 0) >= (selectedEvent?.maxParticipants || 0)
+                            ? 'bg-gray-800 text-gray-500'
+                            : isRegistering
+                              ? 'bg-green-600 text-white'
+                              : 'bg-green-600 text-white hover:bg-green-700 shadow-lg shadow-green-900/40'
+                            }`}
+                        >
+                          {isRegistering ? 'Traitement...' : (selectedEvent?.registrations?.length || 0) >= (selectedEvent?.maxParticipants || 0) ? 'COMPLET' : 'RÉSERVER'}
+                        </button>
+                      )}
                     </>
                   )}
                 </div>
