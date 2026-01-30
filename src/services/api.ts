@@ -4,7 +4,7 @@ import axios, { AxiosResponse } from 'axios';
 const api = axios.create({
   baseURL: import.meta.env.DEV
     ? 'http://localhost:5005/api'
-    : 'https://baysawarrbackend.vercel.app/api',
+    : 'https://baysawarrbackend-pl1nhjqov-sohntechs-projects.vercel.app/api',
   timeout: 60000, // 60 secondes pour les uploads
   headers: {
     'Content-Type': 'application/json',
