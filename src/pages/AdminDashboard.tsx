@@ -33,6 +33,7 @@ import BlogFormModal from '../components/BlogFormModal';
 import FormationFormModal from '../components/FormationFormModal';
 import FormationModal from '../components/FormationModal';
 import EventFormModal from '../components/EventFormModal';
+import EnrollmentFormModal from '../components/EnrollmentFormModal';
 import { EventData, Product, User } from '../types';
 
 interface AdminStats {
@@ -160,6 +161,7 @@ const AdminDashboard = () => {
   const [editingEvent, setEditingEvent] = useState<EventData | null>(null);
   const [selectedEventDetail, setSelectedEventDetail] = useState<EventData | null>(null);
   const [showEventDetailModal, setShowEventDetailModal] = useState(false);
+  const [showEnrollmentFormModal, setShowEnrollmentFormModal] = useState(false);
   const [processingIds, setProcessingIds] = useState<Set<string>>(new Set());
 
   const addProcessingId = (id: string) => {
@@ -1109,6 +1111,13 @@ const AdminDashboard = () => {
                     <option value="client">Clients</option>
                   </select>
                 </div>
+                <button
+                  onClick={() => setShowEnrollmentFormModal(true)}
+                  className="flex items-center space-x-2 bg-gradient-to-r from-green-500 to-green-600 text-white px-6 py-2 rounded-xl hover:from-green-600 hover:to-green-700 transition-all duration-300 shadow-lg hover:shadow-xl font-medium"
+                >
+                  <PlusIcon className="w-4 h-4" />
+                  <span>Nouvel Enrôlement</span>
+                </button>
               </div>
             </div>
 
@@ -2024,6 +2033,16 @@ const AdminDashboard = () => {
         }}
         event={editingEvent}
         onEventSaved={handleEventSaved}
+      />
+
+      <EnrollmentFormModal
+        isOpen={showEnrollmentFormModal}
+        onClose={() => setShowEnrollmentFormModal(false)}
+        onEnrollmentSaved={() => {
+          fetchUsers();
+          fetchAdminData();
+          fetchEnrollments();
+        }}
       />
 
       <AnimatePresence>

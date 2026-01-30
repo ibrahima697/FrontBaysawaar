@@ -236,19 +236,23 @@ const Events = () => {
                     VOIR LES DÉTAILS <ArrowRight size={20} />
                   </motion.button>
 
-                  {isRegistered(featuredEvent) ? (
-                    <div className="bg-green-600/10 border border-green-500/50 text-green-400 px-10 py-5 flex items-center gap-3 text-lg font-bold tracking-wide">
-                      <CheckCircle size={20} /> DÉJÀ INSCRIT
-                    </div>
-                  ) : (
-                    <motion.button
-                      onClick={() => handleRegister(featuredEvent.slug)}
-                      whileHover={{ scale: 1.02 }}
-                      whileTap={{ scale: 0.98 }}
-                      className="text-white px-10 py-5 border border-white/20 hover:border-white hover:bg-white/5 transition-all duration-300 flex items-center gap-3 text-lg font-medium"
-                    >
-                      S'INSCRIRE MAINTENANT
-                    </motion.button>
+                  {user?.role !== 'admin' && (
+                    <>
+                      {isRegistered(featuredEvent) ? (
+                        <div className="bg-green-600/10 border border-green-500/50 text-green-400 px-10 py-5 flex items-center gap-3 text-lg font-bold tracking-wide">
+                          <CheckCircle size={20} /> DÉJÀ INSCRIT
+                        </div>
+                      ) : (
+                        <motion.button
+                          onClick={() => handleRegister(featuredEvent.slug)}
+                          whileHover={{ scale: 1.02 }}
+                          whileTap={{ scale: 0.98 }}
+                          className="text-white px-10 py-5 border border-white/20 hover:border-white hover:bg-white/5 transition-all duration-300 flex items-center gap-3 text-lg font-medium"
+                        >
+                          S'INSCRIRE MAINTENANT
+                        </motion.button>
+                      )}
+                    </>
                   )}
                 </div>
               </motion.div>
@@ -1002,42 +1006,46 @@ const Events = () => {
                     </div>
                   ) : (
                     <>
-                      {/* Compact Availability */}
-                      <div className="flex items-center gap-3">
-                        <div className="relative w-10 h-10">
-                          <svg className="w-full h-full -rotate-90" viewBox="0 0 36 36">
-                            <circle cx="18" cy="18" r="16" fill="none" stroke="#ffffff10" strokeWidth="4" />
-                            <circle
-                              cx="18" cy="18" r="16" fill="none" stroke="#16a34a" strokeWidth="4"
-                              strokeDasharray={`${selectedEvent.maxParticipants > 0 ? ((selectedEvent.registrations?.length || 0) / selectedEvent.maxParticipants) * 100 : 0}, 100`}
-                            />
-                          </svg>
-                        </div>
-                        <div className="hidden sm:block">
-                          <p className="text-[8px] text-gray-500 uppercase font-black">Disponibilité</p>
-                          <p className="text-xs font-bold text-white leading-none">
-                            {Math.max(0, selectedEvent.maxParticipants - (selectedEvent.registrations?.length || 0))} places
-                          </p>
-                        </div>
-                      </div>
+                      {user?.role !== 'admin' && (
+                        <>
+                          {/* Compact Availability */}
+                          <div className="flex items-center gap-3">
+                            <div className="relative w-10 h-10">
+                              <svg className="w-full h-full -rotate-90" viewBox="0 0 36 36">
+                                <circle cx="18" cy="18" r="16" fill="none" stroke="#ffffff10" strokeWidth="4" />
+                                <circle
+                                  cx="18" cy="18" r="16" fill="none" stroke="#16a34a" strokeWidth="4"
+                                  strokeDasharray={`${selectedEvent.maxParticipants > 0 ? ((selectedEvent.registrations?.length || 0) / selectedEvent.maxParticipants) * 100 : 0}, 100`}
+                                />
+                              </svg>
+                            </div>
+                            <div className="hidden sm:block">
+                              <p className="text-[8px] text-gray-500 uppercase font-black">Disponibilité</p>
+                              <p className="text-xs font-bold text-white leading-none">
+                                {Math.max(0, selectedEvent.maxParticipants - (selectedEvent.registrations?.length || 0))} places
+                              </p>
+                            </div>
+                          </div>
 
-                      {isRegistered(selectedEvent) ? (
-                        <div className="flex-1 py-4 rounded-xl font-black tracking-[0.2em] text-[10px] uppercase flex items-center justify-center gap-2 bg-green-600/20 text-green-400 border border-green-500/30">
-                          <CheckCircle size={16} /> DÉJÀ INSCRIT
-                        </div>
-                      ) : (
-                        <button
-                          onClick={() => selectedEvent && handleRegister(selectedEvent.slug)}
-                          disabled={(selectedEvent?.registrations?.length || 0) >= (selectedEvent?.maxParticipants || 0) || isRegistering}
-                          className={`flex-1 py-4 rounded-xl font-black tracking-[0.2em] text-[10px] uppercase flex items-center justify-center gap-2 transition-all ${(selectedEvent?.registrations?.length || 0) >= (selectedEvent?.maxParticipants || 0)
-                            ? 'bg-gray-800 text-gray-500'
-                            : isRegistering
-                              ? 'bg-green-600 text-white'
-                              : 'bg-green-600 text-white hover:bg-green-700 shadow-lg shadow-green-900/40'
-                            }`}
-                        >
-                          {isRegistering ? 'Traitement...' : (selectedEvent?.registrations?.length || 0) >= (selectedEvent?.maxParticipants || 0) ? 'COMPLET' : 'RÉSERVER'}
-                        </button>
+                          {isRegistered(selectedEvent) ? (
+                            <div className="flex-1 py-4 rounded-xl font-black tracking-[0.2em] text-[10px] uppercase flex items-center justify-center gap-2 bg-green-600/20 text-green-400 border border-green-500/30">
+                              <CheckCircle size={16} /> DÉJÀ INSCRIT
+                            </div>
+                          ) : (
+                            <button
+                              onClick={() => selectedEvent && handleRegister(selectedEvent.slug)}
+                              disabled={(selectedEvent?.registrations?.length || 0) >= (selectedEvent?.maxParticipants || 0) || isRegistering}
+                              className={`flex-1 py-4 rounded-xl font-black tracking-[0.2em] text-[10px] uppercase flex items-center justify-center gap-2 transition-all ${(selectedEvent?.registrations?.length || 0) >= (selectedEvent?.maxParticipants || 0)
+                                ? 'bg-gray-800 text-gray-500'
+                                : isRegistering
+                                  ? 'bg-green-600 text-white'
+                                  : 'bg-green-600 text-white hover:bg-green-700 shadow-lg shadow-green-900/40'
+                                }`}
+                            >
+                              {isRegistering ? 'Traitement...' : (selectedEvent?.registrations?.length || 0) >= (selectedEvent?.maxParticipants || 0) ? 'COMPLET' : 'RÉSERVER'}
+                            </button>
+                          )}
+                        </>
                       )}
                     </>
                   )}

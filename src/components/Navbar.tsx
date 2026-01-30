@@ -41,12 +41,12 @@ const Navbar = () => {
   const navItems = [
     { name: 'Accueil', path: '/' },
     { name: 'À propos', path: '/about' },
-    { name: 'Rejoindre', path: '/enrollments' },
+    ...(!user ? [{ name: 'Rejoindre', path: '/enrollments' }] : []),
     //{ name: 'Plateformes', path: '/platforms' },
     { name: 'Activités', path: '/activities' },
     //{ name: 'Fabira Trading', path: '/fabira-trading' },
     { name: 'Événements', path: '/events' },
-    { name: 'Contact', path: '/contact' },
+    //{ name: 'Contact', path: '/contact' },
     { name: 'Blog', path: '/blog' }
   ];
 
