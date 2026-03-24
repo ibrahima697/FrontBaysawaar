@@ -36,17 +36,23 @@ const ProductCarousel = () => {
     const fetchProducts = async () => {
       try {
         setLoading(true);
-        // Utilisation de getExternalProducts pour toujours avoir les produits de la boutique
         const response = await productsAPI.getExternalProducts();
-        const productsData = response.data.products || [];
-        // Filtrer seulement les produits actifs et avec des images
-        const activeProducts = productsData.filter((product: Product) =>
-          product.isActive && product.images && product.images.length > 0
-        );
+        
+        // Gérer le format de réponse (Tableau direct ou Objet avec clé 'products')
+        const rawData = response.data;
+        const productsData = Array.isArray(rawData) ? rawData : (rawData.products || []);
+        
+        // Filtrer les produits valides (doivent avoir un nom et idéalement une image)
+        const activeProducts = productsData.map((p: any) => ({
+          ...p,
+          _id: p.id || p._id, // Mapper id vers _id pour la compatibilité
+          images: p.images || (p.image ? [{ url: p.image }] : []), // Gérer différents formats d'images
+        })).filter((p: any) => p.name && p._id);
+
         setProducts(activeProducts);
       } catch (error) {
         console.error('Erreur lors du chargement des produits externes:', error);
-        // Fallback vers des produits statiques en cas d'erreur
+        // Fallback statique
         setProducts([
           {
             _id: '1',
@@ -94,8 +100,8 @@ const ProductCarousel = () => {
     if (products.length > 0 && products[currentSlide]) {
       const product = products[currentSlide];
       // Redirige vers la page du produit sur le site shop.fabiratrading.com
-      // Utilisation du _id ou du slug (si disponible)
-      const shopUrl = `https://shop.fabiratrading.com/products/${product._id}`;
+      const productId = product._id || (product as any).id;
+      const shopUrl = `https://shop.fabiratrading.com/products/${productId}`;
       window.open(shopUrl, '_blank');
     }
   };
