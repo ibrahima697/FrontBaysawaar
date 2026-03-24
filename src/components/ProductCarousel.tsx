@@ -31,12 +31,13 @@ const ProductCarousel = () => {
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
 
-  // Charger les produits depuis l'API
+  // Charger les produits depuis l'API externe du site E-commerce
   useEffect(() => {
     const fetchProducts = async () => {
       try {
         setLoading(true);
-        const response = await productsAPI.getAllProducts();
+        // Utilisation de getExternalProducts pour toujours avoir les produits de la boutique
+        const response = await productsAPI.getExternalProducts();
         const productsData = response.data.products || [];
         // Filtrer seulement les produits actifs et avec des images
         const activeProducts = productsData.filter((product: Product) =>
@@ -44,7 +45,7 @@ const ProductCarousel = () => {
         );
         setProducts(activeProducts);
       } catch (error) {
-        console.error('Erreur lors du chargement des produits:', error);
+        console.error('Erreur lors du chargement des produits externes:', error);
         // Fallback vers des produits statiques en cas d'erreur
         setProducts([
           {
@@ -75,16 +76,6 @@ const ProductCarousel = () => {
     fetchProducts();
   }, []);
 
-  // Timer pour le carrousel automatique
-  useEffect(() => {
-    if (products.length === 0) return;
-
-    const timer = setInterval(() => {
-      setCurrentSlide((prev) => (prev + 1) % products.length);
-    }, 10000);
-    return () => clearInterval(timer);
-  }, [products.length]);
-
   const nextSlide = () => {
     if (products.length === 0) return;
     setCurrentSlide((prev) => (prev + 1) % products.length);
@@ -101,8 +92,11 @@ const ProductCarousel = () => {
 
   const handleExploreClick = () => {
     if (products.length > 0 && products[currentSlide]) {
-      setSelectedProduct(products[currentSlide]);
-      setIsModalOpen(true);
+      const product = products[currentSlide];
+      // Redirige vers la page du produit sur le site shop.fabiratrading.com
+      // Utilisation du _id ou du slug (si disponible)
+      const shopUrl = `https://shop.fabiratrading.com/products/${product._id}`;
+      window.open(shopUrl, '_blank');
     }
   };
 
