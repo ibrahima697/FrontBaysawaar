@@ -97,7 +97,7 @@ const Activities = () => {
       setApprovedFormationIds(approved);
       setRejectedFormationIds(rejected);
 
-      Swal.fire('Succès', 'Inscription envoyée !', 'success');
+      Swal.fire('Succès', 'Inscription envoyée !!', 'success');
     } catch (err: any) {
       Swal.fire('Erreur', err.response?.data?.message || 'Problème', 'error');
     }
