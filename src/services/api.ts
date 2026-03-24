@@ -159,9 +159,9 @@ export const productsAPI = {
   deleteProduct: (id: string): Promise<AxiosResponse> =>
     api.delete(`/products/${id}`),
 
-  // Get products from the external Shop site specifically
+  // Get products from the external Shop site via our own backend proxy (to avoid CORS)
   getExternalProducts: (): Promise<AxiosResponse> =>
-    shopApi.get('/products'),
+    api.get('/products/external'),
 };
 
 // Blogs API
