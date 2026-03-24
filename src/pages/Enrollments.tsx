@@ -5,7 +5,7 @@ import { Loader2, User, Mail, Phone, MapPin, Globe, Building2, CheckCircle, Info
 import { enrollmentsAPI } from '../services/api';
 import Swal from 'sweetalert2';
 import ImageUpload from '../components/ImageUpload';
-import { useLocation } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 
 interface EnrollmentForm {
   firstName: string;
@@ -19,6 +19,7 @@ interface EnrollmentForm {
 }
 
 const Enrollments: React.FC = () => {
+  const navigate = useNavigate();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitStatus, setSubmitStatus] = useState('');
   const [submitMessage, setSubmitMessage] = useState('');
@@ -139,6 +140,11 @@ const Enrollments: React.FC = () => {
         interests: [],
       });
       setCompanyLogoFiles([]);
+
+      // Redirect to login after a short delay
+      setTimeout(() => {
+        navigate('/login');
+      }, 3000);
 
     } catch (error: any) {
       const errMsg = error?.response?.data?.error || error?.message || 'Erreur lors de la soumission';
