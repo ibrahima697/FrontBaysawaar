@@ -2,8 +2,8 @@ import axios, { AxiosResponse } from 'axios';
 
 // Création d'une instance d'axios avec une configuration de base
 const api = axios.create({
-  baseURL: import.meta.env.VITE_API_URL || (import.meta.env.DEV ? '/api' : 'https://api.fabiratrading.com/api'),
-  timeout: 120000,
+  baseURL: import.meta.env.VITE_API_URL || (import.meta.env.DEV ? '/api' : 'https://api-shop.fabiratrading.com/api'),
+  timeout: 120000, // 2 minutes
   headers: {
     'Content-Type': 'application/json',
   },
@@ -149,10 +149,6 @@ export const productsAPI = {
 
   deleteProduct: (id: string): Promise<AxiosResponse> =>
     api.delete(`/products/${id}`),
-
-  // Get products from the external Shop site via our own backend proxy (to avoid CORS)
-  getExternalProducts: (): Promise<AxiosResponse> =>
-    api.get('/products/external'),
 };
 
 // Blogs API

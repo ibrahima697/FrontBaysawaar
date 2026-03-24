@@ -31,28 +31,21 @@ const ProductCarousel = () => {
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
 
-  // Charger les produits depuis l'API externe du site E-commerce
+  // Charger les produits depuis l'API
   useEffect(() => {
     const fetchProducts = async () => {
       try {
         setLoading(true);
-        const response = await productsAPI.getExternalProducts();
-        
-        // Gérer le format de réponse (Tableau direct ou Objet avec clé 'products')
-        const rawData = response.data;
-        const productsData = Array.isArray(rawData) ? rawData : (rawData.products || []);
-        
-        // Filtrer les produits valides (doivent avoir un nom et idéalement une image)
-        const activeProducts = productsData.map((p: any) => ({
-          ...p,
-          _id: p.id || p._id, // Mapper id vers _id pour la compatibilité
-          images: p.images || (p.image ? [{ url: p.image }] : []), // Gérer différents formats d'images
-        })).filter((p: any) => p.name && p._id);
-
+        const response = await productsAPI.getAllProducts();
+        const productsData = response.data.products || [];
+        // Filtrer seulement les produits actifs et avec des images
+        const activeProducts = productsData.filter((product: Product) =>
+          product.isActive && product.images && product.images.length > 0
+        );
         setProducts(activeProducts);
       } catch (error) {
-        console.error('Erreur lors du chargement des produits externes:', error);
-        // Fallback statique
+        console.error('Erreur lors du chargement des produits:', error);
+        // Fallback vers des produits statiques en cas d'erreur
         setProducts([
           {
             _id: '1',
@@ -82,6 +75,16 @@ const ProductCarousel = () => {
     fetchProducts();
   }, []);
 
+  // Timer pour le carrousel automatique
+  useEffect(() => {
+    if (products.length === 0) return;
+
+    const timer = setInterval(() => {
+      setCurrentSlide((prev) => (prev + 1) % products.length);
+    }, 10000);
+    return () => clearInterval(timer);
+  }, [products.length]);
+
   const nextSlide = () => {
     if (products.length === 0) return;
     setCurrentSlide((prev) => (prev + 1) % products.length);
@@ -98,11 +101,8 @@ const ProductCarousel = () => {
 
   const handleExploreClick = () => {
     if (products.length > 0 && products[currentSlide]) {
-      const product = products[currentSlide];
-      // Redirige vers la page du produit sur le site shop.fabiratrading.com
-      const productId = product._id || (product as any).id;
-      const shopUrl = `https://shop.fabiratrading.com/products/${productId}`;
-      window.open(shopUrl, '_blank');
+      setSelectedProduct(products[currentSlide]);
+      setIsModalOpen(true);
     }
   };
 
