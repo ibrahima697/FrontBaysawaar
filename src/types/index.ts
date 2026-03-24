@@ -99,6 +99,7 @@ export interface Product {
     }>;
     specifications: Record<string, any> | { name: string; value: string }[];
     tags: string[];
+    externalUrl?: string;
     isActive: boolean;
     createdAt: string;
     updatedAt: string;

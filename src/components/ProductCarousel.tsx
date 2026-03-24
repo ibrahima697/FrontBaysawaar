@@ -19,6 +19,7 @@ interface Product {
     url: string;
     alt: string;
   }>;
+  externalUrl?: string; // Optinal link for external products
   isActive: boolean;
   createdAt: string;
   updatedAt: string;
@@ -101,8 +102,13 @@ const ProductCarousel = () => {
 
   const handleExploreClick = () => {
     if (products.length > 0 && products[currentSlide]) {
-      setSelectedProduct(products[currentSlide]);
-      setIsModalOpen(true);
+      const product = products[currentSlide];
+      if (product.externalUrl) {
+        window.open(product.externalUrl, '_blank', 'noopener,noreferrer');
+      } else {
+        setSelectedProduct(product);
+        setIsModalOpen(true);
+      }
     }
   };
 

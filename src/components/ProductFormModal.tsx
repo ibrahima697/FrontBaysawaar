@@ -32,6 +32,7 @@ const ProductFormModal: React.FC<ProductFormModalProps> = ({
     brand: '',
     stock: '',
     tags: '',
+    externalUrl: '',
     isActive: true
   });
 
@@ -45,6 +46,7 @@ const ProductFormModal: React.FC<ProductFormModalProps> = ({
         brand: product.brand || '',
         stock: product.stock?.toString() || '',
         tags: product.tags?.join(', ') || '',
+        externalUrl: product.externalUrl || '',
         isActive: product.isActive ?? true
       });
       // Handle legacy or correct format
@@ -65,6 +67,7 @@ const ProductFormModal: React.FC<ProductFormModalProps> = ({
         brand: '',
         stock: '',
         tags: '',
+        externalUrl: '',
         isActive: true
       });
       setSpecList([]);
@@ -130,6 +133,7 @@ const ProductFormModal: React.FC<ProductFormModalProps> = ({
       submitData.append('stock', formData.stock || '0');
       submitData.append('specifications', JSON.stringify(specList));
       submitData.append('tags', formData.tags);
+      submitData.append('externalUrl', formData.externalUrl);
       submitData.append('isActive', formData.isActive.toString());
 
       // Ajouter les images
@@ -320,7 +324,6 @@ const ProductFormModal: React.FC<ProductFormModalProps> = ({
                 />
               </div>
             </div>
-
             {/* Tags */}
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">
@@ -334,6 +337,22 @@ const ProductFormModal: React.FC<ProductFormModalProps> = ({
                 placeholder="ex: premium, qualité, durable"
                 className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
               />
+            </div>
+
+            {/* External URL */}
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                URL Externe (Lien vers le site e-commerce)
+              </label>
+              <input
+                type="url"
+                name="externalUrl"
+                value={formData.externalUrl}
+                onChange={handleInputChange}
+                placeholder="https://shop.fabiratrading.com/product/..."
+                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
+              />
+              <p className="text-gray-400 text-xs mt-1">Si renseigné, le bouton "Explorer l'excellence" redirigera vers ce lien.</p>
             </div>
 
             {/* Specifications */}
