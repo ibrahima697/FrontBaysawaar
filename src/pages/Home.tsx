@@ -1,21 +1,38 @@
 import { motion } from 'framer-motion';
 import { Link } from 'react-router-dom';
-import { ArrowRight, Users, Globe, TrendingUp, Star, ShoppingCart, Building2, Handshake, Quote, Check, BookOpen } from 'lucide-react';
+import { ArrowRight, Users, Globe, TrendingUp, Star, ShoppingCart, Quote, Check, BookOpen } from 'lucide-react';
 import ProductCarousel from '../components/ProductCarousel';
 import TestimonialSlider from '../components/TestimonialSlider';
+
+const CardLink = ({ card, children, className }: { card: any, children: React.ReactNode, className: string }) => {
+  if (card.isExternal) {
+    return (
+      <a href={card.path} target="_blank" rel="noopener noreferrer" className={className}>
+        {children}
+      </a>
+    );
+  }
+  return (
+    <Link to={card.path} className={className}>
+      {children}
+    </Link>
+  );
+};
 
 const Home = () => {
   const quickAccessCards = [
     {
-      title: 'A propos de BAY SA WAAR',
-      subtitle: 'NOTRE HISTOIRE',
-      description: 'Apprenez-en plus sur notre mission, notre vision et notre engagement.',
-      icon: Building2,
-      path: '/about',
-      color: 'from-green-500 to-emerald-600',
-      glow: 'shadow-green-500/20',
-      accent: 'text-green-600',
-      features: ['Mission Clé', 'Vision 2030', 'Engagement'],
+      title: 'Site E-commerce',
+      subtitle: 'VENTE EN LIGNE',
+      description: 'Découvrez notre plateforme de vente en ligne pour les produits africains.',
+      icon: ShoppingCart,
+      path: 'https://shop.fabiratrading.com/',
+      isExternal: true,
+      color: 'from-blue-600 to-indigo-700',
+      glow: 'shadow-blue-500/20',
+      accent: 'text-blue-600',
+      features: ['Boutiques Perso', 'Paiements Sécurisés', 'Logistique'],
+      buttonText: 'Allez sur le site',
     },
     {
       title: 'Nos Événements',
@@ -27,6 +44,7 @@ const Home = () => {
       glow: 'shadow-blue-500/20',
       accent: 'text-blue-600',
       features: ['Sommet FIPA', 'Webinaires', 'Networking'],
+      buttonText: 'En savoir plus',
     },
     {
       title: 'Nos Activités',
@@ -38,6 +56,7 @@ const Home = () => {
       glow: 'shadow-purple-500/20',
       accent: 'text-purple-600',
       features: ['Formations', 'Accompagnement', 'Projets'],
+      buttonText: 'En savoir plus',
     },
     {
       title: 'Blog & Actualités',
@@ -49,6 +68,7 @@ const Home = () => {
       glow: 'shadow-orange-500/20',
       accent: 'text-orange-600',
       features: ['Articles récents', 'Success Stories', 'Événements'],
+      buttonText: 'En savoir plus',
     },
   ];
 
@@ -344,7 +364,7 @@ const Home = () => {
                 viewport={{ once: true }}
                 className="group relative"
               >
-                <Link to={card.path} className="block h-full">
+                <CardLink card={card} className="block h-full">
                   {/* Main Card Structure */}
                   <div className={`h-full bg-white/40 backdrop-blur-xl rounded-[2.5rem] border border-gray-100 p-8 shadow-2xl transition-all duration-500 group-hover:-translate-y-4 hover:shadow-xl relative overflow-hidden ${card.glow}`}>
 
@@ -382,13 +402,13 @@ const Home = () => {
                     </div>
 
                     <div className="flex items-center justify-center md:justify-start text-green-600 font-bold text-xs uppercase tracking-widest group/btn">
-                      <span className="mr-2">En savoir plus</span>
+                      <span className="mr-2">{card.buttonText}</span>
                       <ArrowRight size={16} className="group-hover/btn:translate-x-1 transition-transform" />
                     </div>
                   </div>
                   {/* Visual Accent Glow Backdrop */}
                   <div className={`absolute -inset-1 bg-gradient-to-br ${card.color} rounded-[2.8rem] blur-2xl opacity-0 group-hover:opacity-[0.12] transition-opacity -z-10`} />
-                </Link>
+                </CardLink>
               </motion.div>
             ))}
           </div>

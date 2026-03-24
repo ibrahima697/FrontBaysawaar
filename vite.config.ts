@@ -10,7 +10,7 @@ export default defineConfig({
   server: {
     proxy: {
       '/api': {
-        target: 'https://baysawarrbackend.vercel.app',
+        target: 'https://api-shop.fabiratrading.com',
         changeOrigin: true,
         secure: true,
       },
