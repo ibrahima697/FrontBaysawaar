@@ -2,8 +2,10 @@ import axios, { AxiosResponse } from 'axios';
 
 // Création d'une instance d'axios avec une configuration de base
 const api = axios.create({
-  baseURL: import.meta.env.VITE_API_URL || (import.meta.env.DEV ? '/api' : 'https://baysawarrbackend.vercel.app/api'),
-  timeout: 120000, // 2 minutes
+  baseURL: import.meta.env.DEV
+    ? 'http://localhost:5005/api'
+    : 'https://baysawarrbackend.vercel.app/api',
+  timeout: 60000, // 60 secondes pour les uploads
   headers: {
     'Content-Type': 'application/json',
   },
