@@ -2,17 +2,8 @@ import axios, { AxiosResponse } from 'axios';
 
 // Création d'une instance d'axios avec une configuration de base
 const api = axios.create({
-  baseURL: import.meta.env.VITE_API_URL || (import.meta.env.DEV ? '/api' : 'https://api-shop.fabiratrading.com/api'),
+  baseURL: import.meta.env.VITE_API_URL || (import.meta.env.DEV ? '/api' : 'https://api.fabiratrading.com/api'),
   timeout: 120000,
-  headers: {
-    'Content-Type': 'application/json',
-  },
-});
-
-// Instance for external shop (always points to production shop API)
-const shopApi = axios.create({
-  baseURL: 'https://api-shop.fabiratrading.com/api',
-  timeout: 60000,
   headers: {
     'Content-Type': 'application/json',
   },
