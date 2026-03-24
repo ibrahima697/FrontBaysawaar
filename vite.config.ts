@@ -10,7 +10,7 @@ export default defineConfig({
   server: {
     proxy: {
       '/api': {
-        target: 'https://bayysawaarback-production.up.railway.app',
+        target: 'https://baysawarrbackend.vercel.app',
         changeOrigin: true,
         secure: true,
       },
