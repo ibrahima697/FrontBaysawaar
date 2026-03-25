@@ -302,7 +302,8 @@ const EventFormModal: React.FC<Props> = ({ isOpen, onClose, event, onEventSaved 
 
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div>
-                            <label className="block text-sm font-medium mb-1">Prix Membre (€)</label>
+                            <label className="block text-sm font-medium mb-1">Prix Membre (FCFA)</label>
+
                             <input
                                 type="number"
                                 value={form.priceMember}
@@ -312,7 +313,8 @@ const EventFormModal: React.FC<Props> = ({ isOpen, onClose, event, onEventSaved 
                             />
                         </div>
                         <div>
-                            <label className="block text-sm font-medium mb-1">Prix Non-Membre (€)</label>
+                            <label className="block text-sm font-medium mb-1">Prix Non-Membre (FCFA)</label>
+
                             <input
                                 type="number"
                                 value={form.priceNonMember}

@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { X, Tag, Package, Box, MessageCircle, ExternalLink, ShieldCheck, Truck, ChevronRight } from 'lucide-react';
+import { X, Package, Box, MessageCircle, ChevronRight } from 'lucide-react';
 import { Product } from '../types';
 
 interface ProductModalProps {
@@ -15,12 +15,9 @@ const ProductModal = ({ product, isOpen, onClose }: ProductModalProps) => {
   if (!product) return null;
 
   const formatPrice = (price: number) => {
-    return new Intl.NumberFormat('fr-FR', {
-      style: 'currency',
-      currency: 'XOF',
-      minimumFractionDigits: 0,
-    }).format(price);
+    return new Intl.NumberFormat('fr-FR').format(price) + ' FCFA';
   };
+
 
   const handleWhatsAppEnquiry = () => {
     const message = `Bonjour, je suis intéressé par le produit "${product.name}" vu sur BAY SA WARR. Pouvez-vous me donner plus d'informations ?`;

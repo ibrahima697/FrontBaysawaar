@@ -1675,7 +1675,7 @@ const AdminDashboard = () => {
                           </td>
                           <td className="px-6 py-4 whitespace-nowrap">
                             <span className="text-sm font-semibold text-gray-900 bg-green-50 text-green-700 px-2 py-1 rounded-lg">
-                              {product.price.toFixed(2)} €
+                              {product.price.toLocaleString('fr-FR')} FCFA
                             </span>
                           </td>
                           <td className="px-6 py-4 whitespace-nowrap">

@@ -258,7 +258,7 @@ const ProductFormModal: React.FC<ProductFormModalProps> = ({
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Prix (€) *
+                  Prix (FCFA) *
                 </label>
                 <input
                   type="number"

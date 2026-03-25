@@ -118,12 +118,9 @@ const ProductCarousel = () => {
   };
 
   const formatPrice = (price: number) => {
-    return new Intl.NumberFormat('fr-FR', {
-      style: 'currency',
-      currency: 'XOF',
-      minimumFractionDigits: 0,
-    }).format(price);
+    return new Intl.NumberFormat('fr-FR').format(price) + ' FCFA';
   };
+
 
   if (loading) {
     return (

@@ -193,7 +193,7 @@ const FormationFormModal: React.FC<Props> = ({ isOpen, onClose, formation, onFor
             </div>
           </div>
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Prix pour Non-Membres (en CFA)</label>
+            <label className="block text-sm font-medium text-gray-700 mb-1">Prix pour Non-Membres (FCFA)</label>
             <input
               type="number"
               name="priceNonMember"
