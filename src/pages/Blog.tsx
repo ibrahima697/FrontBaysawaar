@@ -53,32 +53,36 @@ const Blog = () => {
     }
   };
 
-  const categories = [
-    { id: 'all', name: 'Tous les Articles', count: blogs.length },
-    { id: 'business', name: 'Stratégie d\'Entreprise', count: blogs.filter(b => b.category === 'business').length },
-    { id: 'technology', name: 'Technologie', count: blogs.filter(b => b.category === 'technology').length },
-    { id: 'market', name: 'Aperçu du Marché', count: blogs.filter(b => b.category === 'market').length },
-    { id: 'success', name: 'Histoires de Réussite', count: blogs.filter(b => b.category === 'success').length }
-  ];
-
   // Filtrer les blogs publiés
   const publishedBlogs = blogs.filter(blog => blog.isPublished);
-  
-  // Premier blog comme article en vedette
-  const featuredPost = publishedBlogs[0];
 
-  // Autres blogs
-  const posts = publishedBlogs.slice(1);
+  // Extraire les tags dynamiquement à partir des blogs publiés
+  const categories = [
+    { id: 'all', name: 'Tous les Articles', count: publishedBlogs.length },
+    ...Array.from(new Set(publishedBlogs.flatMap(post => post.tags || [])))
+      .map(tag => ({
+        id: tag,
+        name: tag,
+        count: publishedBlogs.filter(post => post.tags?.includes(tag)).length
+      }))
+      .sort((a, b) => b.count - a.count)
+  ];
 
-  const filteredPosts = posts.filter(post => {
+  // Filtrer les blogs en fonction de la recherche et du tag sélectionné
+  const filteredBlogs = publishedBlogs.filter(post => {
     const matchesSearch = post.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                         post.content.toLowerCase().includes(searchQuery.toLowerCase());
-    const matchesCategory = selectedCategory === 'all' || 
-                           post.category.toLowerCase().replace(' ', '') === selectedCategory;
-    return matchesSearch && matchesCategory;
+                         post.content.toLowerCase().includes(searchQuery.toLowerCase()) ||
+                         post.tags?.some(tag => tag.toLowerCase().includes(searchQuery.toLowerCase()));
+    
+    // Si selectedCategory est 'all', on accepte tout. Sinon on vérifie si le tag est présent.
+    const matchesTag = selectedCategory === 'all' || 
+                       (post.tags && post.tags.includes(selectedCategory));
+    
+    return matchesSearch && matchesTag;
   });
 
-  const sortedPosts = [...filteredPosts].sort((a, b) => {
+  // Trier les blogs filtrés avant de les séparer
+  const sortedFilteredBlogs = [...filteredBlogs].sort((a, b) => {
     if (sortBy === 'latest') {
       return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
     } else if (sortBy === 'oldest') {
@@ -88,6 +92,14 @@ const Blog = () => {
     }
     return 0;
   });
+
+  // Article à la Une : le premier de la liste triée
+  const featuredPost = sortedFilteredBlogs[0];
+
+  // Autres articles pour la grille : le reste de la liste triée
+  const sortedPosts = sortedFilteredBlogs.slice(1);
+
+
 
   const getCategoryColor = (category: string) => {
     const colors = {
@@ -136,6 +148,7 @@ const Blog = () => {
       </section>
 
       {/* Featured Article */}
+      {featuredPost && (
       <section className="py-12 sm:py-16 bg-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <motion.div
@@ -201,6 +214,7 @@ const Blog = () => {
           </motion.div>
         </div>
       </section>
+      )}
 
       {/* Filters and Search */}
       <section className="py-6 sm:py-8 bg-gray-50">
@@ -213,10 +227,10 @@ const Blog = () => {
                 <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" size={20} />
                 <input
                   type="text"
-                  placeholder="Rechercher des articles..."
+                  placeholder="Rechercher des articles par titre, contenu ou tags..."
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent text-base bg-white transition"
+                  className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent text-base bg-white transition shadow-sm"
                 />
               </div>
             </div>
