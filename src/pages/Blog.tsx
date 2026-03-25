@@ -60,6 +60,7 @@ const Blog = () => {
   const categories = [
     { id: 'all', name: 'Tous les Articles', count: publishedBlogs.length },
     ...Array.from(new Set(publishedBlogs.flatMap(post => post.tags || [])))
+      .filter(tag => tag && tag.trim().length > 0) // Supprimer les tags vides ou uniquement composés d'espaces
       .map(tag => ({
         id: tag,
         name: tag,
