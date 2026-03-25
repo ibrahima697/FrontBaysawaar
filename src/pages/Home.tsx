@@ -1,6 +1,7 @@
 import { motion } from 'framer-motion';
 import { Link } from 'react-router-dom';
-import { ArrowRight, Users, Globe, TrendingUp, Star, ShoppingCart, Quote, Check, BookOpen } from 'lucide-react';
+import { ArrowRight, Users, Globe, TrendingUp, Star, ShoppingCart, Quote, Check, BookOpen, LayoutDashboard } from 'lucide-react';
+import { useAuth } from '../context/AuthContext';
 import ProductCarousel from '../components/ProductCarousel';
 import TestimonialSlider from '../components/TestimonialSlider';
 
@@ -20,6 +21,7 @@ const CardLink = ({ card, children, className }: { card: any, children: React.Re
 };
 
 const Home = () => {
+  const { token } = useAuth();
   const quickAccessCards = [
     {
       title: 'Site E-commerce',
@@ -179,13 +181,23 @@ const Home = () => {
               transition={{ delay: 0.6, duration: 0.8 }}
               className="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center"
             >
-              <Link
-                to="/enrollments"
-                className="bg-green-600 text-white px-6 sm:px-8 py-3 sm:py-4 rounded-full font-semibold hover:bg-green-700 transition-all duration-300 flex items-center justify-center space-x-2 shadow-lg hover:shadow-xl"
-              >
-                <span>Rejoignez notre réseau</span>
-                <ArrowRight size={20} />
-              </Link>
+              {token ? (
+                <Link
+                  to="/dashboard"
+                  className="bg-green-600 text-white px-6 sm:px-8 py-3 sm:py-4 rounded-full font-semibold hover:bg-green-700 transition-all duration-300 flex items-center justify-center space-x-2 shadow-lg hover:shadow-xl"
+                >
+                  <span>Mon Tableau de Bord</span>
+                  <LayoutDashboard size={20} />
+                </Link>
+              ) : (
+                <Link
+                  to="/enrollments"
+                  className="bg-green-600 text-white px-6 sm:px-8 py-3 sm:py-4 rounded-full font-semibold hover:bg-green-700 transition-all duration-300 flex items-center justify-center space-x-2 shadow-lg hover:shadow-xl"
+                >
+                  <span>Rejoignez notre réseau</span>
+                  <ArrowRight size={20} />
+                </Link>
+              )}
               <Link
                 to="/events"
                 className="bg-white text-green-600 border-2 border-green-600 px-6 sm:px-8 py-3 sm:py-4 rounded-full font-semibold hover:bg-green-50 transition-all duration-300 flex items-center justify-center space-x-2"

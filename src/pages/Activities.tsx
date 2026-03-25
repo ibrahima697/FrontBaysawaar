@@ -22,38 +22,41 @@ const Activities = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    const userId = user?._id || user?.id;
-    if (!userId || !token) {
-      setLoading(false);
-      return;
-    }
-
     const fetchFormations = async () => {
       try {
+        setLoading(true);
         const res = await formationsAPI.getAll();
         const allFormations: Formation[] = res.data.formations || [];
         setFormations(allFormations);
 
-        // On recalcule proprement les états
-        const registered = new Set<string>();
-        const approved = new Set<string>();
-        const rejected = new Set<string>();
+        const userId = user?._id || user?.id;
+        if (userId && token) {
+          // On recalcule proprement les états seulement si l'utilisateur est connecté
+          const registered = new Set<string>();
+          const approved = new Set<string>();
+          const rejected = new Set<string>();
 
-        allFormations.forEach(f => {
-          const userReg = f.registrations?.find(r => String(r.userId) === String(userId));
-          if (userReg) {
-            registered.add(f._id);
-            if (userReg.status === 'approved') {
-              approved.add(f._id);
-            } else if (userReg.status === 'rejected') {
-              rejected.add(f._id);
+          allFormations.forEach(f => {
+            const userReg = f.registrations?.find(r => String(r.userId) === String(userId));
+            if (userReg) {
+              registered.add(f._id);
+              if (userReg.status === 'approved') {
+                approved.add(f._id);
+              } else if (userReg.status === 'rejected') {
+                rejected.add(f._id);
+              }
             }
-          }
-        });
+          });
 
-        setRegisteredFormationIds(registered);
-        setApprovedFormationIds(approved);
-        setRejectedFormationIds(rejected);
+          setRegisteredFormationIds(registered);
+          setApprovedFormationIds(approved);
+          setRejectedFormationIds(rejected);
+        } else {
+          // Reset states if no user
+          setRegisteredFormationIds(new Set());
+          setApprovedFormationIds(new Set());
+          setRejectedFormationIds(new Set());
+        }
       } catch (err) {
         console.error("Erreur chargement formations :", err);
       } finally {
