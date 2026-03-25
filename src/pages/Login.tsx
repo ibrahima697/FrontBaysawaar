@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { motion } from 'framer-motion';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { Eye, EyeOff, Mail, Lock, ArrowRight, ShieldCheck, ArrowLeft } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 
@@ -8,13 +8,15 @@ const Login = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
-  const [rememberMe, setRememberMe] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
   const [willClearFields, setWillClearFields] = useState(false);
 
   const { login } = useAuth();
   const navigate = useNavigate();
+  const location = useLocation();
+
+  const from = location.state?.from || '/dashboard';
 
   const handleEmailChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setEmail(e.target.value);
@@ -50,7 +52,7 @@ const Login = () => {
     try {
       const success = await login(email.trim(), password);
       if (success) {
-        navigate('/dashboard');
+        navigate(from);
       }
     } catch (err: any) {
       // Improved error handling
@@ -313,7 +315,7 @@ const Login = () => {
             - En dessous du formulaire sur mobile
             - À gauche en sticky sur desktop */}
         <button
-          onClick={() => navigate('/')}
+          onClick={() => navigate(location.state?.from || -1)}
           aria-label="Retour"
           className={`
             flex items-center justify-center

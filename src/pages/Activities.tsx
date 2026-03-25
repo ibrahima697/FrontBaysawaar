@@ -68,7 +68,7 @@ const Activities = () => {
   }, [user, token]);
   const handleRegister = async (formationId: string) => {
     if (!token) {
-      navigate('/login');
+      navigate('/login', { state: { from: '/activities' } });
       return;
     }
 
