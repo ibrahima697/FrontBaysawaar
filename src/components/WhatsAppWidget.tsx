@@ -1,5 +1,5 @@
 import { motion, AnimatePresence } from 'framer-motion';
-import { useState } from 'react';
+import { useState, useRef } from 'react';
 
 const WhatsAppIcon = ({ size = 24, className = "" }: { size?: number, className?: string }) => (
     <svg
@@ -15,16 +15,33 @@ const WhatsAppIcon = ({ size = 24, className = "" }: { size?: number, className?
 
 const WhatsAppWidget = () => {
     const [showTooltip, setShowTooltip] = useState(false);
+    const isDragging = useRef(false);
     const phoneNumber = "221786349573";
     const message = "Bonjour ! J'aimerais en savoir plus sur Baysawaar.";
 
     const handleWhatsAppClick = () => {
+        if (isDragging.current) return;
         const url = `https://wa.me/${phoneNumber}?text=${encodeURIComponent(message)}`;
         window.open(url, '_blank');
     };
 
     return (
-        <div className="fixed bottom-8 right-8 z-[9999] flex flex-col items-end gap-4">
+        <motion.div 
+            drag
+            dragConstraints={{ 
+                left: -window.innerWidth + 100, 
+                right: 0, 
+                top: -window.innerHeight + 100, 
+                bottom: 0 
+            }}
+            dragElastic={0.1}
+            whileDrag={{ scale: 1.05 }}
+            onDragStart={() => (isDragging.current = true)}
+            onDragEnd={() => {
+                setTimeout(() => (isDragging.current = false), 100);
+            }}
+            className="fixed bottom-8 right-8 z-[9999] flex flex-col items-end gap-2 cursor-grab active:cursor-grabbing"
+        >
             <AnimatePresence>
                 {showTooltip && (
                     <motion.div
@@ -49,13 +66,11 @@ const WhatsAppWidget = () => {
                 onClick={handleWhatsAppClick}
                 className="bg-[#25D366] text-white p-4 rounded-full shadow-[0_10px_40px_rgba(37,211,102,0.4)] hover:shadow-[0_15px_50px_rgba(37,211,102,0.6)] transition-all duration-300 group relative flex items-center justify-center w-16 h-16"
             >
-
                 <WhatsAppIcon size={40} className="relative z-10" />
-
                 {/* Pulse effect */}
                 <span className="absolute inset-0 rounded-full bg-[#25D366] opacity-40 animate-ping" />
             </motion.button>
-        </div>
+        </motion.div>
     );
 };
 

@@ -191,12 +191,31 @@ const Footer = () => {
           </div>
         </div>
 
-        {/* Footer Bottom */}
         <div className="flex flex-col md:flex-row justify-between items-center pt-6 border-t border-white/10 text-center md:text-left">
           <p className="text-gray-400 text-sm">
             © {new Date().getFullYear()} BAY SA WAAR
           </p>
 
+          <p className="text-xs text-white/40 flex items-center gap-1">
+            © Fait au Sénégal par{" "}
+            <a 
+              href="https://www.linkedin.com/in/ahmady-ibrahima-guisse-a7a198152" 
+              target="_blank" 
+              rel="noopener noreferrer"
+              className="hover:text-green-400 transition-colors underline decoration-green-400/30 underline-offset-2"
+            >
+              Ibrahima Guissé
+            </a>
+            {" "} & {" "}
+            <a 
+              href="https://www.linkedin.com/in/ndiaga-l-4a7581139/" 
+              target="_blank" 
+              rel="noopener noreferrer"
+              className="hover:text-green-400 transition-colors underline decoration-green-400/30 underline-offset-2"
+            >
+              Sohntech
+            </a>
+          </p>
         </div>
       </div>
     </footer>
