@@ -256,9 +256,11 @@ export const eventsAPI = {
 
   create: (data: EventData | FormData) => api.post('/events', data, {
     headers: { 'Content-Type': data instanceof FormData ? undefined : 'application/json' },
+    timeout: 120000,
   }),
   update: (id: string, data: EventData | FormData) => api.put(`/events/${id}`, data, {
     headers: { 'Content-Type': data instanceof FormData ? undefined : 'application/json' },
+    timeout: 120000,
   }),
   delete: (id: string) => api.delete(`/events/${id}`),
   register: (slug: string) => api.post(`/events/${slug}/register`),
