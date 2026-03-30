@@ -902,8 +902,8 @@ const AdminDashboard = () => {
                     <p className="text-gray-500 mt-1">Gérez et suivez les demandes d'inscription</p>
                   </div>
 
-                  <div className="flex flex-col sm:flex-row gap-3">
-                    <div className="relative group">
+                  <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
+                    <div className="relative group flex-1 sm:flex-initial">
                       <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 group-focus-within:text-green-500 transition-colors" />
                       <input
                         type="text"
@@ -916,12 +916,12 @@ const AdminDashboard = () => {
                         className="pl-10 pr-4 py-2 bg-white border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-green-500/20 focus:border-green-500 transition-all w-full sm:w-64"
                       />
                     </div>
-                    <div className="flex bg-gray-100 p-1 rounded-xl">
+                    <div className="flex bg-gray-100 p-1 rounded-xl overflow-x-auto min-w-0 flex-nowrap no-scrollbar scroll-smooth">
                       {['all', 'pending', 'approved', 'rejected'].map((status) => (
                         <button
                           key={status}
                           onClick={() => setFilter(status as any)}
-                          className={`px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 capitalize ${filter === status
+                          className={`px-3 sm:px-4 py-2 rounded-lg text-xs sm:text-sm font-bold transition-all duration-200 capitalize whitespace-nowrap flex-shrink-0 ${filter === status
                             ? 'bg-white text-gray-900 shadow-sm'
                             : 'text-gray-500 hover:text-gray-700'
                             }`}
