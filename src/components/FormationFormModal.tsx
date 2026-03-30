@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react';
 import { formationsAPI } from '../services/api';
 import Swal from 'sweetalert2';
-import { X } from 'lucide-react';
+import { X, Loader2 } from 'lucide-react';
 
 interface Formation {
   _id?: string;
@@ -27,6 +27,7 @@ interface Props {
 
 const FormationFormModal: React.FC<Props> = ({ isOpen, onClose, formation, onFormationSaved }) => {
   const [errors, setErrors] = useState<Record<string, string>>({});
+  const [isLoading, setIsLoading] = useState(false);
   const [form, setForm] = useState<Formation>({
     title: '',
     description: '',
@@ -85,6 +86,7 @@ const FormationFormModal: React.FC<Props> = ({ isOpen, onClose, formation, onFor
     }
 
     try {
+      setIsLoading(true);
       // Nettoyer les données avant envoi pour éviter d'envoyer registrations/enrolledUsers qui causent des erreurs 400
       const { _id, registrations, enrolledUsers, __v, createdAt, updatedAt, ...cleanForm } = form as any;
       const payload = {
@@ -104,6 +106,8 @@ const FormationFormModal: React.FC<Props> = ({ isOpen, onClose, formation, onFor
     } catch (err: any) {
       console.error(err);
       Swal.fire('Erreur', err.response?.data?.message || 'Impossible de sauvegarder', 'error');
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -226,9 +230,13 @@ const FormationFormModal: React.FC<Props> = ({ isOpen, onClose, formation, onFor
           <div className="flex gap-3 mt-6">
             <button
               type="submit"
-              className="flex-1 bg-green-600 text-white py-3 rounded-lg hover:bg-green-700 font-medium transition"
+              disabled={isLoading}
+              className="flex-1 bg-green-600 text-white py-3 rounded-lg hover:bg-green-700 font-medium transition disabled:bg-green-400 disabled:cursor-not-allowed flex items-center justify-center gap-2"
             >
-              {formation?._id ? 'Mettre à jour' : 'Créer la formation'}
+              {isLoading && <Loader2 className="w-5 h-5 animate-spin" />}
+              {formation?._id 
+                ? (isLoading ? 'Mise à jour...' : 'Mettre à jour') 
+                : (isLoading ? 'Création...' : 'Créer la formation')}
             </button>
             <button
               type="button"

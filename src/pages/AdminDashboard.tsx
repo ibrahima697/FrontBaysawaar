@@ -1482,10 +1482,14 @@ const AdminDashboard = () => {
                               handleToggleHero(event);
                             }}
                             disabled={event._id ? processingIds.has(event._id) : false}
-                            className={`flex items-center justify-center p-2 rounded-full transition-all shadow-lg backdrop-blur-sm ${event.isFeatured ? 'bg-yellow-400 text-yellow-900 border-2 border-yellow-200' : 'bg-white/90 text-gray-400 hover:text-yellow-500 hover:bg-white'}`}
+                            className={`flex items-center justify-center p-2 rounded-full transition-all shadow-lg backdrop-blur-sm ${event.isFeatured ? 'bg-yellow-400 text-yellow-900 border-2 border-yellow-200' : 'bg-white/90 text-gray-400 hover:text-yellow-500 hover:bg-white'} disabled:opacity-50 disabled:cursor-not-allowed`}
                             title={event.isFeatured ? "Retirer du Hero" : "Mettre en Hero"}
                           >
-                            <Star className={`w-5 h-5 ${event.isFeatured ? 'fill-current' : ''}`} />
+                            {event._id && processingIds.has(event._id) ? (
+                              <Loader2 className="w-5 h-5 animate-spin" />
+                            ) : (
+                              <Star className={`w-5 h-5 ${event.isFeatured ? 'fill-current' : ''}`} />
+                            )}
                           </button>
                         )}
                       </div>

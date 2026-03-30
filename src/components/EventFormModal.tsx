@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react';
 import { eventsAPI } from '../services/api';
 import Swal from 'sweetalert2';
-import { X } from 'lucide-react';
+import { X, Loader2 } from 'lucide-react';
 import { EventData } from '../types';
 
 interface Props {
@@ -43,6 +43,7 @@ const EventFormModal: React.FC<Props> = ({ isOpen, onClose, event, onEventSaved 
     const [imageFile, setImageFile] = useState<File | null>(null);
     const [previewUrl, setPreviewUrl] = useState<string | null>(null);
     const [errors, setErrors] = useState<Record<string, string>>({});
+    const [isLoading, setIsLoading] = useState(false);
 
     useEffect(() => {
         if (event) {
@@ -119,6 +120,7 @@ const EventFormModal: React.FC<Props> = ({ isOpen, onClose, event, onEventSaved 
         }
 
         try {
+            setIsLoading(true);
             // Create mode OR Update with Image -> Use FormData
             const formDataToSubmit = new FormData();
             formDataToSubmit.append('title', form.title);
@@ -137,8 +139,6 @@ const EventFormModal: React.FC<Props> = ({ isOpen, onClose, event, onEventSaved 
             }
 
             if (event?._id) {
-                // If it's an update and no new image, we can technically still use FormData or JSON
-                // FormData is more robust here since the backend is already expecting it for create.
                 await eventsAPI.update(event._id, formDataToSubmit);
                 Swal.fire('Succès', 'Événement mis à jour', 'success');
             } else {
@@ -150,7 +150,10 @@ const EventFormModal: React.FC<Props> = ({ isOpen, onClose, event, onEventSaved 
             onClose();
         } catch (err: any) {
             console.error("API Error Details:", err);
-            Swal.fire('Erreur', err.response?.data?.message || 'Impossible de sauvegarder', 'error');
+            const message = err.response?.data?.message || err.response?.data?.error || 'Impossible de sauvegarder';
+            Swal.fire('Erreur', message, 'error');
+        } finally {
+            setIsLoading(false);
         }
     };
 
@@ -339,9 +342,13 @@ const EventFormModal: React.FC<Props> = ({ isOpen, onClose, event, onEventSaved 
                     <div className="flex gap-3 mt-6">
                         <button
                             type="submit"
-                            className="flex-1 bg-green-600 text-white py-3 rounded-lg hover:bg-green-700 font-medium transition"
+                            disabled={isLoading}
+                            className="flex-1 bg-green-600 text-white py-3 rounded-lg hover:bg-green-700 font-medium transition disabled:bg-green-400 disabled:cursor-not-allowed flex items-center justify-center gap-2"
                         >
-                            {event?._id ? 'Mettre à jour' : 'Créer l\'événement'}
+                            {isLoading && <Loader2 className="w-5 h-5 animate-spin" />}
+                            {event?._id 
+                                ? (isLoading ? 'Mise à jour...' : 'Mettre à jour') 
+                                : (isLoading ? 'Création...' : 'Créer l\'événement')}
                         </button>
                         <button
                             type="button"
