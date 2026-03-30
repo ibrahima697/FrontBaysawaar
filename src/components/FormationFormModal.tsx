@@ -85,11 +85,18 @@ const FormationFormModal: React.FC<Props> = ({ isOpen, onClose, formation, onFor
     }
 
     try {
+      // Nettoyer les données avant envoi pour éviter d'envoyer registrations/enrolledUsers qui causent des erreurs 400
+      const { _id, registrations, enrolledUsers, __v, createdAt, updatedAt, ...cleanForm } = form as any;
+      const payload = {
+        ...cleanForm,
+        date: new Date(form.date) // S'assurer que la date est envoyée correctement
+      };
+
       if (formation?._id) {
-        await formationsAPI.update(formation._id, form);
+        await formationsAPI.update(formation._id, payload);
         Swal.fire('Succès', 'Formation mise à jour', 'success');
       } else {
-        await formationsAPI.create(form);
+        await formationsAPI.create(payload);
         Swal.fire('Succès', 'Formation créée avec succès', 'success');
       }
       onFormationSaved();
