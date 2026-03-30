@@ -13,6 +13,8 @@ import {
   Pencil as PencilIcon,
   ChevronLeft,
   ChevronRight,
+  ChevronUp,
+  ChevronDown,
   Calendar,
   MapPin,
   Pencil,
@@ -21,7 +23,9 @@ import {
   Search,
   Filter,
   Star,
-  Eye
+  Eye,
+  CheckCircle as CheckCircleIcon,
+  XCircle as XCircleIcon
 } from 'lucide-react';
 import { adminAPI, productsAPI, blogsAPI, formationsAPI, eventsAPI } from '../services/api';
 import Swal from 'sweetalert2';
@@ -162,6 +166,19 @@ const AdminDashboard = () => {
   const [showEventDetailModal, setShowEventDetailModal] = useState(false);
   const [showEnrollmentFormModal, setShowEnrollmentFormModal] = useState(false);
   const [processingIds, setProcessingIds] = useState<Set<string>>(new Set());
+  const [expandedRows, setExpandedRows] = useState<Set<string>>(new Set());
+
+  const toggleRow = (id: string) => {
+    setExpandedRows(prev => {
+      const next = new Set(prev);
+      if (next.has(id)) {
+        next.delete(id);
+      } else {
+        next.add(id);
+      }
+      return next;
+    });
+  };
 
   const addProcessingId = (id: string) => {
     setProcessingIds(prev => new Set(prev).add(id));
@@ -208,7 +225,7 @@ const AdminDashboard = () => {
     try {
       const response = await formationsAPI.getAllAdmin();
       const data = response.data.formations || [];
-      setFormations([...data].sort((a, b) => 
+      setFormations([...data].sort((a, b) =>
         new Date(b.createdAt || 0).getTime() - new Date(a.createdAt || 0).getTime()
       ));
     } catch (error) {
@@ -251,7 +268,7 @@ const AdminDashboard = () => {
       const params = filter !== 'all' ? { status: filter } : {};
       const response = await adminAPI.getAllEnrollments(params);
       const data = response.data.enrollments || [];
-      setEnrollments([...data].sort((a, b) => 
+      setEnrollments([...data].sort((a, b) =>
         new Date(b.createdAt || 0).getTime() - new Date(a.createdAt || 0).getTime()
       ));
     } catch (error) {
@@ -271,7 +288,7 @@ const AdminDashboard = () => {
     try {
       const response = await productsAPI.getAllProducts();
       const data = response.data.products || [];
-      setProducts([...data].sort((a, b) => 
+      setProducts([...data].sort((a, b) =>
         new Date(b.createdAt || 0).getTime() - new Date(a.createdAt || 0).getTime()
       ));
     } catch (error) {
@@ -284,7 +301,7 @@ const AdminDashboard = () => {
     try {
       const response = await blogsAPI.getAllBlogs();
       const data = response.data.blogs || [];
-      setBlogs([...data].sort((a, b) => 
+      setBlogs([...data].sort((a, b) =>
         new Date(b.createdAt || 0).getTime() - new Date(a.createdAt || 0).getTime()
       ));
     } catch (error) {
@@ -297,7 +314,7 @@ const AdminDashboard = () => {
     try {
       const response = await eventsAPI.getAll();
       const data = response.data.events || [];
-      setEvents([...data].sort((a, b) => 
+      setEvents([...data].sort((a, b) =>
         new Date(b.createdAt || 0).getTime() - new Date(a.createdAt || 0).getTime()
       ));
     } catch (error) {
@@ -311,7 +328,7 @@ const AdminDashboard = () => {
       const response = await adminAPI.getAllUsers();
       // Le backend renvoie directement un tableau d'utilisateurs
       const userData = Array.isArray(response.data) ? response.data : (response.data.users || []);
-      setUsers([...userData].sort((a, b) => 
+      setUsers([...userData].sort((a, b) =>
         new Date(b.createdAt || 0).getTime() - new Date(a.createdAt || 0).getTime()
       ));
     } catch (error) {
@@ -953,85 +970,150 @@ const AdminDashboard = () => {
                           animate={{ opacity: 1, y: 0 }}
                           className="bg-white rounded-xl border border-gray-100 p-5 hover:border-green-200 hover:shadow-md transition-all duration-300"
                         >
-                          <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-6">
-                            {/* User Info */}
-                            <div className="flex-1">
-                              <div className="flex items-center justify-between lg:justify-start gap-4 mb-4">
-                                <span className={`inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold uppercase tracking-wide ${getTypeColor(enrollment.type)}`}>
-                                  {enrollment.type === 'partner' ? 'Partenaire' : 'Membre'}
-                                </span>
-                                <span className={`inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold uppercase tracking-wide ${getStatusColor(enrollment.status)}`}>
-                                  {enrollment.status === 'pending' ? 'En Attente' :
-                                    enrollment.status === 'approved' ? 'Approuvé' : 'Rejeté'}
-                                </span>
-                              </div>
-
-                              <div className="grid md:grid-cols-2 xl:grid-cols-4 gap-6">
-                                <div>
-                                  <label className="text-xs font-semibold text-gray-400 uppercase tracking-wider">Demandeur</label>
-                                  <p className="font-semibold text-gray-900 mt-1">{enrollment.firstName} {enrollment.lastName}</p>
-                                  <p className="text-sm text-gray-500">{enrollment.email}</p>
-                                </div>
-                                <div>
-                                  <label className="text-xs font-semibold text-gray-400 uppercase tracking-wider">Entreprise</label>
-                                  <p className="font-medium text-gray-900 mt-1">{enrollment.companyName || '-'}</p>
-                                  <p className="text-sm text-gray-500">{enrollment.country}</p>
-                                </div>
-                                <div>
-                                  <label className="text-xs font-semibold text-gray-400 uppercase tracking-wider">Contact</label>
-                                  <p className="font-medium text-gray-900 mt-1">{enrollment.phone}</p>
-                                </div>
-                                <div>
-                                  <label className="text-xs font-semibold text-gray-400 uppercase tracking-wider">Date</label>
-                                  <p className="font-medium text-gray-900 mt-1">{new Date(enrollment.createdAt).toLocaleDateString('fr-FR', { day: 'numeric', month: 'short', year: 'numeric' })}</p>
-                                </div>
-                              </div>
+                            {/* Desktop View Table */}
+                            <div className="hidden md:block overflow-x-auto">
+                              <table className="w-full">
+                                <tbody className="divide-y divide-gray-50">
+                                  <tr className="hover:bg-gray-50/50 transition-colors">
+                                    <td className="px-6 py-4 whitespace-nowrap">
+                                      <div className="flex items-center">
+                                        <div className="h-10 w-10 flex-shrink-0 bg-gradient-to-br from-green-500 to-green-600 rounded-full flex items-center justify-center text-white font-bold shadow-sm">
+                                          {enrollment.firstName.charAt(0)}{enrollment.lastName.charAt(0)}
+                                        </div>
+                                        <div className="ml-4">
+                                          <div className="text-sm font-bold text-gray-900">{enrollment.firstName} {enrollment.lastName}</div>
+                                          <div className="text-xs text-gray-500">{enrollment.email}</div>
+                                        </div>
+                                      </div>
+                                    </td>
+                                    <td className="px-6 py-4 whitespace-nowrap">
+                                      <span className={`inline-flex px-2 py-0.5 rounded-full text-[10px] font-bold uppercase ${getTypeColor(enrollment.type)}`}>
+                                        {enrollment.type}
+                                      </span>
+                                    </td>
+                                    <td className="px-6 py-4 whitespace-nowrap">
+                                      <span className={`inline-flex px-2 py-0.5 rounded-full text-[10px] font-bold uppercase ${getStatusColor(enrollment.status)}`}>
+                                        {enrollment.status}
+                                      </span>
+                                    </td>
+                                    <td className="px-6 py-4 whitespace-nowrap text-right">
+                                      <div className="flex items-center justify-end gap-2 text-right">
+                                        {enrollment.status === 'pending' && (
+                                          <>
+                                            <button 
+                                              onClick={() => handleEnrollmentAction(enrollment._id, 'approve')} 
+                                              disabled={processingIds.has(enrollment._id)}
+                                              className="p-2 text-green-600 hover:bg-green-50 rounded-lg transition-colors disabled:opacity-50"
+                                              title="Approuver"
+                                            >
+                                              {processingIds.has(enrollment._id) ? <Loader2 size={18} className="animate-spin" /> : <CheckCircleIcon size={18} />}
+                                            </button>
+                                            <button 
+                                              onClick={() => handleEnrollmentAction(enrollment._id, 'reject')} 
+                                              disabled={processingIds.has(enrollment._id)}
+                                              className="p-2 text-red-600 hover:bg-red-50 rounded-lg transition-colors disabled:opacity-50"
+                                              title="Rejeter"
+                                            >
+                                              {processingIds.has(enrollment._id) ? <Loader2 size={18} className="animate-spin" /> : <XCircleIcon size={18} />}
+                                            </button>
+                                          </>
+                                        )}
+                                        <button 
+                                          onClick={() => handleDeleteEnrollment(enrollment._id)} 
+                                          disabled={processingIds.has(enrollment._id)}
+                                          className="p-2 text-gray-400 hover:text-red-600 hover:bg-gray-50 rounded-lg transition-colors disabled:opacity-50"
+                                          title="Supprimer"
+                                        >
+                                          {processingIds.has(enrollment._id) ? <Loader2 size={18} className="animate-spin" /> : <Trash2 size={18} />}
+                                        </button>
+                                      </div>
+                                    </td>
+                                  </tr>
+                                </tbody>
+                              </table>
                             </div>
 
-                            {/* Actions */}
-                            <div className="flex items-center gap-2 border-t lg:border-t-0 lg:border-l border-gray-100 pt-4 lg:pt-0 lg:pl-6">
-                              {enrollment.status === 'pending' && (
-                                <>
-                                  <button
-                                    onClick={() => handleEnrollmentAction(enrollment._id, 'approve')}
-                                    disabled={processingIds.has(enrollment._id)}
-                                    className="p-2 bg-green-50 text-green-600 rounded-lg hover:bg-green-100 transition-colors tooltip disabled:opacity-50 disabled:cursor-not-allowed"
-                                    title="Approuver"
-                                  >
-                                    {processingIds.has(enrollment._id) ? (
-                                      <Loader2 className="w-5 h-5 animate-spin" />
-                                    ) : (
-                                      <CheckCircle className="w-5 h-5" />
-                                    )}
-                                  </button>
-                                  <button
-                                    onClick={() => handleEnrollmentAction(enrollment._id, 'reject')}
-                                    disabled={processingIds.has(enrollment._id)}
-                                    className="p-2 bg-red-50 text-red-600 rounded-lg hover:bg-red-100 transition-colors tooltip disabled:opacity-50 disabled:cursor-not-allowed"
-                                    title="Rejeter"
-                                  >
-                                    {processingIds.has(enrollment._id) ? (
-                                      <Loader2 className="w-5 h-5 animate-spin" />
-                                    ) : (
-                                      <XCircle className="w-5 h-5" />
-                                    )}
-                                  </button>
-                                </>
-                              )}
-                              <button
-                                onClick={() => handleDeleteEnrollment(enrollment._id)}
-                                disabled={processingIds.has(enrollment._id)}
-                                className="p-2 bg-gray-50 text-gray-500 rounded-lg hover:bg-gray-100 transition-colors tooltip disabled:opacity-50 disabled:cursor-not-allowed"
-                                title="Supprimer"
+                            {/* Mobile View Card */}
+                            <div className="md:hidden">
+                              <div 
+                                className="flex items-center justify-between cursor-pointer"
+                                onClick={() => toggleRow(enrollment._id)}
                               >
-                                {processingIds.has(enrollment._id) ? (
-                                  <Loader2 className="w-5 h-5 animate-spin" />
-                                ) : (
-                                  <Trash2 className="w-5 h-5" />
+                                <div className="flex items-center gap-3">
+                                  <div className="h-10 w-10 rounded-full bg-gradient-to-br from-green-500 to-green-600 flex items-center justify-center text-white text-xs font-bold shadow-sm">
+                                    {enrollment.firstName.charAt(0)}{enrollment.lastName.charAt(0)}
+                                  </div>
+                                  <div>
+                                    <div className="text-sm font-bold text-gray-900">{enrollment.firstName} {enrollment.lastName}</div>
+                                    <div className="text-[10px] text-gray-500 uppercase font-bold tracking-wider">{enrollment.type}</div>
+                                  </div>
+                                </div>
+                                <div className={`p-2 rounded-full transform transition-transform duration-300 ${expandedRows.has(enrollment._id) ? 'rotate-180 bg-green-50 text-green-600' : 'bg-gray-50 text-gray-400'}`}>
+                                  <ChevronDown size={18} />
+                                </div>
+                              </div>
+
+                              <AnimatePresence>
+                                {expandedRows.has(enrollment._id) && (
+                                  <motion.div
+                                    initial={{ height: 0, opacity: 0 }}
+                                    animate={{ height: 'auto', opacity: 1 }}
+                                    exit={{ height: 0, opacity: 0 }}
+                                    className="pt-4 mt-4 border-t border-gray-50 space-y-4 overflow-hidden"
+                                  >
+                                    <div className="grid grid-cols-2 gap-4">
+                                      <div>
+                                        <label className="text-[10px] font-bold text-gray-400 uppercase tracking-wider">Email</label>
+                                        <p className="text-xs text-gray-700 truncate">{enrollment.email}</p>
+                                      </div>
+                                      <div>
+                                        <label className="text-[10px] font-bold text-gray-400 uppercase tracking-wider">Statut</label>
+                                        <div>
+                                          <span className={`inline-flex px-2 py-0.5 rounded-full text-[10px] font-bold uppercase ${getStatusColor(enrollment.status)}`}>
+                                            {enrollment.status}
+                                          </span>
+                                        </div>
+                                      </div>
+                                      <div>
+                                        <label className="text-[10px] font-bold text-gray-400 uppercase tracking-wider">Entreprise</label>
+                                        <p className="text-xs text-gray-700">{enrollment.companyName || '-'}</p>
+                                      </div>
+                                      <div>
+                                        <label className="text-[10px] font-bold text-gray-400 uppercase tracking-wider">Téléphone</label>
+                                        <p className="text-xs text-gray-700">{enrollment.phone}</p>
+                                      </div>
+                                    </div>
+                                    <div className="flex gap-2 pt-2">
+                                      {enrollment.status === 'pending' && (
+                                        <>
+                                          <button 
+                                            onClick={() => handleEnrollmentAction(enrollment._id, 'approve')} 
+                                            disabled={processingIds.has(enrollment._id)}
+                                            className="flex-1 flex items-center justify-center gap-2 py-2 bg-green-600 text-white rounded-xl text-xs font-bold leading-none shadow-sm shadow-green-200 disabled:opacity-50"
+                                          >
+                                            {processingIds.has(enrollment._id) && <Loader2 size={14} className="animate-spin" />} Approuver
+                                          </button>
+                                          <button 
+                                            onClick={() => handleEnrollmentAction(enrollment._id, 'reject')} 
+                                            disabled={processingIds.has(enrollment._id)}
+                                            className="flex-1 flex items-center justify-center gap-2 py-2 bg-red-50 text-red-600 rounded-xl text-xs font-bold leading-none border border-red-100 disabled:opacity-50"
+                                          >
+                                            {processingIds.has(enrollment._id) && <Loader2 size={14} className="animate-spin" />} Rejeter
+                                          </button>
+                                        </>
+                                      )}
+                                      <button 
+                                        onClick={() => handleDeleteEnrollment(enrollment._id)} 
+                                        disabled={processingIds.has(enrollment._id)}
+                                        className="p-2 bg-gray-50 text-gray-400 hover:text-red-600 rounded-xl transition-all border border-gray-100 disabled:opacity-50"
+                                      >
+                                        {processingIds.has(enrollment._id) ? <Loader2 size={16} className="animate-spin" /> : <Trash2 size={16} />}
+                                      </button>
+                                    </div>
+                                  </motion.div>
                                 )}
-                              </button>
+                              </AnimatePresence>
                             </div>
-                          </div>
                         </motion.div>
                       ))}
                   </div>
@@ -1134,14 +1216,15 @@ const AdminDashboard = () => {
             </div>
 
             <div className="bg-white/80 backdrop-blur-xl rounded-2xl border border-white/40 shadow-xl overflow-hidden">
-              <div className="overflow-x-auto">
+              {/* Desktop View */}
+              <div className="hidden md:block overflow-x-auto">
                 <table className="min-w-full divide-y divide-gray-100">
                   <thead className="bg-gray-50/50">
                     <tr>
                       <th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Utilisateur</th>
                       <th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Rôle</th>
                       <th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Pays</th>
-                      <th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Date d'inscription</th>
+                      <th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Inscrit</th>
                       <th className="px-6 py-4 text-right text-xs font-semibold text-gray-500 uppercase tracking-wider">Actions</th>
                     </tr>
                   </thead>
@@ -1167,7 +1250,7 @@ const AdminDashboard = () => {
                             </div>
                           </td>
                           <td className="px-6 py-4 whitespace-nowrap">
-                            <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium border capitalize ${u.role === 'admin' ? 'bg-red-50 text-red-700 border-red-100' :
+                            <span className={`inline-flex px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase border ${u.role === 'admin' ? 'bg-red-50 text-red-700 border-red-100' :
                               u.role === 'partner' ? 'bg-blue-50 text-blue-700 border-blue-100' :
                                 u.role === 'client' ? 'bg-purple-50 text-purple-700 border-purple-100' :
                                   'bg-green-50 text-green-700 border-green-100'
@@ -1176,23 +1259,14 @@ const AdminDashboard = () => {
                             </span>
                           </td>
                           <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-600">
-                            {u.companyDetails?.address || 'Non spécifié'}
+                            {u.companyDetails?.address || '-'}
                           </td>
                           <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                             {u.createdAt ? new Date(u.createdAt).toLocaleDateString('fr-FR') : '-'}
                           </td>
-                          <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                            <button
-                              onClick={() => handleDeleteUser(u._id)}
-                              disabled={processingIds.has(u._id)}
-                              className="p-2 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-all disabled:opacity-50"
-                              title="Supprimer l'utilisateur"
-                            >
-                              {processingIds.has(u._id) ? (
-                                <Loader2 className="w-4 h-4 animate-spin" />
-                              ) : (
-                                <Trash2 className="w-4 h-4" />
-                              )}
+                          <td className="px-6 py-4 whitespace-nowrap text-right">
+                            <button onClick={() => handleDeleteUser(u._id)} disabled={processingIds.has(u._id)} className="p-2 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-all disabled:opacity-50">
+                              {processingIds.has(u._id) ? <Loader2 className="w-4 h-4 animate-spin" /> : <Trash2 className="w-4 h-4" />}
                             </button>
                           </td>
                         </tr>
@@ -1201,48 +1275,72 @@ const AdminDashboard = () => {
                 </table>
               </div>
 
-              {/* Pagination Utilisateurs */}
+              {/* Mobile View */}
+              <div className="md:hidden divide-y divide-gray-100">
+                {users
+                  .filter(u => {
+                    const matchesSearch = `${u.firstName} ${u.lastName} ${u.email}`.toLowerCase().includes(userSearchQuery.toLowerCase());
+                    const matchesRole = userRoleFilter === 'all' || u.role === userRoleFilter;
+                    return matchesSearch && matchesRole;
+                  })
+                  .slice((usersCurrentPage - 1) * usersPerPage, usersCurrentPage * usersPerPage)
+                  .map((u) => {
+                    const isExpanded = expandedRows.has(u._id);
+                    return (
+                      <div key={u._id} className="bg-white/40">
+                        <div className="p-4 flex items-center justify-between cursor-pointer" onClick={() => toggleRow(u._id)}>
+                          <div className="flex items-center gap-3">
+                            <div className="h-10 w-10 rounded-full bg-gradient-to-br from-green-400 to-blue-500 flex items-center justify-center text-white text-xs font-bold shadow-sm">
+                              {u.firstName.charAt(0)}{u.lastName.charAt(0)}
+                            </div>
+                            <div>
+                              <div className="text-sm font-bold text-gray-900">{u.firstName} {u.lastName}</div>
+                              <div className="text-[10px] text-gray-500 uppercase font-bold tracking-wider">{u.role}</div>
+                            </div>
+                          </div>
+                          <div className={`p-2 rounded-full transition-colors ${isExpanded ? 'bg-green-50 text-green-600' : 'bg-gray-100 text-gray-400'}`}>
+                            {isExpanded ? <ChevronUp size={18} /> : <ChevronDown size={18} />}
+                          </div>
+                        </div>
+
+                        <AnimatePresence>
+                          {isExpanded && (
+                            <motion.div initial={{ height: 0, opacity: 0 }} animate={{ height: 'auto', opacity: 1 }} exit={{ height: 0, opacity: 0 }} className="px-4 pb-4 space-y-4 overflow-hidden border-t border-gray-50 pt-4">
+                              <div className="grid grid-cols-2 gap-4">
+                                <div className="col-span-2">
+                                  <label className="text-[10px] font-bold text-gray-400 uppercase tracking-wider">Email</label>
+                                  <p className="text-xs text-gray-700 truncate">{u.email}</p>
+                                </div>
+                                <div>
+                                  <label className="text-[10px] font-bold text-gray-400 uppercase tracking-wider">Pays/Adresse</label>
+                                  <p className="text-xs text-gray-700">{u.companyDetails?.address || '-'}</p>
+                                </div>
+                                <div>
+                                  <label className="text-[10px] font-bold text-gray-400 uppercase tracking-wider">Inscrit le</label>
+                                  <p className="text-xs text-gray-700">{u.createdAt ? new Date(u.createdAt).toLocaleDateString('fr-FR') : '-'}</p>
+                                </div>
+                              </div>
+                              <div className="pt-2">
+                                <button onClick={() => handleDeleteUser(u._id)} disabled={processingIds.has(u._id)} className="w-full flex items-center justify-center gap-2 py-2 bg-red-50 text-red-600 rounded-xl text-xs font-bold border border-red-100">
+                                  {processingIds.has(u._id) ? <Loader2 size={14} className="animate-spin" /> : <Trash2 size={14} />} Supprimer l'utilisateur
+                                </button>
+                              </div>
+                            </motion.div>
+                          )}
+                        </AnimatePresence>
+                      </div>
+                    );
+                  })}
+              </div>
+
+              {/* Pagination Styled */}
               <div className="px-6 py-4 border-t border-gray-100 bg-gray-50/50 flex flex-col sm:flex-row items-center justify-between gap-4">
-                <div className="text-sm text-gray-500">
-                  Affichage de <span className="font-semibold text-gray-900">
-                    {Math.min((usersCurrentPage - 1) * usersPerPage + 1, users.length)}
-                  </span> à <span className="font-semibold text-gray-900">
-                    {Math.min(usersCurrentPage * usersPerPage, users.length)}
-                  </span> sur <span className="font-semibold text-gray-900">{users.length}</span> utilisateurs
+                <div className="text-sm text-gray-500 font-medium">
+                  Affichage de <span className="font-semibold text-gray-900">{Math.min((usersCurrentPage - 1) * usersPerPage + 1, users.length)}</span> à <span className="font-semibold text-gray-900">{Math.min(usersCurrentPage * usersPerPage, users.length)}</span> sur <span className="font-semibold text-gray-900">{users.length}</span> résultats
                 </div>
                 <nav className="flex items-center space-x-1">
-                  <button
-                    onClick={() => setUsersCurrentPage(usersCurrentPage - 1)}
-                    disabled={usersCurrentPage === 1}
-                    className="p-2 rounded-lg border border-gray-200 bg-white text-gray-500 hover:bg-gray-50 disabled:opacity-50 transition-all"
-                  >
-                    <ChevronLeft className="w-4 h-4" />
-                  </button>
-                  <div className="flex items-center space-x-1 px-2">
-                    {Array.from({ length: Math.ceil(users.length / usersPerPage) }, (_, i) => i + 1)
-                      .filter(p => p === 1 || p === usersCurrentPage || p === Math.ceil(users.length / usersPerPage) || Math.abs(p - usersCurrentPage) <= 1)
-                      .map((pageNum, idx, array) => (
-                        <div key={pageNum} className="flex items-center">
-                          {idx > 0 && array[idx - 1] !== pageNum - 1 && <span className="px-2 text-gray-400">...</span>}
-                          <button
-                            onClick={() => setUsersCurrentPage(pageNum)}
-                            className={`w-8 h-8 flex items-center justify-center rounded-lg text-sm font-medium transition-all ${usersCurrentPage === pageNum
-                              ? 'bg-green-600 text-white shadow-md shadow-green-200'
-                              : 'bg-white text-gray-600 border border-gray-200 hover:bg-gray-50'
-                              }`}
-                          >
-                            {pageNum}
-                          </button>
-                        </div>
-                      ))}
-                  </div>
-                  <button
-                    onClick={() => setUsersCurrentPage(usersCurrentPage + 1)}
-                    disabled={usersCurrentPage === Math.ceil(users.length / usersPerPage)}
-                    className="p-2 rounded-lg border border-gray-200 bg-white text-gray-500 hover:bg-gray-50 disabled:opacity-50 transition-all"
-                  >
-                    <ChevronRight className="w-4 h-4" />
-                  </button>
+                  <button onClick={() => setUsersCurrentPage(usersCurrentPage - 1)} disabled={usersCurrentPage === 1} className="p-2 rounded-lg bg-white border border-gray-200 text-gray-500 hover:bg-gray-50 disabled:opacity-50 transition-all font-bold"><ChevronLeft size={16} /></button>
+                  <button onClick={() => setUsersCurrentPage(usersCurrentPage + 1)} disabled={usersCurrentPage === Math.ceil(users.length / usersPerPage)} className="p-2 rounded-lg bg-white border border-gray-200 text-gray-500 hover:bg-gray-50 disabled:opacity-50 transition-all font-bold"><ChevronRight size={16} /></button>
                 </nav>
               </div>
             </div>
@@ -1636,7 +1734,6 @@ const AdminDashboard = () => {
                 onClick={() => {
                   setEditingProduct(null);
                   setShowProductFormModal(true);
-
                 }}
                 className="flex items-center space-x-2 bg-gradient-to-r from-green-500 to-green-600 text-white px-6 py-3 rounded-xl hover:from-green-600 hover:to-green-700 transition-all duration-300 shadow-lg hover:shadow-xl cursor-pointer relative z-50"
               >
@@ -1646,28 +1743,17 @@ const AdminDashboard = () => {
             </div>
 
             <div className="bg-white/80 backdrop-blur-xl rounded-2xl border border-white/40 shadow-xl overflow-hidden">
-              <div className="overflow-x-auto">
+              {/* Desktop View */}
+              <div className="hidden md:block overflow-x-auto">
                 <table className="min-w-full divide-y divide-gray-100">
                   <thead className="bg-gray-50/50">
                     <tr>
-                      <th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">
-                        Produit
-                      </th>
-                      <th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">
-                        Prix
-                      </th>
-                      <th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">
-                        Stock
-                      </th>
-                      <th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">
-                        Catégorie
-                      </th>
-                      <th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">
-                        Statut
-                      </th>
-                      <th className="px-6 py-4 text-right text-xs font-semibold text-gray-500 uppercase tracking-wider">
-                        Actions
-                      </th>
+                      <th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Produit</th>
+                      <th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Prix</th>
+                      <th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Stock</th>
+                      <th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Catégorie</th>
+                      <th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Statut</th>
+                      <th className="px-6 py-4 text-right text-xs font-semibold text-gray-500 uppercase tracking-wider">Actions</th>
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-gray-100 bg-white/40">
@@ -1679,11 +1765,7 @@ const AdminDashboard = () => {
                             <div className="flex items-center space-x-4">
                               <div className="flex-shrink-0 h-12 w-12 rounded-xl bg-gray-100 overflow-hidden shadow-sm border border-white">
                                 {product.images && product.images.length > 0 ? (
-                                  <img
-                                    src={product.images[0].url}
-                                    alt={product.images[0].alt}
-                                    className="h-full w-full object-cover"
-                                  />
+                                  <img src={product.images[0].url} alt={product.images[0].alt} className="h-full w-full object-cover" />
                                 ) : (
                                   <div className="w-full h-full flex items-center justify-center text-gray-300">
                                     <Package className="w-6 h-6" />
@@ -1696,53 +1778,26 @@ const AdminDashboard = () => {
                               </div>
                             </div>
                           </td>
+                          <td className="px-6 py-4 whitespace-nowrap text-sm font-bold text-gray-900">{product.price} FCFA</td>
                           <td className="px-6 py-4 whitespace-nowrap">
-                            <span className="text-sm font-semibold text-gray-900 bg-green-50 text-green-700 px-2 py-1 rounded-lg">
-                              {product.price.toLocaleString('fr-FR')} FCFA
-                            </span>
-                          </td>
-                          <td className="px-6 py-4 whitespace-nowrap">
-                            <div className="flex items-center">
-                              <span className={`text-sm font-medium ${product.stock < 10 ? 'text-red-600' : 'text-gray-700'}`}>
-                                {product.stock}
-                              </span>
-                              <span className="ml-1 text-xs text-gray-400">unités</span>
+                            <div className="flex items-center space-x-2">
+                              <span className={`h-2 w-2 rounded-full ${product.stock > 10 ? 'bg-green-500' : product.stock > 0 ? 'bg-orange-500' : 'bg-red-500'}`} />
+                              <span className="text-sm text-gray-600 font-medium">{product.stock} en stock</span>
                             </div>
                           </td>
                           <td className="px-6 py-4 whitespace-nowrap">
-                            <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-50 text-blue-700">
-                              {product.category}
-                            </span>
+                            <span className="px-3 py-1 bg-gray-100 text-gray-600 text-xs font-semibold rounded-full border border-gray-200">{product.category}</span>
                           </td>
                           <td className="px-6 py-4 whitespace-nowrap">
-                            <span className={`inline-flex items-center space-x-1.5 px-3 py-1 rounded-full text-xs font-medium border ${product.isActive
-                              ? 'bg-green-50 text-green-700 border-green-200'
-                              : 'bg-gray-50 text-gray-600 border-gray-200'
-                              }`}>
-                              <span className={`w-1.5 h-1.5 rounded-full ${product.isActive ? 'bg-green-500' : 'bg-gray-400'}`}></span>
-                              <span>{product.isActive ? 'Actif' : 'Inactif'}</span>
+                            <span className={`px-3 py-1 text-xs font-bold rounded-full border ${product.isActive ? 'bg-green-50 text-green-700 border-green-200' : 'bg-gray-50 text-gray-600 border-gray-200'}`}>
+                              {product.isActive ? 'Actif' : 'Inactif'}
                             </span>
                           </td>
-                          <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                            <div className="flex justify-end space-x-2">
-                              <button
-                                onClick={() => handleEditProduct(product)}
-                                className="p-2 text-gray-400 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-all"
-                                title="Modifier"
-                              >
-                                <PencilIcon className="w-4 h-4" />
-                              </button>
-                              <button
-                                onClick={() => handleDeleteProduct(product._id)}
-                                disabled={processingIds.has(product._id)}
-                                className="p-2 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-all disabled:opacity-50 disabled:cursor-not-allowed"
-                                title="Supprimer"
-                              >
-                                {processingIds.has(product._id) ? (
-                                  <Loader2 className="w-4 h-4 animate-spin" />
-                                ) : (
-                                  <Trash2 className="w-4 h-4" />
-                                )}
+                          <td className="px-6 py-4 whitespace-nowrap text-right text-sm">
+                            <div className="flex items-center justify-end space-x-2">
+                              <button onClick={() => handleEditProduct(product)} className="p-2 text-gray-400 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-all" title="Modifier"><PencilIcon className="w-4 h-4" /></button>
+                              <button onClick={() => handleDeleteProduct(product._id)} disabled={processingIds.has(product._id)} className="p-2 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-all disabled:opacity-50" title="Supprimer">
+                                {processingIds.has(product._id) ? <Loader2 className="w-4 h-4 animate-spin" /> : <Trash2 className="w-4 h-4" />}
                               </button>
                             </div>
                           </td>
@@ -1750,15 +1805,77 @@ const AdminDashboard = () => {
                       ))}
                   </tbody>
                 </table>
-                {products.length === 0 && (
-                  <div className="flex flex-col items-center justify-center py-16 text-center">
-                    <div className="w-16 h-16 bg-gray-50 rounded-full flex items-center justify-center mb-4">
-                      <Package className="w-8 h-8 text-gray-300" />
-                    </div>
-                    <h3 className="text-lg font-medium text-gray-900">Aucun produit</h3>
-                    <p className="text-gray-500 mt-1 max-w-sm">Créez votre premier produit pour commencer à vendre.</p>
-                  </div>
-                )}
+              </div>
+
+              {/* Mobile View */}
+              <div className="md:hidden divide-y divide-gray-100">
+                {products
+                  .slice((productsCurrentPage - 1) * productsPerPage, productsCurrentPage * productsPerPage)
+                  .map((product) => {
+                    const isExpanded = expandedRows.has(product._id);
+                    return (
+                      <div key={product._id} className="bg-white/40">
+                        <div className="p-4 flex items-center justify-between cursor-pointer" onClick={() => toggleRow(product._id)}>
+                          <div className="flex items-center gap-3">
+                            <div className="h-12 w-12 rounded-xl bg-gray-100 overflow-hidden shadow-sm border border-white">
+                              {product.images && product.images.length > 0 ? (
+                                <img src={product.images[0].url} alt={product.images[0].alt} className="h-full w-full object-cover" />
+                              ) : (
+                                <div className="w-full h-full flex items-center justify-center text-gray-300"><Package className="w-6 h-6" /></div>
+                              )}
+                            </div>
+                            <div>
+                              <div className="text-sm font-bold text-gray-900">{product.name}</div>
+                              <div className="text-xs text-gray-500">{product.brand}</div>
+                            </div>
+                          </div>
+                          <div className={`p-2 rounded-full transition-colors ${isExpanded ? 'bg-green-50 text-green-600' : 'bg-gray-100 text-gray-400'}`}>
+                            {isExpanded ? <ChevronUp size={20} /> : <ChevronDown size={20} />}
+                          </div>
+                        </div>
+                        <AnimatePresence>
+                          {isExpanded && (
+                            <motion.div initial={{ height: 0, opacity: 0 }} animate={{ height: 'auto', opacity: 1 }} exit={{ height: 0, opacity: 0 }} className="px-4 pb-4 space-y-4 overflow-hidden">
+                              <div className="grid grid-cols-2 gap-4 pb-3 border-t border-gray-100 pt-3">
+                                <div>
+                                  <label className="text-[10px] font-bold text-gray-400 uppercase tracking-wider">Prix</label>
+                                  <p className="text-sm font-bold text-gray-900 mt-1">{product.price} FCFA</p>
+                                </div>
+                                <div>
+                                  <label className="text-[10px] font-bold text-gray-400 uppercase tracking-wider">Stock</label>
+                                  <div className="flex items-center space-x-2 mt-1">
+                                    <span className={`h-2 w-2 rounded-full ${product.stock > 10 ? 'bg-green-500' : product.stock > 0 ? 'bg-orange-500' : 'bg-red-500'}`} />
+                                    <span className="text-xs text-gray-600">{product.stock} en stock</span>
+                                  </div>
+                                </div>
+                                <div>
+                                  <label className="text-[10px] font-bold text-gray-400 uppercase tracking-wider">Catégorie</label>
+                                  <div className="mt-1"><span className="px-2 py-0.5 bg-gray-100 text-gray-600 text-[10px] font-semibold rounded-full border border-gray-200">{product.category}</span></div>
+                                </div>
+                                <div>
+                                  <label className="text-[10px] font-bold text-gray-400 uppercase tracking-wider">Statut</label>
+                                  <div className="mt-1">
+                                    <span className={`px-2 py-0.5 text-[10px] font-bold rounded-full border ${product.isActive ? 'bg-green-50 text-green-700 border-green-200' : 'bg-gray-50 text-gray-600 border-gray-200'}`}>
+                                      {product.isActive ? 'Actif' : 'Inactif'}
+                                    </span>
+                                  </div>
+                                </div>
+                                <div className="col-span-2">
+                                  <label className="text-[10px] font-bold text-gray-400 uppercase tracking-wider">Actions</label>
+                                  <div className="flex gap-2 mt-2">
+                                    <button onClick={() => handleEditProduct(product)} className="flex-1 flex items-center justify-center gap-2 py-2 bg-blue-50 text-blue-600 rounded-lg text-xs font-bold leading-none"><PencilIcon size={14} /> Modifier</button>
+                                    <button onClick={() => handleDeleteProduct(product._id)} disabled={processingIds.has(product._id)} className="flex-1 flex items-center justify-center gap-2 py-2 bg-red-50 text-red-600 rounded-lg text-xs font-bold leading-none disabled:opacity-50">
+                                      {processingIds.has(product._id) ? <Loader2 size={14} className="animate-spin" /> : <Trash2 size={14} />} Supprimer
+                                    </button>
+                                  </div>
+                                </div>
+                              </div>
+                            </motion.div>
+                          )}
+                        </AnimatePresence>
+                      </div>
+                    );
+                  })}
               </div>
 
               {/* Pagination Styled */}
@@ -1767,16 +1884,8 @@ const AdminDashboard = () => {
                   <div className="text-sm text-gray-500 font-medium">
                     Affichage de <span className="font-semibold text-gray-900">{Math.min((productsCurrentPage - 1) * productsPerPage + 1, products.length)}</span> à <span className="font-semibold text-gray-900">{Math.min(productsCurrentPage * productsPerPage, products.length)}</span> sur <span className="font-semibold text-gray-900">{products.length}</span> résultats
                   </div>
-
                   <nav className="flex items-center space-x-1">
-                    <button
-                      onClick={() => setProductsCurrentPage(productsCurrentPage - 1)}
-                      disabled={productsCurrentPage === 1}
-                      className="p-2 rounded-lg border border-gray-200 bg-white text-gray-500 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed shadow-sm transition-all"
-                    >
-                      <ChevronLeft className="w-4 h-4" />
-                    </button>
-
+                    <button onClick={() => setProductsCurrentPage(productsCurrentPage - 1)} disabled={productsCurrentPage === 1} className="p-2 rounded-lg border border-gray-200 bg-white text-gray-500 hover:bg-gray-50 disabled:opacity-50 shadow-sm"><ChevronLeft className="w-4 h-4" /></button>
                     <div className="flex items-center space-x-1 px-2">
                       {Array.from({ length: Math.ceil(products.length / productsPerPage) }, (_, i) => i + 1).map((pageNum) => (
                         <button
@@ -1791,11 +1900,10 @@ const AdminDashboard = () => {
                         </button>
                       ))}
                     </div>
-
                     <button
                       onClick={() => setProductsCurrentPage(productsCurrentPage + 1)}
                       disabled={productsCurrentPage === Math.ceil(products.length / productsPerPage)}
-                      className="p-2 rounded-lg border border-gray-200 bg-white text-gray-500 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed shadow-sm transition-all"
+                      className="p-2 rounded-lg border border-gray-200 bg-white text-gray-500 hover:bg-gray-50 disabled:opacity-50 shadow-sm transition-all"
                     >
                       <ChevronRight className="w-4 h-4" />
                     </button>
@@ -1827,7 +1935,8 @@ const AdminDashboard = () => {
             </div>
 
             <div className="bg-white/80 backdrop-blur-xl rounded-2xl border border-white/40 shadow-xl overflow-hidden">
-              <div className="overflow-x-auto">
+              {/* Desktop View */}
+              <div className="hidden md:block overflow-x-auto">
                 <table className="min-w-full divide-y divide-gray-100">
                   <thead className="bg-gray-50/50">
                     <tr>
@@ -1938,6 +2047,93 @@ const AdminDashboard = () => {
                     <p className="text-gray-500 mt-1 max-w-sm">Rédigez votre premier article de blog pour partager vos actualités.</p>
                   </div>
                 )}
+              </div>
+
+              {/* Mobile View Card */}
+              <div className="md:hidden divide-y divide-gray-100">
+                {blogs
+                  .slice((blogsCurrentPage - 1) * blogsPerPage, blogsCurrentPage * blogsPerPage)
+                  .map((blog) => {
+                    const isExpanded = expandedRows.has(blog._id);
+                    return (
+                      <div key={blog._id} className="bg-white/40">
+                        <div 
+                          className="p-4 flex items-center justify-between cursor-pointer"
+                          onClick={() => toggleRow(blog._id)}
+                        >
+                          <div className="flex items-center gap-3">
+                            <div className="h-12 w-12 rounded-xl bg-gray-100 overflow-hidden shadow-sm border border-white">
+                              {blog.featuredImage ? (
+                                <img src={blog.featuredImage.url} alt={blog.featuredImage.alt} className="h-full w-full object-cover" />
+                              ) : (
+                                <div className="w-full h-full flex items-center justify-center text-gray-300">
+                                  <BookOpen className="w-6 h-6" />
+                                </div>
+                              )}
+                            </div>
+                            <div className="min-w-0">
+                              <div className="text-sm font-bold text-gray-900 truncate max-w-[180px]">{blog.title}</div>
+                              <div className="text-[10px] text-gray-500 uppercase font-bold tracking-wider">{blog.category}</div>
+                            </div>
+                          </div>
+                          <div className={`p-2 rounded-full transition-colors ${isExpanded ? 'rotate-180 bg-green-50 text-green-600' : 'bg-gray-100 text-gray-400'}`}>
+                            <ChevronDown size={20} />
+                          </div>
+                        </div>
+
+                        <AnimatePresence>
+                          {isExpanded && (
+                            <motion.div
+                              initial={{ height: 0, opacity: 0 }}
+                              animate={{ height: 'auto', opacity: 1 }}
+                              exit={{ height: 0, opacity: 0 }}
+                              className="px-4 pb-4 space-y-4 overflow-hidden border-t border-gray-50 pt-4"
+                            >
+                              <div className="grid grid-cols-2 gap-4">
+                                <div>
+                                  <label className="text-[10px] font-bold text-gray-400 uppercase tracking-wider">Auteur</label>
+                                  <p className="text-xs text-gray-700 mt-1">{blog.author}</p>
+                                </div>
+                                <div>
+                                  <label className="text-[10px] font-bold text-gray-400 uppercase tracking-wider">Statut</label>
+                                  <div className="mt-1">
+                                    <span className={`px-2 py-0.5 text-[10px] font-bold rounded-full border ${blog.isPublished ? 'bg-green-50 text-green-700 border-green-200' : 'bg-yellow-50 text-yellow-700 border-yellow-200'}`}>
+                                      {blog.isPublished ? 'Publié' : 'Brouillon'}
+                                    </span>
+                                  </div>
+                                </div>
+                                <div>
+                                  <label className="text-[10px] font-bold text-gray-400 uppercase tracking-wider">Lecture</label>
+                                  <p className="text-xs text-gray-700 mt-1">{blog.readTime} min</p>
+                                </div>
+                                <div>
+                                  <label className="text-[10px] font-bold text-gray-400 uppercase tracking-wider">Date</label>
+                                  <p className="text-xs text-gray-700 mt-1">{new Date(blog.createdAt).toLocaleDateString()}</p>
+                                </div>
+                                <div className="col-span-2 pt-2">
+                                  <div className="flex gap-2">
+                                    <button 
+                                      onClick={() => handleEditBlog(blog)}
+                                      className="flex-1 flex items-center justify-center gap-2 py-2 bg-blue-50 text-blue-600 rounded-lg text-xs font-bold leading-none border border-blue-100"
+                                    >
+                                      <PencilIcon size={14} /> Modifier
+                                    </button>
+                                    <button 
+                                      onClick={() => handleDeleteBlog(blog._id)}
+                                      disabled={processingIds.has(blog._id)}
+                                      className="flex-1 flex items-center justify-center gap-2 py-2 bg-red-50 text-red-600 rounded-lg text-xs font-bold leading-none border border-red-100 disabled:opacity-50"
+                                    >
+                                      {processingIds.has(blog._id) ? <Loader2 size={14} className="animate-spin" /> : <Trash2 size={14} />} Supprimer
+                                    </button>
+                                  </div>
+                                </div>
+                              </div>
+                            </motion.div>
+                          )}
+                        </AnimatePresence>
+                      </div>
+                    );
+                  })}
               </div>
 
               {/* Pagination Styled */}
@@ -2267,7 +2463,7 @@ const AdminDashboard = () => {
           </div>
         )}
       </AnimatePresence>
-    </motion.div >
+    </motion.div>
   );
 };
 
