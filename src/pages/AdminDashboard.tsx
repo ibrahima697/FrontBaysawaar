@@ -2,7 +2,6 @@ import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
   Users,
-  Clock,
   CheckCircle,
   XCircle,
   Trash2,
@@ -201,10 +200,17 @@ const AdminDashboard = () => {
   }, [activeTab]);
 
 
+  const isEventPassed = (dateEnd: string) => {
+    return new Date(dateEnd) < new Date();
+  };
+
   const fetchFormations = async () => {
     try {
       const response = await formationsAPI.getAllAdmin();
-      setFormations(response.data.formations || []);
+      const data = response.data.formations || [];
+      setFormations([...data].sort((a, b) => 
+        new Date(b.createdAt || 0).getTime() - new Date(a.createdAt || 0).getTime()
+      ));
     } catch (error) {
       console.error('Erreur formations:', error);
       Swal.fire('Erreur', 'Impossible de charger les formations', 'error');
@@ -244,7 +250,10 @@ const AdminDashboard = () => {
     try {
       const params = filter !== 'all' ? { status: filter } : {};
       const response = await adminAPI.getAllEnrollments(params);
-      setEnrollments(response.data.enrollments || []);
+      const data = response.data.enrollments || [];
+      setEnrollments([...data].sort((a, b) => 
+        new Date(b.createdAt || 0).getTime() - new Date(a.createdAt || 0).getTime()
+      ));
     } catch (error) {
       console.error('Erreur lors du chargement des enrôlements:', error);
       Swal.fire({
@@ -261,7 +270,10 @@ const AdminDashboard = () => {
   const fetchProducts = async () => {
     try {
       const response = await productsAPI.getAllProducts();
-      setProducts(response.data.products || []);
+      const data = response.data.products || [];
+      setProducts([...data].sort((a, b) => 
+        new Date(b.createdAt || 0).getTime() - new Date(a.createdAt || 0).getTime()
+      ));
     } catch (error) {
       console.error('Erreur lors du chargement des produits:', error);
       Swal.fire('Erreur', 'Impossible de charger les produits', 'error');
@@ -271,7 +283,10 @@ const AdminDashboard = () => {
   const fetchBlogs = async () => {
     try {
       const response = await blogsAPI.getAllBlogs();
-      setBlogs(response.data.blogs || []);
+      const data = response.data.blogs || [];
+      setBlogs([...data].sort((a, b) => 
+        new Date(b.createdAt || 0).getTime() - new Date(a.createdAt || 0).getTime()
+      ));
     } catch (error) {
       console.error('Erreur lors du chargement des blogs:', error);
       Swal.fire('Erreur', 'Impossible de charger les blogs', 'error');
@@ -281,7 +296,10 @@ const AdminDashboard = () => {
   const fetchEvents = async () => {
     try {
       const response = await eventsAPI.getAll();
-      setEvents(response.data.events || []);
+      const data = response.data.events || [];
+      setEvents([...data].sort((a, b) => 
+        new Date(b.createdAt || 0).getTime() - new Date(a.createdAt || 0).getTime()
+      ));
     } catch (error) {
       console.error('Erreur events:', error);
       Swal.fire('Erreur', 'Impossible de charger les événements', 'error');
@@ -293,7 +311,9 @@ const AdminDashboard = () => {
       const response = await adminAPI.getAllUsers();
       // Le backend renvoie directement un tableau d'utilisateurs
       const userData = Array.isArray(response.data) ? response.data : (response.data.users || []);
-      setUsers(userData);
+      setUsers([...userData].sort((a, b) => 
+        new Date(b.createdAt || 0).getTime() - new Date(a.createdAt || 0).getTime()
+      ));
     } catch (error) {
       console.error('Erreur users:', error);
       Swal.fire('Erreur', 'Impossible de charger les utilisateurs', 'error');
@@ -366,6 +386,10 @@ const AdminDashboard = () => {
 
 
   const handleToggleHero = async (event: EventData) => {
+    if (isEventPassed(event.dateEnd)) {
+      Swal.fire('Action impossible', 'Un événement passé ne peut pas être mis en avant.', 'warning');
+      return;
+    }
     try {
       addProcessingId(event._id!);
       const newStatus = !event.isFeatured;
@@ -615,18 +639,6 @@ const AdminDashboard = () => {
     }
   };
 
-  const getStatusIcon = (status: string) => {
-    switch (status) {
-      case 'pending':
-        return <Clock className="w-5 h-5 text-yellow-500" />;
-      case 'approved':
-        return <CheckCircle className="w-5 h-5 text-green-500" />;
-      case 'rejected':
-        return <XCircle className="w-5 h-5 text-red-500" />;
-      default:
-        return null;
-    }
-  };
 
   const getStatusColor = (status: string) => {
     switch (status) {
@@ -1448,7 +1460,7 @@ const AdminDashboard = () => {
                     key={event._id}
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
-                    className="bg-white/80 backdrop-blur-xl rounded-2xl border border-white/50 shadow-xl overflow-hidden group hover:shadow-2xl transition-all duration-300 flex flex-col"
+                    className={`bg-white/80 backdrop-blur-xl rounded-2xl border border-white/50 shadow-xl overflow-hidden group hover:shadow-2xl transition-all duration-300 flex flex-col ${isEventPassed(event.dateEnd) ? 'opacity-75 grayscale-[0.5]' : ''}`}
                   >
                     <div className="relative h-40 w-full overflow-hidden bg-gray-100">
                       {event.images && event.images.length > 0 ? (
@@ -1463,19 +1475,26 @@ const AdminDashboard = () => {
                         </div>
                       )}
                       <div className="absolute top-4 right-4">
-                        <button
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            handleToggleHero(event);
-                          }}
-                          disabled={event._id ? processingIds.has(event._id) : false}
-                          className={`flex items-center justify-center p-2 rounded-full transition-all shadow-lg backdrop-blur-sm ${event.isFeatured ? 'bg-yellow-400 text-yellow-900 border-2 border-yellow-200' : 'bg-white/90 text-gray-400 hover:text-yellow-500 hover:bg-white'}`}
-                          title={event.isFeatured ? "Retirer du Hero" : "Mettre en Hero"}
-                        >
-                          <Star className={`w-5 h-5 ${event.isFeatured ? 'fill-current' : ''}`} />
-                        </button>
+                        {!isEventPassed(event.dateEnd) && (
+                          <button
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              handleToggleHero(event);
+                            }}
+                            disabled={event._id ? processingIds.has(event._id) : false}
+                            className={`flex items-center justify-center p-2 rounded-full transition-all shadow-lg backdrop-blur-sm ${event.isFeatured ? 'bg-yellow-400 text-yellow-900 border-2 border-yellow-200' : 'bg-white/90 text-gray-400 hover:text-yellow-500 hover:bg-white'}`}
+                            title={event.isFeatured ? "Retirer du Hero" : "Mettre en Hero"}
+                          >
+                            <Star className={`w-5 h-5 ${event.isFeatured ? 'fill-current' : ''}`} />
+                          </button>
+                        )}
                       </div>
-                      <div className="absolute bottom-4 left-4">
+                      <div className="absolute top-4 left-4 flex gap-2">
+                        {isEventPassed(event.dateEnd) && (
+                          <span className="px-3 py-1 text-xs font-bold uppercase tracking-wider rounded-full shadow-md bg-red-100 text-red-600 border border-red-200 backdrop-blur-sm">
+                            Passé
+                          </span>
+                        )}
                         <span className="px-3 py-1 text-xs font-bold uppercase tracking-wider rounded-full shadow-md bg-white/90 text-gray-800 backdrop-blur-sm">
                           {event.type || 'Événement'}
                         </span>
