@@ -93,14 +93,14 @@ const Login = () => {
         </div>
 
         {/* Right Side: Clean Form */}
-        <div className="flex-1 flex flex-col justify-center px-6 sm:px-16 lg:px-24 xl:px-32 py-12 relative bg-white overflow-y-auto">
-          <div className="max-w-md w-full mx-auto space-y-8 sm:space-y-12">
-            <div className="space-y-6 sm:space-y-8 text-center">
+        <div className="flex-1 flex flex-col justify-center px-6 sm:px-16 lg:px-20 xl:px-32 py-8 relative bg-white overflow-y-auto">
+          <div className="max-w-md w-full mx-auto space-y-6 sm:space-y-8">
+            <div className="space-y-4 sm:space-y-6 text-center">
               {/* Centered Logo */}
               <div className="flex justify-center">
                 <img
                   src="https://res.cloudinary.com/drxouwbms/image/upload/v1755777328/369470771_801733008414799_8805271754561376909_n_c4laj2.jpg"
-                  className="w-16 h-16 sm:w-20 sm:h-20 rounded-2xl shadow-xl border border-gray-50"
+                  className="w-16 h-16 sm:w-18 sm:h-18 rounded-2xl shadow-lg border border-gray-50"
                   alt="Logo"
                 />
               </div>
@@ -108,12 +108,12 @@ const Login = () => {
               <motion.div
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
-                className="space-y-3 sm:space-y-4 text-center"
+                className="space-y-2 sm:space-y-3 text-center"
               >
-                <h1 className="text-4xl sm:text-6xl md:text-7xl font-black text-gray-900 tracking-tighter leading-[0.85]">
+                <h1 className="text-4xl sm:text-5xl lg:text-5xl xl:text-6xl font-black text-gray-900 tracking-tighter leading-none">
                   Bienvenue
                 </h1>
-                <p className="text-gray-400 font-medium text-sm sm:text-lg leading-relaxed">
+                <p className="text-gray-400 font-medium text-sm sm:text-base leading-relaxed">
                   Sur votre portail Baysawarr.
                 </p>
               </motion.div>
