@@ -307,19 +307,19 @@ const Home = () => {
       {/* Refined Testimonials Section with High-Impact Cool Background */}
       <section className="relative py-24 sm:py-32 bg-slate-50/30 overflow-hidden">
         {/* Ambient Boutique Background Elements - Amplified for visibility */}
-        {/* 1. Large vibrant glows */}
-        <div className="absolute -top-24 -right-24 w-[600px] h-[600px] bg-green-500/10 rounded-full blur-[120px] pointer-events-none" />
-        <div className="absolute -bottom-24 -left-24 w-[700px] h-[700px] bg-blue-500/10 rounded-full blur-[120px] pointer-events-none" />
-        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-emerald-500/5 rounded-full blur-[140px] pointer-events-none" />
+        {/* 1. Large vibrant glows - Reduced complexity on mobile to fix iPhone blinking */}
+        <div className="absolute -top-24 -right-24 w-[300px] h-[300px] sm:w-[600px] sm:h-[600px] bg-green-500/10 rounded-full blur-[80px] sm:blur-[120px] pointer-events-none" />
+        <div className="absolute -bottom-24 -left-24 w-[350px] h-[350px] sm:w-[700px] sm:h-[700px] bg-blue-500/10 rounded-full blur-[80px] sm:blur-[120px] pointer-events-none" />
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[400px] h-[400px] sm:w-[800px] sm:h-[800px] bg-emerald-500/5 rounded-full blur-[80px] sm:blur-[140px] pointer-events-none" />
 
-        {/* 2. Floating Animated Glass Orbs */}
+        {/* 2. Floating Animated Glass Orbs - Hidden on mobile for performance */}
         <motion.div
           animate={{
             y: [0, -40, 0],
             x: [0, 30, 0],
           }}
           transition={{ duration: 15, repeat: Infinity, ease: "easeInOut" }}
-          className="absolute top-1/4 left-20 w-80 h-80 bg-green-400/10 rounded-full blur-[90px] pointer-events-none border border-green-500/5"
+          className="hidden sm:block absolute top-1/4 left-20 w-80 h-80 bg-green-400/10 rounded-full blur-[90px] pointer-events-none border border-green-500/5"
         />
         <motion.div
           animate={{
@@ -327,7 +327,7 @@ const Home = () => {
             x: [0, -40, 0],
           }}
           transition={{ duration: 18, repeat: Infinity, ease: "easeInOut" }}
-          className="absolute bottom-1/4 right-20 w-[450px] h-[450px] bg-blue-400/10 rounded-full blur-[110px] pointer-events-none border border-blue-500/5"
+          className="hidden sm:block absolute bottom-1/4 right-20 w-[450px] h-[450px] bg-blue-400/10 rounded-full blur-[110px] pointer-events-none border border-blue-500/5"
         />
 
         {/* 3. Distinct Texture Overlay (Dot Grid) */}
