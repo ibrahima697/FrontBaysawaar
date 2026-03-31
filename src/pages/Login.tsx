@@ -55,15 +55,15 @@ const Login = () => {
   };
 
   return (
-    <div className="min-h-screen h-screen w-full bg-white flex items-center justify-center overflow-hidden font-sans">
-      {/* Immersive Full-Screen Design */}
+    <div className="min-h-screen lg:h-screen w-full bg-white flex flex-col lg:flex-row items-center justify-center lg:overflow-hidden font-sans">
+      {/* Immersive Design Container */}
       <motion.div
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
-        className="w-full h-full flex overflow-hidden bg-white"
+        className="w-full h-full flex flex-col lg:flex-row items-stretch lg:overflow-hidden bg-white"
       >
-        {/* Left Side: Cinematic Banner with Curved Corners (Desktop only) */}
-        <div className="hidden lg:flex lg:w-1/2 relative h-full p-4">
+        {/* Left Side: Cinematic Banner (Desktop only) */}
+        <div className="hidden lg:flex lg:w-1/2 relative p-4 h-full">
           <div className="relative h-full w-full rounded-[2.5rem] overflow-hidden group shadow-2xl">
             <img
               src="https://res.cloudinary.com/drxouwbms/image/upload/v1755894348/20250821_1333_Senegalese_Unity_Network_simple_compose_01k36d7c5yed4vdr030kte04t7_ylytqo.png"
@@ -93,14 +93,14 @@ const Login = () => {
         </div>
 
         {/* Right Side: Clean Form */}
-        <div className="flex-1 flex flex-col justify-center px-10 sm:px-16 lg:px-24 xl:px-32 py-12 relative overflow-y-auto lg:overflow-hidden bg-white">
-          <div className="max-w-md w-full mx-auto space-y-12">
-            <div className="space-y-8 text-center">
+        <div className="flex-1 flex flex-col justify-center px-6 sm:px-16 lg:px-24 xl:px-32 py-12 relative bg-white overflow-y-auto">
+          <div className="max-w-md w-full mx-auto space-y-8 sm:space-y-12">
+            <div className="space-y-6 sm:space-y-8 text-center">
               {/* Centered Logo */}
               <div className="flex justify-center">
                 <img
                   src="https://res.cloudinary.com/drxouwbms/image/upload/v1755777328/369470771_801733008414799_8805271754561376909_n_c4laj2.jpg"
-                  className="w-20 h-20 rounded-2xl shadow-xl border border-gray-50"
+                  className="w-16 h-16 sm:w-20 sm:h-20 rounded-2xl shadow-xl border border-gray-50"
                   alt="Logo"
                 />
               </div>
@@ -108,12 +108,12 @@ const Login = () => {
               <motion.div
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
-                className="space-y-4 text-center"
+                className="space-y-3 sm:space-y-4 text-center"
               >
-                <h1 className="text-5xl sm:text-7xl font-black text-gray-900 tracking-tighter leading-[0.85]">
+                <h1 className="text-4xl sm:text-6xl md:text-7xl font-black text-gray-900 tracking-tighter leading-[0.85]">
                   Bienvenue
                 </h1>
-                <p className="text-gray-400 font-medium text-lg leading-relaxed">
+                <p className="text-gray-400 font-medium text-sm sm:text-lg leading-relaxed">
                   Sur votre portail Baysawarr.
                 </p>
               </motion.div>
