@@ -93,14 +93,14 @@ const Login = () => {
         </div>
 
         {/* Right Side: Clean Form */}
-        <div className="flex-1 flex flex-col justify-center px-6 sm:px-16 lg:px-20 xl:px-32 py-8 relative bg-white overflow-y-auto">
+        <div className="flex-1 flex flex-col justify-center px-6 sm:px-16 lg:px-20 xl:px-32 py-6 relative bg-white overflow-y-auto">
           <div className="max-w-md w-full mx-auto space-y-6 sm:space-y-8">
             <div className="space-y-4 sm:space-y-6 text-center">
               {/* Centered Logo */}
               <div className="flex justify-center">
                 <img
                   src="https://res.cloudinary.com/drxouwbms/image/upload/v1755777328/369470771_801733008414799_8805271754561376909_n_c4laj2.jpg"
-                  className="w-16 h-16 sm:w-18 sm:h-18 rounded-2xl shadow-lg border border-gray-50"
+                  className="w-14 h-14 sm:w-16 sm:h-16 rounded-2xl shadow-lg border border-gray-50"
                   alt="Logo"
                 />
               </div>
@@ -124,10 +124,10 @@ const Login = () => {
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.2 }}
               onSubmit={handleSubmit}
-              className="space-y-8"
+              className="space-y-6"
             >
               {error && (
-                <div className="p-5 bg-red-50 border border-red-100 text-red-600 text-sm font-bold rounded-2xl animate-shake">
+                <div className="p-4 bg-red-50 border border-red-100 text-red-600 text-sm font-bold rounded-2xl animate-shake">
                   {error}
                 </div>
               )}
@@ -188,7 +188,7 @@ const Login = () => {
               </motion.button>
             </motion.form>
 
-            <div className="pt-12 text-center border-t border-gray-100">
+            <div className="pt-8 text-center border-t border-gray-100">
               <p className="text-gray-400 text-sm font-bold">
                 Pas encore de compte ? {' '}
                 <Link to="/enrollments" className="text-green-600 hover:underline underline-offset-8 decoration-2">S'inscrire gratuitement</Link>
