@@ -128,7 +128,7 @@ const Navbar = () => {
               <div className="flex flex-col">
                 <h1 className="text-xl font-black tracking-tight flex items-center">
                   <span className="text-blue-900 transition-colors duration-200 group-hover:text-green-700">BAY SA</span>
-                  <span className="text-green-600 ml-1.5">WARR</span>
+                  <span className="text-blue-900 transition-colors duration-200 group-hover:text-green-700 ml-0.5">WARR</span>
                 </h1>
 
               </div>

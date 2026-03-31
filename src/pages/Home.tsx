@@ -1,446 +1,381 @@
 import { motion } from 'framer-motion';
 import { Link } from 'react-router-dom';
-import { ArrowRight, Users, Globe, TrendingUp, Star, ShoppingCart, Quote, Check, BookOpen, LayoutDashboard } from 'lucide-react';
+import { ArrowRight, Users, Globe, TrendingUp, Star, Quote, Check, LayoutDashboard } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import ProductCarousel from '../components/ProductCarousel';
-import TestimonialSlider from '../components/TestimonialSlider';
-
-const CardLink = ({ card, children, className }: { card: any, children: React.ReactNode, className: string }) => {
-  if (card.isExternal) {
-    return (
-      <a href={card.path} target="_blank" rel="noopener noreferrer" className={className}>
-        {children}
-      </a>
-    );
-  }
-  return (
-    <Link to={card.path} className={className}>
-      {children}
-    </Link>
-  );
-};
+import TestimonialCarousel from '../components/TestimonialCarousel';
+import PinterestCard from '../components/PinterestCard';
 
 const Home = () => {
   const { token } = useAuth();
-  const quickAccessCards = [
+
+  const services = [
     {
-      title: 'Site E-commerce',
+      title: 'E-commerce Premium',
       subtitle: 'VENTE EN LIGNE',
-      description: 'Découvrez notre plateforme de vente en ligne pour les produits africains.',
-      icon: ShoppingCart,
+      description: 'Une vitrine digitale exclusive pour l\'artisanat et les produits d\'excellence africaine. Boutiques personnalisées, paiements sécurisés et logistique intégrée.',
+      image: '/images/service_ecommerce.png',
       path: 'https://shop.fabiratrading.com/',
       isExternal: true,
-      color: 'from-blue-600 to-indigo-700',
-      glow: 'shadow-blue-500/20',
-      accent: 'text-blue-600',
-      features: ['Boutiques Perso', 'Paiements Sécurisés', 'Logistique'],
-      buttonText: 'Allez sur le site',
+      span: 'md:col-span-2 md:row-span-2'
     },
     {
-      title: 'Nos Événements',
-      subtitle: 'PROCHAINS RENDEZ-VOUS',
-      description: 'Participez à nos événements exclusifs et développez votre réseau.',
-      icon: TrendingUp,
+      title: 'Événements Clés',
+      subtitle: 'NETWORKING',
+      description: 'Sommet FIPA, webinaires et rencontres exclusives avec les leaders d\'influence.',
+      image: '/images/service_events.png',
       path: '/events',
-      color: 'from-blue-500 to-cyan-600',
-      glow: 'shadow-blue-500/20',
-      accent: 'text-blue-600',
-      features: ['Sommet FIPA', 'Webinaires', 'Networking'],
-      buttonText: 'En savoir plus',
+      span: 'md:col-span-1 md:row-span-1'
     },
     {
-      title: 'Nos Activités',
-      subtitle: 'ACTION SUR LE TERRAIN',
-      description: 'Découvrez les actions concrètes que nous menons pour le développement.',
-      icon: Users,
+      title: 'Activités Terrain',
+      subtitle: 'IMPACT REEL',
+      description: 'Formations, accompagnement stratégique et projets concrets pour l\'innovation.',
+      image: '/images/service_activities.png',
       path: '/activities',
-      color: 'from-purple-500 to-indigo-600',
-      glow: 'shadow-purple-500/20',
-      accent: 'text-purple-600',
-      features: ['Formations', 'Accompagnement', 'Projets'],
-      buttonText: 'En savoir plus',
+      span: 'md:col-span-1 md:row-span-2'
     },
     {
-      title: 'Blog & Actualités',
-      subtitle: 'VEILLE STRATÉGIQUE',
-      description: 'Soyez informé de nos activités à travers notre blog et nos actualités.',
-      icon: BookOpen,
+      title: 'Actualités & Blog',
+      subtitle: 'SAVOIR & VEILLE',
+      description: 'Analyses stratégiques et success stories du continent pour rester à la pointe de l\'innovation.',
+      image: '/images/service_blog_news.png',
       path: '/blog',
-      color: 'from-orange-500 to-amber-600',
-      glow: 'shadow-orange-500/20',
-      accent: 'text-orange-600',
-      features: ['Articles récents', 'Success Stories', 'Événements'],
-      buttonText: 'En savoir plus',
-    },
+      span: 'md:col-span-2 md:row-span-1'
+    }
   ];
 
-  const stats = [
-    { number: '10,000+', label: 'Utilisateurs actifs', icon: Users },
-    { number: '50+', label: 'Pays', icon: Globe },
-    { number: '95%', label: 'Taux de croissance', icon: TrendingUp },
-    { number: '4.9/5', label: 'Note', icon: Star },
+  interface StatItem {
+    number: string;
+    label: string;
+    description: string;
+    icon: any;
+    color: string;
+    isHero?: boolean;
+  }
+
+  const stats: StatItem[] = [
+    { number: '10,000+', label: 'Partenaires Actifs', description: 'Un écosystème en plein essor.', icon: Users, color: 'bg-gradient-to-br from-green-500 to-emerald-900 text-white border-transparent shadow-2xl shadow-green-950/50' },
+    { number: '50+', label: 'Pays Connectés', description: 'L\'excellence sans frontières.', icon: Globe, color: 'bg-gradient-to-br from-green-500 to-emerald-900 text-white border-transparent shadow-2xl shadow-green-950/50' },
+    { number: '95%', label: 'Taux de Réussite', description: 'Un engagement pour le succès.', icon: TrendingUp, color: 'bg-gradient-to-br from-green-500 to-emerald-900 text-white border-transparent shadow-2xl shadow-green-950/50', isHero: true },
+    { number: '4.9/5', label: 'Satisfaction', description: 'La confiance de notre réseau.', icon: Star, color: 'bg-gradient-to-br from-green-500 to-emerald-900 text-white border-transparent shadow-2xl shadow-green-950/50' },
   ];
+
 
   return (
     <motion.div
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
-      className="min-h-screen"
+      className="min-h-screen bg-white"
     >
-      {/* Hero Section with Background Image */}
-      <section className="relative min-h-[calc(100vh-4rem)] flex items-center justify-center overflow-hidden">
-        {/* Background Image with Overlay */}
-        <div className="absolute inset-0">
-          <img
-            src="https://res.cloudinary.com/drxouwbms/image/upload/v1755783263/20250821_1333_Senegalese_Unity_Network_simple_compose_01k36d7c5ze1vr73ppjxyq0q0c_pdhnmq.png"
-            alt="African Business"
-            className="w-full h-full object-cover filter blur-sm"
+      {/* Modern Cinematic Hero Section */}
+      <section className="relative min-h-screen flex items-center overflow-hidden bg-gray-950">
+        <div className="absolute inset-0 z-0">
+          <motion.img
+            initial={{ scale: 1.1, opacity: 0 }}
+            animate={{ scale: 1, opacity: 0.6 }}
+            transition={{ duration: 1.5 }}
+            src="/images/hero_african_business.png"
+            alt="African Business Excellence"
+            className="w-full h-full object-cover"
           />
-          <div className="absolute inset-0 bg-black opacity-30"></div>
+          <div className="absolute inset-0 bg-gradient-to-r from-gray-950 via-gray-950/40 to-transparent" />
         </div>
 
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center relative z-10 py-8 sm:py-12">
-          <motion.div
-            initial={{ y: 50, opacity: 0 }}
-            animate={{ y: 0, opacity: 1 }}
-            transition={{ duration: 0.8 }}
-            className="space-y-8"
-          >
-            <div className="space-y-3 sm:space-y-4">
-              <motion.h1
-                className="text-4xl sm:text-5xl md:text-6xl font-bold text-white tracking-tight"
-                initial={{ y: 20, opacity: 0 }}
-                animate={{ y: 0, opacity: 1 }}
-                transition={{ duration: 0.5 }}
-              >
-                Bienvenue sur{' '}
-                <span className="relative">
-                  <span
-                    className="text-green-900 bg-clip-text bg-gradient-to-r from-green-900 to-green-900"
-                    style={{
-                      WebkitTextStroke: '1px white',
-
-                    }}
-                  >
-                    BAY SA WARR
-                  </span>
-
-                </span>
-              </motion.h1>
-              <p className="text-base sm:text-lg md:text-2xl text-white max-w-3xl mx-auto leading-relaxed font-light">
-                Connectant l'excellence africaine aux opportunités mondiales
-              </p>
-            </div>
-
-            {/* Enhanced President's Message with Glassmorphism */}
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10 w-full">
+          <div className="grid lg:grid-cols-2 items-center gap-12 sm:gap-20">
             <motion.div
-              initial={{ y: 30, opacity: 0 }}
-              animate={{ y: 0, opacity: 1 }}
-              transition={{ delay: 0.3, duration: 0.8 }}
-              className="relative bg-white/40 backdrop-blur-2xl p-6 sm:p-8 rounded-3xl shadow-2xl max-w-4xl mx-auto border border-white/60 hover:bg-white/50 transition-all duration-500"
+              initial={{ x: -50, opacity: 0 }}
+              animate={{ x: 0, opacity: 1 }}
+              transition={{ duration: 0.8 }}
+              className="space-y-10"
             >
-              {/* Glassmorphic Glow Effect */}
-              <div className="absolute inset-0 bg-gradient-to-br from-green-500/10 via-transparent to-blue-500/10 rounded-3xl" />
-
-              <div className="absolute -top-6 left-1/2 transform -translate-x-1/2">
-                <div className="w-12 h-12 bg-gradient-to-br from-green-600 to-green-500 rounded-full flex items-center justify-center ring-4 ring-white/80 shadow-lg shadow-green-500/30">
-                  <Quote className="text-white" size={24} />
-                </div>
+              <div className="space-y-6">
+                <motion.span
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  className="inline-block text-green-500 font-black tracking-[0.4em] uppercase text-xs sm:text-sm"
+                >
+                  L'excellence à votre portée
+                </motion.span>
+                <h1 className="text-5xl sm:text-7xl md:text-8xl font-black text-white leading-[0.95] tracking-tighter">
+                  BAY SA<br />
+                  <span className="text-transparent bg-clip-text bg-gradient-to-r from-green-400 to-emerald-600">WARR</span>
+                </h1>
+                <p className="text-xl sm:text-2xl text-gray-400 max-w-xl font-medium leading-relaxed">
+                  Connecter l'excellence entrepreneuriale africaine aux opportunités d'un marché mondial en pleine mutation.
+                </p>
               </div>
 
-              <div className="flex items-center space-x-4 sm:space-x-6 mb-4 sm:mb-6 relative">
-                <div className="relative">
-                  <div className="absolute inset-0 bg-green-400/30 rounded-full blur-md" />
-                  <img
-                    src="https://res.cloudinary.com/drxouwbms/image/upload/v1755778170/Web_Photo_Editor_1_nik1li.jpg"
-                    alt="Fatou Fabira Dramé"
-                    className="relative w-16 h-16 sm:w-20 sm:h-20 rounded-full object-cover ring-4 ring-white/80 shadow-xl"
-                  />
-                  <div className="absolute -bottom-2 -right-2 w-8 h-8 bg-gradient-to-br from-green-600 to-green-500 rounded-full flex items-center justify-center ring-4 ring-white/80 shadow-lg">
-                    <Check className="text-white" size={16} />
+              <div className="flex flex-col sm:flex-row gap-5">
+                {token ? (
+                  <Link
+                    to="/dashboard"
+                    className="group bg-green-600 text-white px-8 py-5 rounded-2xl font-black hover:bg-green-500 transition-all duration-300 flex items-center justify-center space-x-3 shadow-2xl shadow-green-900/20"
+                  >
+                    <span>Tableau de Bord</span>
+                    <LayoutDashboard size={22} className="group-hover:rotate-12 transition-transform" />
+                  </Link>
+                ) : (
+                  <Link
+                    to="/enrollments"
+                    className="group bg-green-600 text-white px-8 py-5 rounded-2xl font-black hover:bg-green-500 transition-all duration-300 flex items-center justify-center space-x-3 shadow-2xl shadow-green-900/20"
+                  >
+                    <span>Rejoindre le Réseau</span>
+                    <ArrowRight size={22} className="group-hover:translate-x-2 transition-transform" />
+                  </Link>
+                )}
+                <Link
+                  to="/events"
+                  className="bg-white/5 backdrop-blur-md text-white border border-white/10 px-8 py-5 rounded-2xl font-black hover:bg-white/10 transition-all duration-300 flex items-center justify-center space-x-3"
+                >
+                  <span>Nos Événements</span>
+                  <TrendingUp size={22} />
+                </Link>
+              </div>
+            </motion.div>
+
+            {/* Floating Glass Quote */}
+            <motion.div
+              initial={{ scale: 0.9, opacity: 0, rotateY: 20 }}
+              animate={{ scale: 1, opacity: 1, rotateY: 0 }}
+              transition={{ delay: 0.4, duration: 1 }}
+              className="hidden lg:block relative p-10 bg-white/5 backdrop-blur-3xl rounded-[3rem] border border-white/10 shadow-2xl overflow-hidden group"
+            >
+              <div className="absolute top-0 right-0 p-8 opacity-10 group-hover:opacity-20 transition-opacity">
+                <Quote size={120} className="text-white" />
+              </div>
+
+              <div className="relative space-y-8">
+                <div className="flex items-center gap-6">
+                  <div className="relative">
+                    <img
+                      src="https://res.cloudinary.com/drxouwbms/image/upload/v1755778170/Web_Photo_Editor_1_nik1li.jpg"
+                      alt="Présidente"
+                      className="w-20 h-20 rounded-full object-cover ring-4 ring-green-500/30"
+                    />
+                    <div className="absolute -bottom-2 -right-2 w-8 h-8 bg-green-500 rounded-full flex items-center justify-center ring-4 ring-gray-900">
+                      <Check className="text-white" size={16} />
+                    </div>
+                  </div>
+                  <div>
+                    <h4 className="text-white text-xl font-black uppercase tracking-wider">Fatou Fabira Dramé</h4>
+                    <p className="text-green-500 font-bold text-sm uppercase tracking-widest">Présidente Fondatrice</p>
                   </div>
                 </div>
-                <div className="text-left">
-                  <h3 className="text-xl sm:text-2xl font-bold text-gray-900">Message de la présidente</h3>
-                  <p className="text-gray-700">Mme Fatou Fabira Dramé</p>
-                  <p className="text-green-600 text-xs sm:text-sm font-bold">Présidente de la plateforme</p>
-                </div>
+
+                <p className="text-gray-300 text-2xl font-light italic leading-relaxed">
+                  "Nous bâtissons un pont indestructible entre le génie local et l'ambition globale. Chaque partenariat est une pierre angulaire du futur de l'Afrique."
+                </p>
               </div>
-
-              <p className="text-gray-800 text-base sm:text-lg leading-relaxed italic relative">
-                "Chez BAY SA WARR, nous croyons au potentiel illimité des entreprises africaines.
-                Notre plateforme joue le rôle de pont reliant l'excellence locale aux marchés mondiaux,
-                favorisant l'innovation, le partenariat et une croissance durable à travers le continent."
-              </p>
             </motion.div>
+          </div>
+        </div>
 
-            <motion.div
-              initial={{ y: 30, opacity: 0 }}
-              animate={{ y: 0, opacity: 1 }}
-              transition={{ delay: 0.6, duration: 0.8 }}
-              className="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center"
+        {/* Decorative elements */}
+        <div className="absolute bottom-10 left-10 w-96 h-96 bg-green-500/10 rounded-full blur-[120px] animate-pulse" />
+        <div className="absolute top-10 right-10 w-96 h-96 bg-blue-500/10 rounded-full blur-[120px] animate-pulse delay-1000" />
+      </section>
+
+      {/* Modern Pinterest-style Grid Section */}
+      <section className="py-24 sm:py-32 bg-gray-50/50">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center mb-20 space-y-4">
+            <motion.span
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              className="inline-block px-4 py-2 bg-green-50 text-green-700 text-[11px] font-black uppercase tracking-[0.3em] rounded-full border border-green-100 shadow-sm"
             >
-              {token ? (
-                <Link
-                  to="/dashboard"
-                  className="bg-green-600 text-white px-6 sm:px-8 py-3 sm:py-4 rounded-full font-semibold hover:bg-green-700 transition-all duration-300 flex items-center justify-center space-x-2 shadow-lg hover:shadow-xl"
-                >
-                  <span>Mon Tableau de Bord</span>
-                  <LayoutDashboard size={20} />
-                </Link>
-              ) : (
-                <Link
-                  to="/enrollments"
-                  className="bg-green-600 text-white px-6 sm:px-8 py-3 sm:py-4 rounded-full font-semibold hover:bg-green-700 transition-all duration-300 flex items-center justify-center space-x-2 shadow-lg hover:shadow-xl"
-                >
-                  <span>Rejoignez notre réseau</span>
-                  <ArrowRight size={20} />
-                </Link>
-              )}
-              <Link
-                to="/events"
-                className="bg-white text-green-600 border-2 border-green-600 px-6 sm:px-8 py-3 sm:py-4 rounded-full font-semibold hover:bg-green-50 transition-all duration-300 flex items-center justify-center space-x-2"
-              >
-                <span>Nos Événements</span>
-                <TrendingUp size={20} />
-              </Link>
-            </motion.div>
-          </motion.div>
+              Écosystème BAYS AWARR
+            </motion.span>
+            <h2 className="text-4xl sm:text-6xl font-black text-gray-900 tracking-tighter">
+              Une vision, des <span className="text-green-600">possibilités infinies</span>
+            </h2>
+            <p className="text-lg sm:text-xl text-gray-500 max-w-2xl mx-auto font-medium">
+              Découvrez comment nous transformons le paysage économique à travers nos piliers stratégiques.
+            </p>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 auto-rows-[400px]">
+            {services.map((service, index) => (
+              <PinterestCard
+                key={index}
+                index={index}
+                title={service.title}
+                subtitle={service.subtitle}
+                description={service.description}
+                image={service.image}
+                link={service.path}
+                isExternal={service.isExternal}
+                className={service.span}
+              />
+            ))}
+          </div>
         </div>
       </section>
 
-      {/* Stats Section */}
-      <section className="relative py-24 overflow-hidden">
-        {/* Background Pattern */}
-        <div className="absolute inset-0 bg-gradient-to-b from-white via-green-50/30 to-white" />
-        <div className="absolute inset-0 bg-[url('/grid-pattern.svg')] opacity-5" />
+      {/* Immersive Impact Section - 3D Green Expansion */}
+      <section className="relative py-24 sm:py-32 bg-gray-50/50 overflow-hidden">
+        {/* Background elements - soft glows */}
+        <div className="absolute top-0 right-0 w-1/2 h-full bg-green-500/5 blur-[120px]" />
+        <div className="absolute bottom-0 left-0 w-1/3 h-1/2 bg-blue-500/5 blur-[120px]" />
 
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative">
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8 }}
-            viewport={{ once: true }}
-            className="text-center mb-16"
-          >
-            <h2 className="text-3xl sm:text-4xl font-bold text-gray-900 mb-4">
-              Notre Impact en Chiffres
-            </h2>
-            <p className="text-lg sm:text-xl text-gray-600 max-w-2xl mx-auto">
-              Découvrez comment BAY SA WARR transforme le commerce en Afrique
+        <div className="max-w-[90rem] mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+          <div className="flex flex-col lg:flex-row lg:items-end justify-between mb-16 gap-10">
+            <div className="max-w-2xl space-y-6">
+              <motion.span
+                initial={{ opacity: 0, x: -20 }}
+                whileInView={{ opacity: 1, x: 0 }}
+                className="inline-block px-4 py-2 bg-green-100 text-green-700 text-[10px] font-black uppercase tracking-[0.3em] rounded-full border border-green-200 shadow-sm"
+              >
+                Indicateurs de Performance
+              </motion.span>
+              <h2 className="text-4xl sm:text-6xl font-black text-gray-900 tracking-tighter leading-tight">
+                Maximiser votre <span className="text-transparent bg-clip-text bg-gradient-to-r from-green-600 to-green-600">potentiel</span> d'affaires
+              </h2>
+            </div>
+            <p className="text-xl text-gray-500 leading-relaxed max-w-sm font-medium">
+              Gagnez du temps et de l'influence grâce à notre écosystème conçu pour les visionnaires africains.
             </p>
-          </motion.div>
+          </div>
 
-          <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-6 sm:gap-8 lg:gap-12">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
             {stats.map((stat, index) => (
               <motion.div
                 key={index}
-                initial={{ y: 30, opacity: 0 }}
-                whileInView={{ y: 0, opacity: 1 }}
-                transition={{ delay: index * 0.1, duration: 0.5 }}
+                initial={{ opacity: 0, y: 40 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                transition={{ delay: index * 0.1, duration: 0.8 }}
                 viewport={{ once: true }}
-                className="relative group"
+                className={`group relative p-8 sm:p-12 flex flex-col justify-between h-[360px] border transition-all duration-700 hover:scale-[1.02]
+                  rounded-tl-2xl rounded-br-2xl rounded-tr-[5rem] rounded-bl-[5rem]
+                  ${stat.color}`}
               >
-                {/* Glassmorphic Card */}
-                <div className="absolute inset-0 bg-white/40 backdrop-blur-xl rounded-3xl transform group-hover:scale-105 transition-all duration-500 border border-white/60 shadow-xl" />
-                <div className="absolute inset-0 bg-gradient-to-br from-green-500/10 via-transparent to-blue-500/10 rounded-3xl opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+                {/* Icon Container */}
+                <div className="w-14 h-14 rounded-2xl flex items-center justify-center mb-10 transition-transform duration-500 group-hover:scale-110 bg-white/10">
+                  <stat.icon className="text-white group-hover:rotate-12 transition-transform" size={28} />
+                </div>
 
-                <div className="relative p-8 text-center">
-                  <div className="mb-6 relative">
-                    <div className="absolute inset-0 bg-gradient-to-br from-green-600 to-green-400 rounded-full blur-xl opacity-30 group-hover:opacity-50 transition-opacity duration-500" />
-                    <div className="relative w-16 h-16 sm:w-20 sm:h-20 mx-auto bg-gradient-to-br from-green-600 via-green-500 to-green-400 rounded-full flex items-center justify-center shadow-2xl shadow-green-500/40 group-hover:shadow-green-500/60 transition-shadow duration-500">
-                      <stat.icon className="text-white" size={30} />
+                <div className="space-y-6">
+                  <div>
+                    <div className="text-5xl sm:text-6xl font-black tracking-tighter mb-2 text-white">
+                      {stat.number}
+                    </div>
+                    <div className="text-sm font-black uppercase tracking-widest text-green-300">
+                      {stat.label}
                     </div>
                   </div>
-
-                  <motion.h3
-                    initial={{ opacity: 0, y: 10 }}
-                    whileInView={{ opacity: 1, y: 0 }}
-                    transition={{ delay: index * 0.2, duration: 0.5 }}
-                    viewport={{ once: true }}
-                    className="text-3xl sm:text-4xl font-black text-gray-900 mb-3 relative"
-                  >
-                    <span className="relative z-10 bg-gradient-to-r from-gray-900 to-gray-700 bg-clip-text text-transparent">{stat.number}</span>
-                    <div className="absolute -bottom-1 left-1/2 transform -translate-x-1/2 w-2/3 h-3 bg-green-300/40 -z-10 blur-sm" />
-                  </motion.h3>
-
-                  <motion.p
-                    initial={{ opacity: 0 }}
-                    whileInView={{ opacity: 1 }}
-                    transition={{ delay: index * 0.3, duration: 0.5 }}
-                    viewport={{ once: true }}
-                    className="text-gray-700 font-semibold text-sm sm:text-base"
-                  >
-                    {stat.label}
-                  </motion.p>
-
-                  <div className="absolute bottom-0 left-0 right-0 h-1 bg-gradient-to-r from-transparent via-green-500/40 to-transparent transform scale-x-0 group-hover:scale-x-100 transition-transform duration-500 blur-sm" />
+                  <p className="text-xs sm:text-sm font-medium leading-relaxed transition-opacity text-white/70 group-hover:text-white">
+                    {stat.description}
+                  </p>
                 </div>
+
+                {/* Decorative cut highlight for hero card */}
+                {stat.isHero && (
+                  <div className="absolute top-0 right-0 p-8 opacity-10 pointer-events-none group-hover:opacity-30 transition-opacity">
+                    <TrendingUp size={100} className="text-white" />
+                  </div>
+                )}
               </motion.div>
             ))}
           </div>
         </div>
       </section>
 
-      {/* Product Carousel - Full Width */}
-      <section className="relative py-24 overflow-hidden">
-        {/* Glassmorphic Background */}
-        <div className="absolute inset-0 bg-gradient-to-br from-green-50 via-blue-50 to-purple-50" />
-        <div className="absolute inset-0 backdrop-blur-3xl bg-white/30" />
-
-        {/* Floating Orbs */}
-        <div className="absolute top-20 left-10 w-72 h-72 bg-green-400/20 rounded-full blur-3xl animate-pulse" />
-        <div className="absolute bottom-20 right-10 w-96 h-96 bg-blue-400/20 rounded-full blur-3xl animate-pulse delay-1000" />
-
-        <div className="relative">
-          <motion.div
-            initial={{ y: 30, opacity: 0 }}
-            whileInView={{ y: 0, opacity: 1 }}
-            transition={{ duration: 0.8 }}
-            viewport={{ once: true }}
-            className="text-center mb-16 px-4"
-          >
-            <motion.span
-              initial={{ scale: 0.9, opacity: 0 }}
-              whileInView={{ scale: 1, opacity: 1 }}
-              transition={{ duration: 0.5 }}
-              className="inline-block text-green-600 font-bold px-6 py-2 rounded-full bg-white/60 backdrop-blur-md border border-white/40 shadow-lg mb-6"
-            >
-              ✨ Nos Vedettes
-            </motion.span>
-            <h2 className="text-4xl sm:text-5xl md:text-6xl font-black text-gray-900 mb-6 tracking-tight">
-              Produits et services{' '}
-              <span className="relative inline-block">
-                <span className="text-transparent bg-clip-text bg-gradient-to-r from-green-600 to-blue-600">
-                  en vedette
-                </span>
-                <div className="absolute -bottom-2 left-0 w-full h-4 bg-green-200/40 -z-10 blur-sm" />
-              </span>
-            </h2>
-            <p className="text-lg sm:text-xl text-gray-600 max-w-3xl mx-auto leading-relaxed">
-              Découvrez l'excellence africaine : produits authentiques et solutions innovantes
+      {/* Featured Products Section */}
+      <section className="py-24 sm:py-32 overflow-hidden bg-white">
+        <div className="max-w-[90rem] mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex flex-col md:flex-row md:items-end justify-between mb-16 gap-6">
+            <div className="space-y-4">
+              <span className="text-green-600 font-black uppercase tracking-[0.3em] text-xs">Exclusivités du réseau</span>
+              <h2 className="text-4xl sm:text-6xl font-black text-gray-900 tracking-tighter">
+                Produits <span className=" text-green-600">Vedettes</span>
+              </h2>
+            </div>
+            <p className="text-lg text-gray-500 max-w-sm font-medium leading-relaxed">
+              Une sélection rigoureuse des meilleures produits de notre site e-commerce.
             </p>
-          </motion.div>
+          </div>
 
-          {/* Full Width Carousel */}
-          <div className="w-full">
+          <div className="mx-[-1rem]">
             <ProductCarousel />
           </div>
         </div>
       </section>
 
-      {/* Quick Access Cards Section */}
-      <section className="relative py-24 overflow-hidden">
-        {/* Background Effects */}
-        <div className="absolute inset-0 bg-gradient-to-b from-gray-50 via-white to-gray-50" />
-        <div className="absolute inset-0 bg-[url('/grid-pattern.svg')] opacity-5" />
-        <div className="absolute right-0 top-1/2 w-96 h-96 bg-green-200/30 rounded-full filter blur-[80px]" />
-        <div className="absolute left-0 bottom-0 w-96 h-96 bg-blue-200/30 rounded-full filter blur-[80px]" />
+      {/* Refined Testimonials Section with High-Impact Cool Background */}
+      <section className="relative py-24 sm:py-32 bg-slate-50/30 overflow-hidden">
+        {/* Ambient Boutique Background Elements - Amplified for visibility */}
+        {/* 1. Large vibrant glows */}
+        <div className="absolute -top-24 -right-24 w-[600px] h-[600px] bg-green-500/10 rounded-full blur-[120px] pointer-events-none" />
+        <div className="absolute -bottom-24 -left-24 w-[700px] h-[700px] bg-blue-500/10 rounded-full blur-[120px] pointer-events-none" />
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-emerald-500/5 rounded-full blur-[140px] pointer-events-none" />
 
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative">
-          <motion.div
-            initial={{ y: 30, opacity: 0 }}
-            whileInView={{ y: 0, opacity: 1 }}
-            transition={{ duration: 0.8 }}
-            viewport={{ once: true }}
-            className="text-center mb-16"
-          >
+        {/* 2. Floating Animated Glass Orbs */}
+        <motion.div
+          animate={{
+            y: [0, -40, 0],
+            x: [0, 30, 0],
+          }}
+          transition={{ duration: 15, repeat: Infinity, ease: "easeInOut" }}
+          className="absolute top-1/4 left-20 w-80 h-80 bg-green-400/10 rounded-full blur-[90px] pointer-events-none border border-green-500/5"
+        />
+        <motion.div
+          animate={{
+            y: [0, 50, 0],
+            x: [0, -40, 0],
+          }}
+          transition={{ duration: 18, repeat: Infinity, ease: "easeInOut" }}
+          className="absolute bottom-1/4 right-20 w-[450px] h-[450px] bg-blue-400/10 rounded-full blur-[110px] pointer-events-none border border-blue-500/5"
+        />
+
+        {/* 3. Distinct Texture Overlay (Dot Grid) */}
+        <div className="absolute inset-0 bg-[radial-gradient(#d1d5db_1.5px,transparent_1.5px)] [background-size:32px_32px] opacity-[0.15] pointer-events-none" />
+
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+          <div className="text-center mb-16 space-y-4">
             <motion.span
-              initial={{ y: 20, opacity: 0 }}
-              whileInView={{ y: 0, opacity: 1 }}
-              transition={{ duration: 0.5 }}
-              className="inline-block text-green-600 font-medium px-4 py-2 rounded-full bg-green-50 border border-green-100 mb-4"
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              className="inline-block px-4 py-2 bg-white text-green-700 text-[10px] font-black uppercase tracking-[0.3em] rounded-full shadow-sm border border-gray-100"
             >
-              Solutions Intégrées
+              Impact & Témoignages
             </motion.span>
-            <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold text-gray-900 mb-6">
-              Découvrez notre{' '}
-              <span className="relative inline-block">
-                écosystème
-                <div className="absolute bottom-2 left-0 w-full h-3 bg-green-200/50 -z-10 transform -rotate-1"></div>
-              </span>
+            <h2 className="text-4xl sm:text-6xl font-black text-gray-900 tracking-tighter">
+              La voix de nos <span className="text-green-600">membres</span>
             </h2>
-            <p className="text-lg sm:text-xl text-gray-600 max-w-3xl mx-auto">
-              Des solutions complètes pour développer votre activité en Afrique et au-delà
-            </p>
-          </motion.div>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
-            {quickAccessCards.map((card, index) => (
-              <motion.div
-                key={index}
-                initial={{ y: 40, opacity: 0 }}
-                whileInView={{ y: 0, opacity: 1 }}
-                transition={{ delay: index * 0.1, duration: 0.6 }}
-                viewport={{ once: true }}
-                className="group relative"
-              >
-                <CardLink card={card} className="block h-full">
-                  {/* Main Card Structure */}
-                  <div className={`h-full bg-white/40 backdrop-blur-xl rounded-[2.5rem] border border-gray-100 p-8 shadow-2xl transition-all duration-500 group-hover:-translate-y-4 hover:shadow-xl relative overflow-hidden ${card.glow}`}>
-
-                    {/* Elaborated: Decorative Corner Accent */}
-                    <div className={`absolute top-0 right-0 w-32 h-32 bg-gradient-to-br ${card.color} opacity-[0.03] rounded-bl-[5rem] group-hover:opacity-[0.08] transition-opacity`} />
-                    <div className={`absolute top-8 right-8 w-2 h-2 rounded-full bg-gradient-to-r ${card.color} opacity-20 group-hover:scale-150 transition-transform`} />
-
-                    {/* Elaborated: Inner Border Glow Effect */}
-                    <div className={`absolute inset-[1px] rounded-[2.4rem] border border-white/50 pointer-events-none`} />
-
-                    {/* Icon with Dynamic Glow & Layered Container */}
-                    <div className="relative mb-8 group-hover:rotate-3 transition-transform duration-500 flex justify-center md:justify-start">
-                      <div className={`absolute -inset-2 bg-gradient-to-br ${card.color} rounded-3xl blur-xl opacity-20 group-hover:opacity-40 transition-opacity`} />
-                      <div className={`relative w-20 h-20 rounded-3xl bg-gradient-to-br ${card.color} flex items-center justify-center text-white shadow-lg`}>
-                        <card.icon size={36} strokeWidth={2.5} />
-                      </div>
-                    </div>
-
-                    <div className="mb-6 text-center md:text-left">
-                      <h3 className="text-xl font-black text-gray-900 mb-1 leading-tight group-hover:text-green-600 transition-colors">{card.title}</h3>
-                      <p className={`text-[10px] font-black uppercase tracking-[0.2em] ${card.accent}`}>{card.subtitle}</p>
-                    </div>
-
-                    <p className="text-gray-500 text-sm leading-relaxed mb-8 font-medium text-center md:text-left h-20 overflow-hidden">
-                      {card.description}
-                    </p>
-
-                    <div className="space-y-3 mb-10">
-                      {card.features.map((feature, fIdx) => (
-                        <div key={fIdx} className="flex items-center gap-3 justify-center md:justify-start">
-                          <div className={`w-1.5 h-1.5 rounded-full bg-gradient-to-r ${card.color} shadow-sm shadow-current`} />
-                          <span className="text-[11px] font-bold text-gray-800 tracking-wide uppercase opacity-80">{feature}</span>
-                        </div>
-                      ))}
-                    </div>
-
-                    <div className="flex items-center justify-center md:justify-start text-green-600 font-bold text-xs uppercase tracking-widest group/btn">
-                      <span className="mr-2">{card.buttonText}</span>
-                      <ArrowRight size={16} className="group-hover/btn:translate-x-1 transition-transform" />
-                    </div>
-                  </div>
-                  {/* Visual Accent Glow Backdrop */}
-                  <div className={`absolute -inset-1 bg-gradient-to-br ${card.color} rounded-[2.8rem] blur-2xl opacity-0 group-hover:opacity-[0.12] transition-opacity -z-10`} />
-                </CardLink>
-              </motion.div>
-            ))}
           </div>
+
+          <TestimonialCarousel />
         </div>
       </section>
 
-      {/* Testimonials */}
-      <section className="py-16 bg-gray-50">
+      {/* Final CTA Section */}
+      <section className="py-24 sm:py-32">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <motion.div
-            initial={{ y: 30, opacity: 0 }}
-            whileInView={{ y: 0, opacity: 1 }}
-            transition={{ duration: 0.8 }}
-            viewport={{ once: true }}
-            className="text-center mb-12"
-          >
-            <h2 className="text-3xl sm:text-4xl font-bold text-gray-900 mb-4">Ce que nos clients disent</h2>
-            <p className="text-lg sm:text-xl text-gray-600">Fait confiance par les entreprises partout en Afrique</p>
-          </motion.div>
-          <TestimonialSlider />
+          <div className="relative overflow-hidden rounded-[4rem] bg-gradient-to-br from-green-600 to-indigo-900 p-12 sm:p-24 text-center">
+            <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/asfalt-dark.png')] opacity-20" />
+            <div className="relative z-10 space-y-10">
+              <h2 className="text-5xl sm:text-7xl font-black text-white tracking-tighter leading-tight">
+                Prêt à rejoindre<br />l'excellence ?
+              </h2>
+              <p className="text-xl sm:text-2xl text-white/70 max-w-2xl mx-auto font-light">
+                Ne manquez pas l'opportunité de propulser votre activité vers une dimension globale.
+              </p>
+              <div className="pt-6">
+                <Link
+                  to="/enrollments"
+                  className="inline-flex items-center gap-4 bg-white text-gray-900 px-10 py-6 rounded-[2rem] font-black text-lg hover:scale-105 transition-transform shadow-2xl shadow-black/20"
+                >
+                  Démarrer l'aventure <ArrowRight />
+                </Link>
+              </div>
+            </div>
+
+            {/* Background decorative shapes */}
+            <div className="absolute -top-1/2 -left-1/4 w-[800px] h-[800px] bg-white/10 rounded-full blur-[120px] pointer-events-none" />
+          </div>
         </div>
       </section>
     </motion.div>
