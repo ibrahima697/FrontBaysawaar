@@ -55,7 +55,7 @@ const Home = () => {
   }
 
   const stats: StatItem[] = [
-    { number: '10,000+', label: 'Partenaires Actifs', description: 'Un écosystème en plein essor.', icon: Users, color: 'bg-gradient-to-br from-green-500 to-emerald-900 text-white border-transparent shadow-2xl shadow-green-950/50' },
+    { number: '1000+', label: 'Partenaires Actifs', description: 'Un écosystème en plein essor.', icon: Users, color: 'bg-gradient-to-br from-green-500 to-emerald-900 text-white border-transparent shadow-2xl shadow-green-950/50' },
     { number: '50+', label: 'Pays Connectés', description: 'L\'excellence sans frontières.', icon: Globe, color: 'bg-gradient-to-br from-green-500 to-emerald-900 text-white border-transparent shadow-2xl shadow-green-950/50' },
     { number: '95%', label: 'Taux de Réussite', description: 'Un engagement pour le succès.', icon: TrendingUp, color: 'bg-gradient-to-br from-green-500 to-emerald-900 text-white border-transparent shadow-2xl shadow-green-950/50', isHero: true },
     { number: '4.9/5', label: 'Satisfaction', description: 'La confiance de notre réseau.', icon: Star, color: 'bg-gradient-to-br from-green-500 to-emerald-900 text-white border-transparent shadow-2xl shadow-green-950/50' },
