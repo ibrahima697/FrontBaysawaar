@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Star, ArrowRight, ArrowLeft } from 'lucide-react';
+import { Star, ArrowRight, ArrowLeft, User } from 'lucide-react';
 
 const testimonials = [
   {
@@ -102,11 +102,9 @@ const TestimonialCarousel = () => {
             </blockquote>
 
             <div className="flex flex-col items-center gap-4 mt-auto">
-              <img
-                src={testimonials[currentIndex].image}
-                alt={testimonials[currentIndex].name}
-                className="w-14 h-14 sm:w-16 sm:h-16 rounded-full object-cover ring-4 ring-green-50 shadow-xl"
-              />
+              <div className="w-14 h-14 sm:w-16 sm:h-16 rounded-full bg-gray-100 flex items-center justify-center ring-4 ring-green-50 shadow-xl text-gray-400">
+                <User size={32} />
+              </div>
               <div>
                 <div className="font-black text-gray-900 uppercase tracking-tighter text-sm sm:text-base">{testimonials[currentIndex].name}</div>
                 <div className="text-[10px] sm:text-sm font-bold text-green-600 uppercase tracking-[0.1em]">{testimonials[currentIndex].role}</div>
@@ -132,37 +130,7 @@ const TestimonialCarousel = () => {
         </div>
       </div>
 
-      {/* Impact Indicators Section */}
-      <motion.div 
-        key={currentIndex + "-metrics"}
-        initial={{ opacity: 0, y: 10 }}
-        animate={{ opacity: 1, y: 0 }}
-        className="mt-8 sm:mt-16 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8 items-center justify-center max-w-3xl mx-auto"
-      >
-        <div className="text-center lg:text-left">
-          <div className="text-3xl sm:text-4xl font-black text-gray-950 tracking-tighter leading-none mb-1">
-            {testimonials[currentIndex].metric}
-          </div>
-          <div className="text-[10px] font-black uppercase tracking-[0.2em] text-gray-400">
-            {testimonials[currentIndex].metricLabel}
-          </div>
-        </div>
-        
-        <div className="hidden lg:block h-px bg-gray-100" />
-        
-        <div className="flex flex-col items-center lg:items-end justify-center">
-            <div className="flex items-center gap-3">
-               <div className="flex -space-x-4">
-                 {testimonials.map((t, i) => (
-                   <img key={i} src={t.image} className="w-8 h-8 sm:w-10 sm:h-10 rounded-full border-4 border-white object-cover shadow-sm" alt="Thumbnail" />
-                 ))}
-               </div>
-               <div className="text-[10px] sm:text-[11px] font-black uppercase text-gray-900 tracking-wider">
-                  +10k Membres
-               </div>
-            </div>
-        </div>
-      </motion.div>
+
 
       {/* Navigation Tracking Bar */}
       <div className="mt-10 sm:mt-12 flex justify-center gap-2 sm:gap-3">

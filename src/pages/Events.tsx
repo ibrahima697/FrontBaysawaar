@@ -1,10 +1,10 @@
 // src/pages/Events.tsx
 import { useEffect, useState, useRef } from 'react';
-import { motion, Variants, AnimatePresence } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 import {
-  Calendar, MapPin, Users, ArrowRight, TrendingUp, Globe,
+  Calendar, MapPin, Users, ArrowRight, Globe,
   Award, CheckCircle, X, ChevronLeft, ChevronRight,
-  Info, Clock, DollarSign, Heart, Zap, Share2
+  Clock
 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import Swal from 'sweetalert2';
@@ -530,354 +530,118 @@ const Events = () => {
           </div>
         </section>
       )}
-      {/* Why Attend - Expanded Bento Grid Style */}
-      <section className="py-32 bg-[#0a0a0a] relative overflow-hidden">
-        {/* Background Elements */}
-        <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-green-500/10 rounded-full blur-[100px] -translate-y-1/2 translate-x-1/2 z-0" />
-        <div className="absolute bottom-0 left-0 w-[500px] h-[500px] bg-blue-500/10 rounded-full blur-[100px] translate-y-1/2 -translate-x-1/2 z-0" />
-        <div className="absolute top-1/2 left-1/2 w-[800px] h-[800px] bg-white/5 rounded-full blur-[120px] -translate-x-1/2 -translate-y-1/2 z-0 pointer-events-none" />
-
-        <div className="max-w-[90rem] mx-auto px-6 relative z-10">
-          <div className="mb-20 text-center md:text-left">
-            <span className="text-green-500 font-bold tracking-widest uppercase text-sm mb-4 block">L'Expérience FIPA</span>
-            <h2 className="text-4xl md:text-6xl font-bold text-white mb-6 leading-tight">
-              Plus qu'un événement, <br /> <span className="text-gray-500">une célébration de l'excellence</span>
-            </h2>
-            <p className="text-gray-400 text-lg max-w-2xl leading-relaxed md:ml-0 mx-auto">
-              Une immersion totale dans la créativité et l'innovation africaine. Découvrez les multiples facettes qui rendent le FIPA unique.
-            </p>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-4 auto-rows-[300px] gap-6">
-
-            {/* 1. Networking (Large) */}
-            <motion.div
-              initial={{ opacity: 0, scale: 0.9 }}
-              whileInView={{ opacity: 1, scale: 1 }}
-              viewport={{ once: true }}
-              className="md:col-span-2 md:row-span-2 rounded-3xl overflow-hidden relative group"
-            >
-              <img
-                src="https://res.cloudinary.com/drxouwbms/image/upload/v1765711712/photorealistic-portrait-african-woman_mimrxs.jpg"
-                alt="Networking"
-                className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
-              />
-              <div className="absolute inset-0 bg-gradient-to-t from-black via-transparent to-transparent opacity-90" />
-              <div className="absolute bottom-0 left-0 p-8">
-                <div className="bg-green-500 w-12 h-12 rounded-full flex items-center justify-center mb-4 text-black shadow-[0_0_20px_rgba(34,197,94,0.4)]">
-                  <Users size={24} />
-                </div>
-                <h3 className="text-3xl font-bold text-white mb-2">Networking Stratégique</h3>
-                <p className="text-gray-300 font-light">Rencontrez les décideurs qui façonnent l'avenir du continent.</p>
-              </div>
-            </motion.div>
-
-            {/* 2. Croissance (Small Dark) */}
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.1 }}
-              viewport={{ once: true }}
-              className="md:col-span-1 md:row-span-1 bg-[#151515] rounded-3xl p-8 border border-white/5 hover:border-green-500/30 transition-all group flex flex-col justify-between"
-            >
-              <div className="bg-white/5 w-10 h-10 rounded-xl flex items-center justify-center text-green-500 group-hover:bg-green-500 group-hover:text-black transition-colors">
-                <TrendingUp size={20} />
-              </div>
-              <div>
-                <h3 className="text-xl font-bold text-white mb-2">Croissance</h3>
-                <p className="text-sm text-gray-400">Accédez à de nouveaux marchés porteurs.</p>
-              </div>
-            </motion.div>
-
-            {/* 3. Expertise (Small Image) */}
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.2 }}
-              viewport={{ once: true }}
-              className="md:col-span-1 md:row-span-1 rounded-3xl overflow-hidden relative group border border-white/5"
-            >
-              <img
-                src="https://res.cloudinary.com/drxouwbms/image/upload/v1765711581/collection-wooden-sculptures-pottery_tslv8h.jpg"
-                alt="Art"
-                className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110 grayscale group-hover:grayscale-0"
-              />
-              <div className="absolute inset-0 bg-black/40 group-hover:bg-transparent transition-colors" />
-              <div className="absolute bottom-6 left-6">
-                <span className="text-white font-bold text-lg inline-block border-b-2 border-green-500 pb-1">Artisanat d'Art</span>
-              </div>
-            </motion.div>
-
-            {/* 4. Awards (Tall Green) */}
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.3 }}
-              viewport={{ once: true }}
-              className="md:col-span-1 md:row-span-2 bg-gradient-to-b from-green-600 to-green-900 rounded-3xl p-8 flex flex-col justify-between relative overflow-hidden group shadow-2xl shadow-green-900/20"
-            >
-              <div className="absolute top-0 right-0 w-32 h-32 bg-white/10 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2" />
-
-              <div className="relative z-10 p-2 bg-black/20 rounded-lg w-fit text-white mb-4">
-                <Award size={24} />
-              </div>
-
-              <div className="relative z-10">
-                <h3 className="text-2xl font-bold text-white mb-4">L'Excellence Récompensée</h3>
-                <p className="text-green-100 text-sm leading-relaxed mb-8 opacity-90">
-                  Participez aux FIPA Awards et donnez une visibilité internationale à vos produits innovants.
-                </p>
-                <button className="bg-white text-green-800 px-6 py-4 rounded-xl font-bold text-sm w-full hover:bg-gray-100 transition-colors flex justify-between items-center group-hover:px-4">
-                  <span>Candidater</span> <ArrowRight size={16} className="opacity-0 group-hover:opacity-100 transition-opacity" />
-                </button>
-              </div>
-            </motion.div>
-
-            {/* 5. Countries Stat (Small Text) */}
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.4 }}
-              viewport={{ once: true }}
-              className="md:col-span-1 md:row-span-1 bg-[#151515] rounded-3xl p-8 border border-white/5 flex flex-col justify-center items-center text-center group hover:bg-[#1a1a1a] transition-colors relative overflow-hidden"
-            >
-              <div className="absolute inset-0 bg-green-500/5 scale-0 group-hover:scale-100 transition-transform rounded-full blur-2xl"></div>
-              <h4 className="text-5xl font-bold text-white mb-2 group-hover:scale-110 transition-transform relative z-10 border-b-4 border-green-500/20 pb-2">50+</h4>
-              <p className="text-gray-400 text-sm uppercase tracking-widest relative z-10">Pays Représentés</p>
-            </motion.div>
-
-            {/* 6. Culture (Small Image) */}
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.5 }}
-              viewport={{ once: true }}
-              className="md:col-span-1 md:row-span-1 rounded-3xl overflow-hidden relative group"
-            >
-              <img
-                src="https://res.cloudinary.com/drxouwbms/image/upload/v1765711685/african-woman-portrait-cultural-decorative-items_yzgwv0.jpg"
-                alt="Culture"
-                className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
-              />
-              <div className="absolute inset-0 bg-green-900/60 mix-blend-multiply transition-opacity group-hover:opacity-80" />
-              <div className="absolute inset-0 flex items-center justify-center z-10">
-                <span className="text-white text-lg font-bold tracking-widest uppercase border border-white/30 px-4 py-2 rounded-full backdrop-blur-sm">Culture</span>
-              </div>
-            </motion.div>
-
-            {/* 7. Innovation/Tech (Large Wide) */}
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.6 }}
-              viewport={{ once: true }}
-              className="md:col-span-2 md:row-span-1 rounded-3xl overflow-hidden relative group border border-white/5"
-            >
-              <img
-                src="https://images.unsplash.com/photo-1531482615713-2afd69097998?q=80&w=1740&auto=format&fit=crop"
-                alt="Tech Innovation"
-                className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
-              />
-              <div className="absolute inset-0 bg-gradient-to-r from-black/90 via-black/40 to-transparent" />
-              <div className="absolute inset-y-0 left-0 p-10 flex flex-col justify-center max-w-sm">
-                <div className="flex items-center gap-3 mb-3 text-blue-400">
-                  <Globe size={20} />
-                  <span className="uppercase tracking-wider text-xs font-bold">Innovation</span>
-                </div>
-                <h3 className="text-2xl font-bold text-white mb-3">Tech & Digital</h3>
-                <p className="text-gray-300 text-sm">Le village numérique : vitrine des startups qui transforment l'Afrique.</p>
-              </div>
-            </motion.div>
-
-            {/* 8. Gastronomy (Small Vertical) */}
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.7 }}
-              viewport={{ once: true }}
-              className="md:col-span-1 md:row-span-1 rounded-3xl overflow-hidden relative group"
-            >
-              <img
-                src="https://images.unsplash.com/photo-1555939594-58d7cb561ad1?q=80&w=687&auto=format&fit=crop"
-                alt="Gastronomy"
-                className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
-              />
-              <div className="absolute inset-0 bg-black/30 group-hover:bg-black/10 transition-colors" />
-              <div className="absolute top-4 right-4 bg-white/10 backdrop-blur-md px-3 py-1 rounded-full text-xs font-bold text-white">
-                Gastronomie
-              </div>
-            </motion.div>
-
-            {/* 9. Interactive Map / Location (Small) */}
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.8 }}
-              viewport={{ once: true }}
-              className="md:col-span-1 md:row-span-1 bg-[#202020] rounded-3xl p-6 flex flex-col justify-center items-center text-center relative overflow-hidden group cursor-pointer"
-            >
-              <div className="absolute inset-0 opacity-20 group-hover:opacity-30 transition-opacity">
-                {/* Abstract map pattern simulation */}
-                <svg width="100%" height="100%" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
-                  <path d="M0 0 L100 100 M100 0 L0 100" stroke="white" strokeWidth="0.5" />
-                  <circle cx="50" cy="50" r="30" stroke="white" strokeWidth="0.5" fill="none" />
-                </svg>
-              </div>
-              <MapPin size={32} className="text-green-500 mb-3 relative z-10 group-hover:animate-bounce" />
-              <h3 className="text-white font-bold relative z-10">Dakar, Sénégal</h3>
-              <span className="text-xs text-gray-400 mt-1 relative z-10">Le Hub Ouest Africain</span>
-            </motion.div>
-
-          </div>
-        </div>
-      </section>
-
-      {/* Bento Finale - The Future is Now */}
-      <section className="py-40 bg-[#050505] relative overflow-hidden">
+      {/* Fabira TV Section */}
+      <section className="py-32 bg-[#050505] relative overflow-hidden">
         {/* Decorative Background Elements */}
-        <div className="absolute top-0 right-0 w-[600px] h-[600px] bg-green-500/5 rounded-full blur-[150px] -translate-y-1/2 translate-x-1/2 z-0" />
-        <div className="absolute bottom-0 left-0 w-[600px] h-[600px] bg-blue-500/5 rounded-full blur-[150px] translate-y-1/2 -translate-x-1/2 z-0" />
-
+        <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-green-500/10 rounded-full blur-[120px] -translate-y-1/2 translate-x-1/2 z-0" />
+        <div className="absolute bottom-0 left-0 w-[500px] h-[500px] bg-red-500/10 rounded-full blur-[120px] translate-y-1/2 -translate-x-1/2 z-0" />
+        
         <div className="max-w-[90rem] mx-auto px-6 relative z-10">
-          <div className="text-center mb-20">
+          <div className="mb-20 text-center">
             <motion.span
               initial={{ opacity: 0, y: 10 }}
               whileInView={{ opacity: 1, y: 0 }}
-              className="text-green-500 font-bold tracking-[0.4em] uppercase text-xs mb-4 block"
+              className="text-red-500 font-bold tracking-widest uppercase text-sm mb-4 block"
             >
-              Le Mot de la Fin
+              Immersions & Replays
             </motion.span>
             <motion.h2
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
-              className="text-5xl md:text-7xl font-black text-white tracking-tighter"
+              className="text-5xl md:text-7xl font-black text-white mb-6 leading-tight uppercase tracking-tighter"
             >
-              UNE NOUVELLE <span className="text-gray-700">ÈRE</span>
+              FABIRA <span className="text-transparent bg-clip-text bg-gradient-to-r from-red-500 to-red-700">TV</span>
             </motion.h2>
+            <motion.p
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              className="text-gray-400 text-lg max-w-2xl mx-auto leading-relaxed"
+            >
+              Revivez les moments forts de nos événements, découvrez nos interviews exclusives et plongez au cœur de l'innovation et du style de vie.
+            </motion.p>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-4 grid-rows-none md:grid-rows-2 gap-6 h-auto md:h-[800px]">
-
-            {/* 1. Main Feature Card (CTA) */}
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-16">
+            {/* Main Video (Bigger) */}
             <motion.div
-              initial={{ opacity: 0, scale: 0.95 }}
-              whileInView={{ opacity: 1, scale: 1 }}
-              className="md:col-span-2 md:row-span-2 bg-gradient-to-br from-green-600 to-green-900 rounded-[40px] p-10 md:p-16 flex flex-col justify-between relative overflow-hidden group border border-white/10 shadow-2xl"
-            >
-              <div className="absolute top-0 right-0 p-12 opacity-10 group-hover:scale-110 transition-transform duration-700">
-                <Zap size={200} fill="currentColor" />
-              </div>
-
-              <div className="relative z-10">
-                <div className="bg-white/10 backdrop-blur-md w-14 h-14 rounded-2xl flex items-center justify-center mb-8 border border-white/20">
-                  <Heart className="text-white" size={28} />
-                </div>
-                <h3 className="text-4xl md:text-6xl font-black text-white leading-tight mb-6">
-                  REJOIGNEZ <br /> LE MOUVEMENT.
-                </h3>
-                <p className="text-green-100 text-lg md:text-xl font-light max-w-md opacity-80 leading-relaxed">
-                  Baysawaar n'est pas qu'une plateforme, c'est une mission pour catalyser l'excellence africaine. En devenant membre, vous accédez à un monde d'opportunités sans limites.
-                </p>
-              </div>
-
-              <div className="relative z-10 mt-12">
-                <motion.button
-                  whileHover={{ scale: 1.05, x: 10 }}
-                  whileTap={{ scale: 0.95 }}
-                  className="bg-white text-green-900 px-10 py-6 rounded-full font-black tracking-widest uppercase text-sm flex items-center gap-4 hover:shadow-[0_20px_40px_rgba(255,255,255,0.2)] transition-all"
-                >
-                  DEVENIR MEMBRE MAINTENANT <ArrowRight size={20} />
-                </motion.button>
-              </div>
-            </motion.div>
-
-            {/* 2. Heritage Card (Image) */}
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
+              initial={{ opacity: 0, y: 30 }}
               whileInView={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.1 }}
-              className="md:col-span-1 md:row-span-1 rounded-[40px] overflow-hidden relative group border border-white/5"
+              className="md:col-span-3 lg:col-span-2 rounded-[2rem] overflow-hidden border border-white/10 shadow-[0_0_50px_rgba(255,0,0,0.15)] relative group bg-black"
             >
-              <img
-                src="https://res.cloudinary.com/drxouwbms/image/upload/v1765711712/photorealistic-portrait-african-woman_mimrxs.jpg"
-                alt="Heritage"
-                className="w-full h-full object-cover grayscale transition-all duration-700 group-hover:grayscale-0 group-hover:scale-110"
-              />
-              <div className="absolute inset-0 bg-gradient-to-t from-black via-transparent to-transparent opacity-60" />
-              <div className="absolute bottom-8 left-8">
-                <span className="text-white font-bold tracking-widest uppercase text-[10px] bg-green-600 px-3 py-1 rounded-full mb-2 inline-block">Vision</span>
-                <p className="text-white font-bold text-lg">Nos Racines, Notre Futur</p>
+              <div className="aspect-video w-full">
+                <iframe 
+                  width="100%" 
+                  height="100%" 
+                  src="https://www.youtube.com/embed/aStSTbLurH8?autoplay=0&rel=0&modestbranding=1" 
+                  title="YouTube video player" 
+                  frameBorder="0" 
+                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
+                  allowFullScreen
+                  className="w-full h-full"
+                ></iframe>
               </div>
             </motion.div>
 
-            {/* 3. Community Card (Interactive) */}
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.2 }}
-              className="md:col-span-1 md:row-span-1 bg-[#101010] rounded-[40px] p-8 border border-white/5 flex flex-col justify-between hover:border-green-500/30 transition-all group"
-            >
-              <div className="flex justify-between items-start">
-                <div className="bg-white/5 w-12 h-12 rounded-xl flex items-center justify-center text-green-500 group-hover:bg-green-500 group-hover:text-black transition-colors">
-                  <Share2 size={24} />
+            {/* Side Videos Grid */}
+            <div className="md:col-span-3 lg:col-span-1 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-1 gap-8">
+              <motion.div
+                initial={{ opacity: 0, x: 20 }}
+                whileInView={{ opacity: 1, x: 0 }}
+                transition={{ delay: 0.1 }}
+                className="rounded-3xl overflow-hidden border border-white/10 shadow-xl relative bg-black"
+              >
+                <div className="aspect-video w-full">
+                  <iframe 
+                    width="100%" 
+                    height="100%" 
+                    src="https://www.youtube.com/embed/xLfezHpKs4E?start=243&autoplay=0&rel=0&modestbranding=1" 
+                    title="YouTube video player" 
+                    frameBorder="0" 
+                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
+                    allowFullScreen
+                    className="w-full h-full"
+                  ></iframe>
                 </div>
-                <div className="flex -space-x-3">
-                  {[1, 2, 3].map(i => (
-                    <div key={i} className="w-8 h-8 rounded-full border-2 border-[#101010] bg-gray-800 overflow-hidden">
-                      <img src={`https://i.pravatar.cc/100?img=${i + 20}`} alt="avatar" />
-                    </div>
-                  ))}
+              </motion.div>
+
+              <motion.div
+                initial={{ opacity: 0, x: 20 }}
+                whileInView={{ opacity: 1, x: 0 }}
+                transition={{ delay: 0.2 }}
+                className="rounded-3xl overflow-hidden border border-white/10 shadow-xl relative bg-black"
+              >
+                <div className="aspect-video w-full">
+                  <iframe 
+                    width="100%" 
+                    height="100%" 
+                    src="https://www.youtube.com/embed/QSxcyWKoEdY?autoplay=0&rel=0&modestbranding=1" 
+                    title="YouTube video player" 
+                    frameBorder="0" 
+                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
+                    allowFullScreen
+                    className="w-full h-full"
+                  ></iframe>
                 </div>
-              </div>
-              <div>
-                <h4 className="text-4xl font-bold text-white mb-2">2.4k+</h4>
-                <p className="text-gray-500 text-sm uppercase tracking-widest font-medium">Membres Actifs</p>
-              </div>
-            </motion.div>
-
-            {/* 4. Globe / Connection Card */}
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.3 }}
-              className="md:col-span-2 md:row-span-1 bg-[#0a0a0a] rounded-[40px] p-10 border border-white/5 relative overflow-hidden group flex items-center gap-10"
-            >
-              <div className="absolute top-0 right-0 w-full h-full opacity-10 pointer-events-none">
-                <Globe size={300} className="translate-x-1/2" />
-              </div>
-              <div className="relative z-10 flex-1">
-                <h4 className="text-2xl font-bold text-white mb-4">Connecter l'Afrique <br /> au reste du Monde.</h4>
-                <p className="text-gray-400 text-sm font-light leading-relaxed max-w-sm">
-                  Grâce à nos partenariats internationaux, nous ouvrons des portes vers les marchés mondiaux pour les talents locaux.
-                </p>
-              </div>
-              <div className="relative z-10 hidden md:block">
-                <div className="w-24 h-24 rounded-full border border-white/10 flex items-center justify-center animate-spin-slow">
-                  <div className="w-2 h-2 bg-green-500 rounded-full" />
-                </div>
-              </div>
-            </motion.div>
-
-          </div>
-
-          {/* Social Proof Footer */}
-          {/* <div className="mt-20 flex flex-col md:flex-row items-center justify-between gap-8 border-t border-white/5 pt-12">
-            <p className="text-gray-500 text-sm font-light">© 2026 Baysawaar Foundation. All rights reserved.</p>
-            <div className="flex gap-10">
-              {["Instagram", "LinkedIn", "Twitter", "Facebook"].map(social => (
-                <a key={social} href="#" className="text-gray-500 hover:text-white transition-colors text-xs font-bold uppercase tracking-[0.2em]">{social}</a>
-              ))}
+              </motion.div>
             </div>
-            <motion.button
+          </div>
+
+          {/* CTA Subscribe */}
+          <div className="flex justify-center mt-12">
+            <motion.a
+              href="https://www.youtube.com/@fabiratv2023/"
+              target="_blank"
+              rel="noopener noreferrer"
               whileHover={{ scale: 1.05 }}
-              className="text-green-500 font-bold uppercase tracking-widest text-xs border-b border-green-500 pb-1"
+              whileTap={{ scale: 0.95 }}
+              className="bg-[#FF0000] text-white px-10 py-5 rounded-full font-black tracking-widest uppercase text-sm flex items-center gap-3 hover:shadow-[0_10px_30px_rgba(255,0,0,0.3)] transition-all"
             >
-              S'inscrire à la gazette
-            </motion.button>
-          </div> */}
+              <svg className="w-6 h-6" fill="currentColor" viewBox="0 0 24 24"><path d="M19.615 3.184c-3.604-.246-11.631-.245-15.23 0-3.897.266-4.356 2.62-4.385 8.816.029 6.185.484 8.549 4.385 8.816 3.6.245 11.626.246 15.23 0 3.897-.266 4.356-2.62 4.385-8.816-.029-6.185-.484-8.549-4.385-8.816zm-10.615 12.816v-8l8 3.993-8 4.007z"/></svg>
+              S'ABONNER À FABIRA TV
+            </motion.a>
+          </div>
         </div>
       </section>
-
       {/* Event Details Modal */}
       <AnimatePresence>
         {selectedEvent && (

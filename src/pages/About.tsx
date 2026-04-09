@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Target, Eye, Heart, Users, Award, Globe, TrendingUp, Handshake, Facebook, Linkedin, Instagram, Youtube } from 'lucide-react';
+import { Target, Eye, Heart, Users, Globe, TrendingUp, Facebook, Linkedin, Instagram, Youtube } from 'lucide-react';
 
 const About = () => {
   const navigate = useNavigate();
@@ -71,28 +71,16 @@ const About = () => {
       image: 'https://res.cloudinary.com/drxouwbms/image/upload/v1755778170/Web_Photo_Editor_1_nik1li.jpg',
     },
     {
-      name: 'Fatou Ndiaye',
-      role: 'Directrice des Opérations',
-      bio: 'Experte en gestion de la chaîne d\'approvisionnement et des opérations de plateforme avec une connaissance approfondie du marché africain.',
-      image: 'https://images.pexels.com/photos/1181686/pexels-photo-1181686.jpeg?auto=compress&cs=tinysrgb&w=400',
-    },
-    {
-      name: 'Kwame Mensah',
-      role: 'Directeur Technique',
-      bio: 'Innovateur technologique spécialisé dans les plateformes e-commerce et la transformation digitale.',
-      image: 'https://images.pexels.com/photos/1043471/pexels-photo-1043471.jpeg?auto=compress&cs=tinysrgb&w=400',
-    },
-    {
-      name: 'Amina Kone',
-      role: 'Directrice des Partenariats',
-      bio: 'Développeuse de relations avec un vaste réseau sur les marchés africains et internationaux.',
-      image: 'https://images.pexels.com/photos/1239291/pexels-photo-1239291.jpeg?auto=compress&cs=tinysrgb&w=400',
-    },
-    {
       name: 'Ndiaga Lo',
       role: 'Developpeur Frontend',
       bio: 'Développeur Frontend avec une expertise approfondie en React et Next.js.',
       image: 'https://res.cloudinary.com/drxouwbms/image/upload/v1743803438/learners/bwear6xjrbj69froahdp.jpg',
+    },
+    {
+      name: 'Ahmady Ibrahima Guissé',
+      role: 'Developpeur Backend',
+      bio: 'Développeur Backend avec une expertise approfondie en Node.js et Express.js.',
+      image: 'https://res.cloudinary.com/drxouwbms/image/upload/t_ahmadycrop/baysawarr/dz5p45walblwamgdzs0b.png',
     },
   ];
 
@@ -159,7 +147,7 @@ const About = () => {
               {/* Main Image */}
               <div className="relative z-10 w-[85%] aspect-[4/5] rounded-[60px] overflow-hidden shadow-2xl border-8 border-white">
                 <img
-                  src="https://images.pexels.com/photos/3184465/pexels-photo-3184465.jpeg?auto=compress&cs=tinysrgb&w=800"
+                  src="https://res.cloudinary.com/drxouwbms/image/upload/v1775727190/656205723_1464080912180002_2259596601692938735_n-Picsart-AiImageEnhancer_gvvswe.jpg"
                   alt="Notre équipe au travail"
                   className="w-full h-full object-cover"
                 />
@@ -174,7 +162,7 @@ const About = () => {
                 className="absolute -bottom-10 -right-4 z-20 w-[55%] aspect-square rounded-[40px] overflow-hidden shadow-2xl border-8 border-white hidden sm:block"
               >
                 <img
-                  src="https://images.pexels.com/photos/1181686/pexels-photo-1181686.jpeg?auto=compress&cs=tinysrgb&w=400"
+                  src="https://res.cloudinary.com/drxouwbms/image/upload/v1775727559/660454148_1470106721577421_1297613685971822068_n_mqxjgq.jpg"
                   alt="Productivité"
                   className="w-full h-full object-cover"
                 />
@@ -553,18 +541,6 @@ const About = () => {
                             {member.bio}
                           </p>
 
-                          {/* Social Icons */}
-                          <div className="flex items-center gap-3">
-                            <a href="#" className="p-2.5 bg-gray-50 rounded-xl text-slate-400 hover:bg-green-600 hover:text-white transition-all shadow-sm">
-                              <Linkedin size={18} />
-                            </a>
-                            <a href="#" className="p-2.5 bg-gray-50 rounded-xl text-slate-400 hover:bg-green-600 hover:text-white transition-all shadow-sm">
-                              <Facebook size={18} />
-                            </a>
-                            <a href="#" className="p-2.5 bg-gray-50 rounded-xl text-slate-400 hover:bg-green-600 hover:text-white transition-all shadow-sm">
-                              <TrendingUp size={18} />
-                            </a>
-                          </div>
                         </div>
                       </div>
                     </div>
