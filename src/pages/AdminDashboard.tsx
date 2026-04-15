@@ -25,7 +25,16 @@ import {
   Star,
   Eye,
   CheckCircle as CheckCircleIcon,
-  XCircle as XCircleIcon
+  XCircle as XCircleIcon,
+  Mail,
+  Phone,
+  Globe,
+  Building2,
+  FileText,
+  Download,
+  Tag,
+  Clock,
+  X
 } from 'lucide-react';
 import { adminAPI, productsAPI, blogsAPI, formationsAPI, eventsAPI } from '../services/api';
 import Swal from 'sweetalert2';
@@ -53,23 +62,26 @@ interface AdminStats {
 
 interface Enrollment {
   _id: string;
-  type: 'partner' | 'member';
+  type?: 'partner' | 'member';
   firstName: string;
   lastName: string;
   email: string;
   phone: string;
   country: string;
   city: string;
-  companyName: string;
-  businessType: string;
+  companyName?: string;
+  businessType?: string;
   distributionArea?: string;
   targetMarkets?: string;
   industry?: string;
   companySize?: string;
   interests?: string[];
+  companyLogo?: { publicId: string; url: string };
+  businessDocuments?: { publicId: string; url: string; name?: string }[];
   status: 'pending' | 'approved' | 'rejected';
-  userId: string;
+  userId?: string;
   createdAt: string;
+  updatedAt?: string;
 }
 
 interface Formation {
@@ -165,6 +177,10 @@ const AdminDashboard = () => {
   const [selectedEventDetail, setSelectedEventDetail] = useState<EventData | null>(null);
   const [showEventDetailModal, setShowEventDetailModal] = useState(false);
   const [showEnrollmentFormModal, setShowEnrollmentFormModal] = useState(false);
+  const [selectedEnrollmentDetail, setSelectedEnrollmentDetail] = useState<Enrollment | null>(null);
+  const [showEnrollmentDetailModal, setShowEnrollmentDetailModal] = useState(false);
+  const [selectedUserDetail, setSelectedUserDetail] = useState<User | null>(null);
+  const [showUserDetailModal, setShowUserDetailModal] = useState(false);
   const [processingIds, setProcessingIds] = useState<Set<string>>(new Set());
   const [expandedRows, setExpandedRows] = useState<Set<string>>(new Set());
 
@@ -178,6 +194,16 @@ const AdminDashboard = () => {
       }
       return next;
     });
+  };
+
+  const openEnrollmentDetail = (enrollment: Enrollment) => {
+    setSelectedEnrollmentDetail(enrollment);
+    setShowEnrollmentDetailModal(true);
+  };
+
+  const closeEnrollmentDetail = () => {
+    setShowEnrollmentDetailModal(false);
+    setSelectedEnrollmentDetail(null);
   };
 
   const addProcessingId = (id: string) => {
@@ -353,6 +379,8 @@ const AdminDashboard = () => {
       try {
         addProcessingId(id);
         await adminAPI.deleteUser(id);
+        setShowUserDetailModal(false);
+        setSelectedUserDetail(null);
         Swal.fire('Supprimé!', 'L\'utilisateur a été supprimé.', 'success');
         fetchUsers();
         fetchAdminData();
@@ -459,6 +487,7 @@ const AdminDashboard = () => {
         addProcessingId(id);
         await adminAPI.updateEnrollment(id, { status: action === 'approve' ? 'approved' : 'rejected' });
 
+        closeEnrollmentDetail();
         Swal.fire({
           icon: 'success',
           title: 'Succès',
@@ -524,6 +553,7 @@ const AdminDashboard = () => {
         addProcessingId(id);
         await adminAPI.deleteEnrollment(id);
 
+        closeEnrollmentDetail();
         Swal.fire({
           icon: 'success',
           title: 'Supprimé',
@@ -998,28 +1028,15 @@ const AdminDashboard = () => {
                                     </td>
                                     <td className="px-6 py-4 whitespace-nowrap text-right">
                                       <div className="flex items-center justify-end gap-2 text-right">
-                                        {enrollment.status === 'pending' && (
-                                          <>
-                                            <button 
-                                              onClick={() => handleEnrollmentAction(enrollment._id, 'approve')} 
-                                              disabled={processingIds.has(enrollment._id)}
-                                              className="p-2 text-green-600 hover:bg-green-50 rounded-lg transition-colors disabled:opacity-50"
-                                              title="Approuver"
-                                            >
-                                              {processingIds.has(enrollment._id) ? <Loader2 size={18} className="animate-spin" /> : <CheckCircleIcon size={18} />}
-                                            </button>
-                                            <button 
-                                              onClick={() => handleEnrollmentAction(enrollment._id, 'reject')} 
-                                              disabled={processingIds.has(enrollment._id)}
-                                              className="p-2 text-red-600 hover:bg-red-50 rounded-lg transition-colors disabled:opacity-50"
-                                              title="Rejeter"
-                                            >
-                                              {processingIds.has(enrollment._id) ? <Loader2 size={18} className="animate-spin" /> : <XCircleIcon size={18} />}
-                                            </button>
-                                          </>
-                                        )}
-                                        <button 
-                                          onClick={() => handleDeleteEnrollment(enrollment._id)} 
+                                        <button
+                                          onClick={() => openEnrollmentDetail(enrollment)}
+                                          className="p-2 text-blue-500 hover:bg-blue-50 rounded-lg transition-colors"
+                                          title="Voir les détails"
+                                        >
+                                          <Eye size={18} />
+                                        </button>
+                                        <button
+                                          onClick={() => handleDeleteEnrollment(enrollment._id)}
                                           disabled={processingIds.has(enrollment._id)}
                                           className="p-2 text-gray-400 hover:text-red-600 hover:bg-gray-50 rounded-lg transition-colors disabled:opacity-50"
                                           title="Supprimer"
@@ -1084,26 +1101,14 @@ const AdminDashboard = () => {
                                       </div>
                                     </div>
                                     <div className="flex gap-2 pt-2">
-                                      {enrollment.status === 'pending' && (
-                                        <>
-                                          <button 
-                                            onClick={() => handleEnrollmentAction(enrollment._id, 'approve')} 
-                                            disabled={processingIds.has(enrollment._id)}
-                                            className="flex-1 flex items-center justify-center gap-2 py-2 bg-green-600 text-white rounded-xl text-xs font-bold leading-none shadow-sm shadow-green-200 disabled:opacity-50"
-                                          >
-                                            {processingIds.has(enrollment._id) && <Loader2 size={14} className="animate-spin" />} Approuver
-                                          </button>
-                                          <button 
-                                            onClick={() => handleEnrollmentAction(enrollment._id, 'reject')} 
-                                            disabled={processingIds.has(enrollment._id)}
-                                            className="flex-1 flex items-center justify-center gap-2 py-2 bg-red-50 text-red-600 rounded-xl text-xs font-bold leading-none border border-red-100 disabled:opacity-50"
-                                          >
-                                            {processingIds.has(enrollment._id) && <Loader2 size={14} className="animate-spin" />} Rejeter
-                                          </button>
-                                        </>
-                                      )}
-                                      <button 
-                                        onClick={() => handleDeleteEnrollment(enrollment._id)} 
+                                      <button
+                                        onClick={() => openEnrollmentDetail(enrollment)}
+                                        className="flex-1 flex items-center justify-center gap-2 py-2 bg-blue-50 text-blue-600 rounded-xl text-xs font-bold leading-none border border-blue-100 hover:bg-blue-100 transition-all"
+                                      >
+                                        <Eye size={14} /> Voir détails
+                                      </button>
+                                      <button
+                                        onClick={() => handleDeleteEnrollment(enrollment._id)}
                                         disabled={processingIds.has(enrollment._id)}
                                         className="p-2 bg-gray-50 text-gray-400 hover:text-red-600 rounded-xl transition-all border border-gray-100 disabled:opacity-50"
                                       >
@@ -1265,9 +1270,18 @@ const AdminDashboard = () => {
                             {u.createdAt ? new Date(u.createdAt).toLocaleDateString('fr-FR') : '-'}
                           </td>
                           <td className="px-6 py-4 whitespace-nowrap text-right">
-                            <button onClick={() => handleDeleteUser(u._id)} disabled={processingIds.has(u._id)} className="p-2 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-all disabled:opacity-50">
-                              {processingIds.has(u._id) ? <Loader2 className="w-4 h-4 animate-spin" /> : <Trash2 className="w-4 h-4" />}
-                            </button>
+                            <div className="flex items-center justify-end gap-2">
+                              <button
+                                onClick={() => { setSelectedUserDetail(u); setShowUserDetailModal(true); }}
+                                className="p-2 text-blue-500 hover:bg-blue-50 rounded-lg transition-all"
+                                title="Voir le profil"
+                              >
+                                <Eye className="w-4 h-4" />
+                              </button>
+                              <button onClick={() => handleDeleteUser(u._id)} disabled={processingIds.has(u._id)} className="p-2 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-all disabled:opacity-50">
+                                {processingIds.has(u._id) ? <Loader2 className="w-4 h-4 animate-spin" /> : <Trash2 className="w-4 h-4" />}
+                              </button>
+                            </div>
                           </td>
                         </tr>
                       ))}
@@ -1320,9 +1334,15 @@ const AdminDashboard = () => {
                                   <p className="text-xs text-gray-700">{u.createdAt ? new Date(u.createdAt).toLocaleDateString('fr-FR') : '-'}</p>
                                 </div>
                               </div>
-                              <div className="pt-2">
-                                <button onClick={() => handleDeleteUser(u._id)} disabled={processingIds.has(u._id)} className="w-full flex items-center justify-center gap-2 py-2 bg-red-50 text-red-600 rounded-xl text-xs font-bold border border-red-100">
-                                  {processingIds.has(u._id) ? <Loader2 size={14} className="animate-spin" /> : <Trash2 size={14} />} Supprimer l'utilisateur
+                              <div className="pt-2 flex gap-2">
+                                <button
+                                  onClick={() => { setSelectedUserDetail(u); setShowUserDetailModal(true); }}
+                                  className="flex-1 flex items-center justify-center gap-2 py-2 bg-blue-50 text-blue-600 rounded-xl text-xs font-bold border border-blue-100 hover:bg-blue-100 transition-all"
+                                >
+                                  <Eye size={14} /> Voir le profil
+                                </button>
+                                <button onClick={() => handleDeleteUser(u._id)} disabled={processingIds.has(u._id)} className="flex-1 flex items-center justify-center gap-2 py-2 bg-red-50 text-red-600 rounded-xl text-xs font-bold border border-red-100 disabled:opacity-50">
+                                  {processingIds.has(u._id) ? <Loader2 size={14} className="animate-spin" /> : <Trash2 size={14} />} Supprimer
                                 </button>
                               </div>
                             </motion.div>
@@ -2263,6 +2283,573 @@ const AdminDashboard = () => {
           fetchEnrollments();
         }}
       />
+
+      <AnimatePresence>
+        {showEnrollmentDetailModal && selectedEnrollmentDetail && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              onClick={closeEnrollmentDetail}
+              className="absolute inset-0 bg-black/60 backdrop-blur-sm"
+            />
+            <motion.div
+              initial={{ scale: 0.95, opacity: 0, y: 20 }}
+              animate={{ scale: 1, opacity: 1, y: 0 }}
+              exit={{ scale: 0.95, opacity: 0, y: 20 }}
+              className="relative z-10 w-full max-w-2xl flex flex-col max-h-[92vh] overflow-hidden rounded-3xl bg-white shadow-2xl"
+            >
+              {/* ── Hero Header ── */}
+              <div className="relative flex-shrink-0 bg-gradient-to-br from-green-700 via-green-800 to-green-900 px-6 pt-6 pb-10">
+                <button
+                  onClick={closeEnrollmentDetail}
+                  className="absolute top-4 right-4 rounded-full bg-white/10 p-2 text-white/80 hover:bg-white/20 hover:text-white transition"
+                >
+                  <X size={18} />
+                </button>
+
+                {/* Badges */}
+                <div className="flex flex-wrap gap-2 mb-4">
+                  {selectedEnrollmentDetail.type && (
+                    <span className={`rounded-full px-3 py-1 text-[11px] font-bold uppercase tracking-wider ${selectedEnrollmentDetail.type === 'partner' ? 'bg-blue-500/30 text-blue-100' : 'bg-purple-500/30 text-purple-100'}`}>
+                      {selectedEnrollmentDetail.type === 'partner' ? 'Partenaire' : 'Membre'}
+                    </span>
+                  )}
+                  <span className={`rounded-full px-3 py-1 text-[11px] font-bold uppercase tracking-wider ${
+                    selectedEnrollmentDetail.status === 'approved' ? 'bg-emerald-500/30 text-emerald-100' :
+                    selectedEnrollmentDetail.status === 'rejected' ? 'bg-red-500/30 text-red-100' :
+                    'bg-yellow-500/30 text-yellow-100'
+                  }`}>
+                    {selectedEnrollmentDetail.status === 'approved' ? 'Approuvé' : selectedEnrollmentDetail.status === 'rejected' ? 'Rejeté' : 'En attente'}
+                  </span>
+                </div>
+
+                {/* Avatar + Identity */}
+                <div className="flex items-center gap-4">
+                  {selectedEnrollmentDetail.companyLogo?.url ? (
+                    <img
+                      src={selectedEnrollmentDetail.companyLogo.url}
+                      alt={selectedEnrollmentDetail.companyName}
+                      className="w-16 h-16 rounded-2xl object-cover ring-4 ring-white/20 flex-shrink-0"
+                    />
+                  ) : (
+                    <div className="w-16 h-16 rounded-2xl bg-white/20 flex items-center justify-center text-white text-xl font-black ring-4 ring-white/10 flex-shrink-0">
+                      {selectedEnrollmentDetail.firstName[0]}{selectedEnrollmentDetail.lastName[0]}
+                    </div>
+                  )}
+                  <div className="min-w-0">
+                    <h3 className="text-2xl font-black text-white leading-tight truncate">
+                      {selectedEnrollmentDetail.firstName} {selectedEnrollmentDetail.lastName}
+                    </h3>
+                    <p className="mt-0.5 text-green-200 text-sm truncate">{selectedEnrollmentDetail.email}</p>
+                    {selectedEnrollmentDetail.companyName && (
+                      <p className="mt-0.5 text-green-300 text-xs font-medium truncate">{selectedEnrollmentDetail.companyName}</p>
+                    )}
+                  </div>
+                </div>
+              </div>
+
+              {/* ── Scrollable Body ── */}
+              <div className="flex-1 overflow-y-auto bg-gray-50 p-5 space-y-4">
+
+                {/* Contact */}
+                <div className="rounded-2xl bg-white border border-gray-100 p-5 shadow-sm">
+                  <p className="text-xs font-bold uppercase tracking-widest text-gray-400 mb-3">Contact</p>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    <div className="flex items-start gap-3">
+                      <div className="w-8 h-8 rounded-xl bg-green-50 flex items-center justify-center flex-shrink-0">
+                        <Mail size={14} className="text-green-600" />
+                      </div>
+                      <div className="min-w-0">
+                        <p className="text-[10px] font-semibold uppercase tracking-wider text-gray-400">Email</p>
+                        <p className="text-sm text-gray-800 font-medium truncate">{selectedEnrollmentDetail.email}</p>
+                      </div>
+                    </div>
+                    <div className="flex items-start gap-3">
+                      <div className="w-8 h-8 rounded-xl bg-green-50 flex items-center justify-center flex-shrink-0">
+                        <Phone size={14} className="text-green-600" />
+                      </div>
+                      <div>
+                        <p className="text-[10px] font-semibold uppercase tracking-wider text-gray-400">Téléphone</p>
+                        <p className="text-sm text-gray-800 font-medium">{selectedEnrollmentDetail.phone || <span className="text-gray-400 italic">Non renseigné</span>}</p>
+                      </div>
+                    </div>
+                    <div className="flex items-start gap-3">
+                      <div className="w-8 h-8 rounded-xl bg-green-50 flex items-center justify-center flex-shrink-0">
+                        <Globe size={14} className="text-green-600" />
+                      </div>
+                      <div>
+                        <p className="text-[10px] font-semibold uppercase tracking-wider text-gray-400">Pays</p>
+                        <p className="text-sm text-gray-800 font-medium">{selectedEnrollmentDetail.country || <span className="text-gray-400 italic">Non renseigné</span>}</p>
+                      </div>
+                    </div>
+                    <div className="flex items-start gap-3">
+                      <div className="w-8 h-8 rounded-xl bg-green-50 flex items-center justify-center flex-shrink-0">
+                        <MapPin size={14} className="text-green-600" />
+                      </div>
+                      <div>
+                        <p className="text-[10px] font-semibold uppercase tracking-wider text-gray-400">Ville</p>
+                        <p className="text-sm text-gray-800 font-medium">{selectedEnrollmentDetail.city || <span className="text-gray-400 italic">Non renseigné</span>}</p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Entreprise */}
+                {(selectedEnrollmentDetail.companyName || selectedEnrollmentDetail.businessType || selectedEnrollmentDetail.industry || selectedEnrollmentDetail.companySize || selectedEnrollmentDetail.distributionArea || selectedEnrollmentDetail.targetMarkets) && (
+                  <div className="rounded-2xl bg-white border border-gray-100 p-5 shadow-sm">
+                    <p className="text-xs font-bold uppercase tracking-widest text-gray-400 mb-3">Société & Business</p>
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                      {selectedEnrollmentDetail.companyName && (
+                        <div className="flex items-start gap-3 sm:col-span-2">
+                          <div className="w-8 h-8 rounded-xl bg-blue-50 flex items-center justify-center flex-shrink-0">
+                            <Building2 size={14} className="text-blue-600" />
+                          </div>
+                          <div>
+                            <p className="text-[10px] font-semibold uppercase tracking-wider text-gray-400">Entreprise</p>
+                            <p className="text-sm text-gray-800 font-semibold">{selectedEnrollmentDetail.companyName}</p>
+                          </div>
+                        </div>
+                      )}
+                      {selectedEnrollmentDetail.businessType && (
+                        <div className="flex items-start gap-3">
+                          <div className="w-8 h-8 rounded-xl bg-blue-50 flex items-center justify-center flex-shrink-0">
+                            <Tag size={14} className="text-blue-600" />
+                          </div>
+                          <div>
+                            <p className="text-[10px] font-semibold uppercase tracking-wider text-gray-400">Type d'activité</p>
+                            <p className="text-sm text-gray-800 font-medium">{selectedEnrollmentDetail.businessType}</p>
+                          </div>
+                        </div>
+                      )}
+                      {selectedEnrollmentDetail.industry && (
+                        <div className="flex items-start gap-3">
+                          <div className="w-8 h-8 rounded-xl bg-blue-50 flex items-center justify-center flex-shrink-0">
+                            <TrendingUp size={14} className="text-blue-600" />
+                          </div>
+                          <div>
+                            <p className="text-[10px] font-semibold uppercase tracking-wider text-gray-400">Secteur</p>
+                            <p className="text-sm text-gray-800 font-medium">{selectedEnrollmentDetail.industry}</p>
+                          </div>
+                        </div>
+                      )}
+                      {selectedEnrollmentDetail.companySize && (
+                        <div className="flex items-start gap-3">
+                          <div className="w-8 h-8 rounded-xl bg-blue-50 flex items-center justify-center flex-shrink-0">
+                            <Users size={14} className="text-blue-600" />
+                          </div>
+                          <div>
+                            <p className="text-[10px] font-semibold uppercase tracking-wider text-gray-400">Taille</p>
+                            <p className="text-sm text-gray-800 font-medium">{selectedEnrollmentDetail.companySize}</p>
+                          </div>
+                        </div>
+                      )}
+                      {selectedEnrollmentDetail.distributionArea && (
+                        <div className="flex items-start gap-3">
+                          <div className="w-8 h-8 rounded-xl bg-blue-50 flex items-center justify-center flex-shrink-0">
+                            <MapPin size={14} className="text-blue-600" />
+                          </div>
+                          <div>
+                            <p className="text-[10px] font-semibold uppercase tracking-wider text-gray-400">Zone de distribution</p>
+                            <p className="text-sm text-gray-800 font-medium">{selectedEnrollmentDetail.distributionArea}</p>
+                          </div>
+                        </div>
+                      )}
+                      {selectedEnrollmentDetail.targetMarkets && (
+                        <div className="flex items-start gap-3">
+                          <div className="w-8 h-8 rounded-xl bg-blue-50 flex items-center justify-center flex-shrink-0">
+                            <Globe size={14} className="text-blue-600" />
+                          </div>
+                          <div>
+                            <p className="text-[10px] font-semibold uppercase tracking-wider text-gray-400">Marchés cibles</p>
+                            <p className="text-sm text-gray-800 font-medium">{selectedEnrollmentDetail.targetMarkets}</p>
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                )}
+
+                {/* Intérêts */}
+                <div className="rounded-2xl bg-white border border-gray-100 p-5 shadow-sm">
+                  <div className="flex items-center justify-between mb-3">
+                    <p className="text-xs font-bold uppercase tracking-widest text-gray-400">Intérêts déclarés</p>
+                    {(selectedEnrollmentDetail.interests?.length ?? 0) > 0 && (
+                      <span className="text-[10px] font-bold bg-green-100 text-green-700 rounded-full px-2 py-0.5">
+                        {selectedEnrollmentDetail.interests!.length}
+                      </span>
+                    )}
+                  </div>
+                  <div className="flex flex-wrap gap-2">
+                    {selectedEnrollmentDetail.interests?.length ? (
+                      selectedEnrollmentDetail.interests.map((interest) => (
+                        <span key={interest} className="rounded-full border border-green-200 bg-green-50 px-3 py-1 text-xs font-medium text-green-700">
+                          {interest}
+                        </span>
+                      ))
+                    ) : (
+                      <p className="text-sm text-gray-400 italic">Aucun intérêt renseigné</p>
+                    )}
+                  </div>
+                </div>
+
+                {/* Documents */}
+                {selectedEnrollmentDetail.businessDocuments && selectedEnrollmentDetail.businessDocuments.length > 0 && (
+                  <div className="rounded-2xl bg-white border border-gray-100 p-5 shadow-sm">
+                    <p className="text-xs font-bold uppercase tracking-widest text-gray-400 mb-3">Documents joints</p>
+                    <div className="space-y-2">
+                      {selectedEnrollmentDetail.businessDocuments.map((doc, idx) => (
+                        <a
+                          key={doc.publicId || idx}
+                          href={doc.url}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="flex items-center gap-3 rounded-xl border border-gray-100 bg-gray-50 p-3 hover:bg-green-50 hover:border-green-200 transition group"
+                        >
+                          <div className="w-8 h-8 rounded-lg bg-white border border-gray-200 flex items-center justify-center flex-shrink-0 group-hover:border-green-200">
+                            <FileText size={14} className="text-gray-500 group-hover:text-green-600" />
+                          </div>
+                          <span className="flex-1 text-sm text-gray-700 font-medium truncate group-hover:text-green-700">
+                            {doc.name || `Document ${idx + 1}`}
+                          </span>
+                          <Download size={14} className="text-gray-400 flex-shrink-0 group-hover:text-green-600" />
+                        </a>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
+                {/* Métadonnées */}
+                <div className="rounded-2xl bg-white border border-gray-100 p-5 shadow-sm">
+                  <p className="text-xs font-bold uppercase tracking-widest text-gray-400 mb-3">Informations de la demande</p>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    <div className="flex items-start gap-3">
+                      <div className="w-8 h-8 rounded-xl bg-yellow-50 flex items-center justify-center flex-shrink-0">
+                        <Calendar size={14} className="text-yellow-600" />
+                      </div>
+                      <div>
+                        <p className="text-[10px] font-semibold uppercase tracking-wider text-gray-400">Soumise le</p>
+                        <p className="text-sm text-gray-800 font-medium">
+                          {new Date(selectedEnrollmentDetail.createdAt).toLocaleString('fr-FR', { dateStyle: 'medium', timeStyle: 'short' })}
+                        </p>
+                      </div>
+                    </div>
+                    {selectedEnrollmentDetail.updatedAt && selectedEnrollmentDetail.updatedAt !== selectedEnrollmentDetail.createdAt && (
+                      <div className="flex items-start gap-3">
+                        <div className="w-8 h-8 rounded-xl bg-yellow-50 flex items-center justify-center flex-shrink-0">
+                          <Clock size={14} className="text-yellow-600" />
+                        </div>
+                        <div>
+                          <p className="text-[10px] font-semibold uppercase tracking-wider text-gray-400">Dernière mise à jour</p>
+                          <p className="text-sm text-gray-800 font-medium">
+                            {new Date(selectedEnrollmentDetail.updatedAt).toLocaleString('fr-FR', { dateStyle: 'medium', timeStyle: 'short' })}
+                          </p>
+                        </div>
+                      </div>
+                    )}
+                    {selectedEnrollmentDetail.userId && (
+                      <div className="flex items-start gap-3">
+                        <div className="w-8 h-8 rounded-xl bg-yellow-50 flex items-center justify-center flex-shrink-0">
+                          <UserCheck size={14} className="text-yellow-600" />
+                        </div>
+                        <div>
+                          <p className="text-[10px] font-semibold uppercase tracking-wider text-gray-400">ID utilisateur</p>
+                          <p className="text-xs text-gray-500 font-mono break-all">{selectedEnrollmentDetail.userId}</p>
+                        </div>
+                      </div>
+                    )}
+                    <div className="flex items-start gap-3">
+                      <div className={`w-8 h-8 rounded-xl flex items-center justify-center flex-shrink-0 ${
+                        selectedEnrollmentDetail.status === 'approved' ? 'bg-green-50' :
+                        selectedEnrollmentDetail.status === 'rejected' ? 'bg-red-50' : 'bg-yellow-50'
+                      }`}>
+                        {selectedEnrollmentDetail.status === 'approved'
+                          ? <CheckCircle size={14} className="text-green-600" />
+                          : selectedEnrollmentDetail.status === 'rejected'
+                          ? <XCircle size={14} className="text-red-500" />
+                          : <Clock size={14} className="text-yellow-600" />
+                        }
+                      </div>
+                      <div>
+                        <p className="text-[10px] font-semibold uppercase tracking-wider text-gray-400">Statut actuel</p>
+                        <span className={`inline-flex rounded-full px-2 py-0.5 text-[11px] font-bold uppercase tracking-wide ${getStatusColor(selectedEnrollmentDetail.status)}`}>
+                          {selectedEnrollmentDetail.status === 'approved' ? 'Approuvé' : selectedEnrollmentDetail.status === 'rejected' ? 'Rejeté' : 'En attente'}
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+              </div>
+
+              {/* ── Actions (sticky footer) ── */}
+              <div className="flex-shrink-0 border-t border-gray-100 bg-white px-5 py-4">
+                <div className="grid gap-3 sm:grid-cols-3">
+                  {selectedEnrollmentDetail.status === 'pending' && (
+                    <>
+                      <button
+                        onClick={() => handleEnrollmentAction(selectedEnrollmentDetail._id, 'approve')}
+                        disabled={processingIds.has(selectedEnrollmentDetail._id)}
+                        className="flex items-center justify-center gap-2 rounded-2xl bg-green-600 px-4 py-3 text-xs font-bold text-white transition hover:bg-green-700 disabled:opacity-50"
+                      >
+                        {processingIds.has(selectedEnrollmentDetail._id) ? <Loader2 size={14} className="animate-spin" /> : <CheckCircle size={14} />}
+                        Approuver
+                      </button>
+                      <button
+                        onClick={() => handleEnrollmentAction(selectedEnrollmentDetail._id, 'reject')}
+                        disabled={processingIds.has(selectedEnrollmentDetail._id)}
+                        className="flex items-center justify-center gap-2 rounded-2xl bg-red-50 px-4 py-3 text-xs font-bold text-red-600 border border-red-100 transition hover:bg-red-100 disabled:opacity-50"
+                      >
+                        {processingIds.has(selectedEnrollmentDetail._id) ? <Loader2 size={14} className="animate-spin" /> : <XCircle size={14} />}
+                        Rejeter
+                      </button>
+                    </>
+                  )}
+                  <button
+                    onClick={() => handleDeleteEnrollment(selectedEnrollmentDetail._id)}
+                    disabled={processingIds.has(selectedEnrollmentDetail._id)}
+                    className="flex items-center justify-center gap-2 rounded-2xl bg-gray-50 px-4 py-3 text-xs font-bold text-gray-700 border border-gray-200 transition hover:bg-gray-100 disabled:opacity-50"
+                  >
+                    {processingIds.has(selectedEnrollmentDetail._id) ? <Loader2 size={14} className="animate-spin" /> : <Trash2 size={14} />}
+                    Supprimer
+                  </button>
+                </div>
+              </div>
+            </motion.div>
+          </div>
+        )}
+      </AnimatePresence>
+
+      {/* ══════════════════════════════════════════
+          Modal Détail Utilisateur
+      ══════════════════════════════════════════ */}
+      <AnimatePresence>
+        {showUserDetailModal && selectedUserDetail && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              onClick={() => setShowUserDetailModal(false)}
+              className="absolute inset-0 bg-black/60 backdrop-blur-sm"
+            />
+            <motion.div
+              initial={{ scale: 0.95, opacity: 0, y: 20 }}
+              animate={{ scale: 1, opacity: 1, y: 0 }}
+              exit={{ scale: 0.95, opacity: 0, y: 20 }}
+              className="relative z-10 w-full max-w-lg flex flex-col max-h-[90vh] overflow-hidden rounded-3xl bg-white shadow-2xl"
+            >
+              {/* Hero */}
+              <div className="relative flex-shrink-0 bg-gradient-to-br from-[#1D3557] via-[#1D3557] to-[#264d7a] px-6 pt-6 pb-10">
+                <button
+                  onClick={() => setShowUserDetailModal(false)}
+                  className="absolute top-4 right-4 rounded-full bg-white/10 p-2 text-white/80 hover:bg-white/20 hover:text-white transition"
+                >
+                  <X size={18} />
+                </button>
+
+                {/* Role badge */}
+                <div className="mb-4">
+                  <span className={`rounded-full px-3 py-1 text-[11px] font-bold uppercase tracking-wider ${
+                    selectedUserDetail.role === 'admin' ? 'bg-red-500/30 text-red-100' :
+                    selectedUserDetail.role === 'partner' ? 'bg-blue-400/30 text-blue-100' :
+                    selectedUserDetail.role === 'client' ? 'bg-purple-400/30 text-purple-100' :
+                    'bg-green-400/30 text-green-100'
+                  }`}>
+                    {selectedUserDetail.role === 'admin' ? 'Administrateur' :
+                     selectedUserDetail.role === 'partner' ? 'Partenaire' :
+                     selectedUserDetail.role === 'client' ? 'Client' : 'Membre'}
+                  </span>
+                </div>
+
+                {/* Avatar + Identity */}
+                <div className="flex items-center gap-4">
+                  {selectedUserDetail.photo?.url || selectedUserDetail.photoURL || selectedUserDetail.avatar ? (
+                    <img
+                      src={selectedUserDetail.photo?.url || selectedUserDetail.photoURL || selectedUserDetail.avatar}
+                      alt={selectedUserDetail.firstName}
+                      className="w-16 h-16 rounded-2xl object-cover ring-4 ring-white/20 flex-shrink-0"
+                    />
+                  ) : (
+                    <div className="w-16 h-16 rounded-2xl bg-white/20 flex items-center justify-center text-white text-xl font-black ring-4 ring-white/10 flex-shrink-0">
+                      {selectedUserDetail.firstName[0]}{selectedUserDetail.lastName[0]}
+                    </div>
+                  )}
+                  <div className="min-w-0">
+                    <h3 className="text-2xl font-black text-white leading-tight">
+                      {selectedUserDetail.firstName} {selectedUserDetail.lastName}
+                    </h3>
+                    <p className="mt-0.5 text-blue-200 text-sm truncate">{selectedUserDetail.email}</p>
+                    {selectedUserDetail.phone && (
+                      <p className="mt-0.5 text-blue-300 text-xs">{selectedUserDetail.phone}</p>
+                    )}
+                  </div>
+                </div>
+              </div>
+
+              {/* Body scrollable */}
+              <div className="flex-1 overflow-y-auto bg-gray-50 p-5 space-y-4">
+
+                {/* Contact */}
+                <div className="rounded-2xl bg-white border border-gray-100 p-5 shadow-sm">
+                  <p className="text-xs font-bold uppercase tracking-widest text-gray-400 mb-3">Contact</p>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    <div className="flex items-start gap-3">
+                      <div className="w-8 h-8 rounded-xl bg-blue-50 flex items-center justify-center flex-shrink-0">
+                        <Mail size={14} className="text-blue-600" />
+                      </div>
+                      <div className="min-w-0">
+                        <p className="text-[10px] font-semibold uppercase tracking-wider text-gray-400">Email</p>
+                        <p className="text-sm text-gray-800 font-medium truncate">{selectedUserDetail.email}</p>
+                      </div>
+                    </div>
+                    <div className="flex items-start gap-3">
+                      <div className="w-8 h-8 rounded-xl bg-blue-50 flex items-center justify-center flex-shrink-0">
+                        <Phone size={14} className="text-blue-600" />
+                      </div>
+                      <div>
+                        <p className="text-[10px] font-semibold uppercase tracking-wider text-gray-400">Téléphone</p>
+                        <p className="text-sm text-gray-800 font-medium">{selectedUserDetail.phone || <span className="text-gray-400 italic">Non renseigné</span>}</p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Entreprise */}
+                {selectedUserDetail.companyDetails && (selectedUserDetail.companyDetails.name || selectedUserDetail.companyDetails.type || selectedUserDetail.companyDetails.address) && (
+                  <div className="rounded-2xl bg-white border border-gray-100 p-5 shadow-sm">
+                    <p className="text-xs font-bold uppercase tracking-widest text-gray-400 mb-3">Entreprise</p>
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                      {selectedUserDetail.companyDetails.name && (
+                        <div className="flex items-start gap-3 sm:col-span-2">
+                          <div className="w-8 h-8 rounded-xl bg-green-50 flex items-center justify-center flex-shrink-0">
+                            <Building2 size={14} className="text-green-600" />
+                          </div>
+                          <div>
+                            <p className="text-[10px] font-semibold uppercase tracking-wider text-gray-400">Nom</p>
+                            <p className="text-sm text-gray-800 font-semibold">{selectedUserDetail.companyDetails.name}</p>
+                          </div>
+                        </div>
+                      )}
+                      {selectedUserDetail.companyDetails.type && (
+                        <div className="flex items-start gap-3">
+                          <div className="w-8 h-8 rounded-xl bg-green-50 flex items-center justify-center flex-shrink-0">
+                            <Tag size={14} className="text-green-600" />
+                          </div>
+                          <div>
+                            <p className="text-[10px] font-semibold uppercase tracking-wider text-gray-400">Type</p>
+                            <p className="text-sm text-gray-800 font-medium">{selectedUserDetail.companyDetails.type}</p>
+                          </div>
+                        </div>
+                      )}
+                      {selectedUserDetail.companyDetails.years !== undefined && (
+                        <div className="flex items-start gap-3">
+                          <div className="w-8 h-8 rounded-xl bg-green-50 flex items-center justify-center flex-shrink-0">
+                            <TrendingUp size={14} className="text-green-600" />
+                          </div>
+                          <div>
+                            <p className="text-[10px] font-semibold uppercase tracking-wider text-gray-400">Années d'activité</p>
+                            <p className="text-sm text-gray-800 font-medium">{selectedUserDetail.companyDetails.years} ans</p>
+                          </div>
+                        </div>
+                      )}
+                      {selectedUserDetail.companyDetails.address && (
+                        <div className="flex items-start gap-3 sm:col-span-2">
+                          <div className="w-8 h-8 rounded-xl bg-green-50 flex items-center justify-center flex-shrink-0">
+                            <MapPin size={14} className="text-green-600" />
+                          </div>
+                          <div>
+                            <p className="text-[10px] font-semibold uppercase tracking-wider text-gray-400">Adresse</p>
+                            <p className="text-sm text-gray-800 font-medium">{selectedUserDetail.companyDetails.address}</p>
+                          </div>
+                        </div>
+                      )}
+                      {selectedUserDetail.companyDetails.registrationNumber && (
+                        <div className="flex items-start gap-3 sm:col-span-2">
+                          <div className="w-8 h-8 rounded-xl bg-green-50 flex items-center justify-center flex-shrink-0">
+                            <FileText size={14} className="text-green-600" />
+                          </div>
+                          <div>
+                            <p className="text-[10px] font-semibold uppercase tracking-wider text-gray-400">N° d'enregistrement</p>
+                            <p className="text-sm text-gray-800 font-mono">{selectedUserDetail.companyDetails.registrationNumber}</p>
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                )}
+
+                {/* Métadonnées */}
+                <div className="rounded-2xl bg-white border border-gray-100 p-5 shadow-sm">
+                  <p className="text-xs font-bold uppercase tracking-widest text-gray-400 mb-3">Informations du compte</p>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    <div className="flex items-start gap-3">
+                      <div className="w-8 h-8 rounded-xl bg-yellow-50 flex items-center justify-center flex-shrink-0">
+                        <Calendar size={14} className="text-yellow-600" />
+                      </div>
+                      <div>
+                        <p className="text-[10px] font-semibold uppercase tracking-wider text-gray-400">Membre depuis</p>
+                        <p className="text-sm text-gray-800 font-medium">
+                          {selectedUserDetail.createdAt
+                            ? new Date(selectedUserDetail.createdAt).toLocaleDateString('fr-FR', { dateStyle: 'long' })
+                            : <span className="text-gray-400 italic">Inconnu</span>}
+                        </p>
+                      </div>
+                    </div>
+                    <div className="flex items-start gap-3">
+                      <div className={`w-8 h-8 rounded-xl flex items-center justify-center flex-shrink-0 ${
+                        selectedUserDetail.role === 'admin' ? 'bg-red-50' :
+                        selectedUserDetail.role === 'partner' ? 'bg-blue-50' :
+                        selectedUserDetail.role === 'client' ? 'bg-purple-50' : 'bg-green-50'
+                      }`}>
+                        <UserCheck size={14} className={
+                          selectedUserDetail.role === 'admin' ? 'text-red-600' :
+                          selectedUserDetail.role === 'partner' ? 'text-blue-600' :
+                          selectedUserDetail.role === 'client' ? 'text-purple-600' : 'text-green-600'
+                        } />
+                      </div>
+                      <div>
+                        <p className="text-[10px] font-semibold uppercase tracking-wider text-gray-400">Rôle</p>
+                        <span className={`inline-flex rounded-full px-2 py-0.5 text-[11px] font-bold uppercase tracking-wide border ${
+                          selectedUserDetail.role === 'admin' ? 'bg-red-50 text-red-700 border-red-100' :
+                          selectedUserDetail.role === 'partner' ? 'bg-blue-50 text-blue-700 border-blue-100' :
+                          selectedUserDetail.role === 'client' ? 'bg-purple-50 text-purple-700 border-purple-100' :
+                          'bg-green-50 text-green-700 border-green-100'
+                        }`}>
+                          {selectedUserDetail.role}
+                        </span>
+                      </div>
+                    </div>
+                    <div className="flex items-start gap-3 sm:col-span-2">
+                      <div className="w-8 h-8 rounded-xl bg-gray-50 flex items-center justify-center flex-shrink-0">
+                        <Tag size={14} className="text-gray-500" />
+                      </div>
+                      <div>
+                        <p className="text-[10px] font-semibold uppercase tracking-wider text-gray-400">ID</p>
+                        <p className="text-xs text-gray-500 font-mono break-all">{selectedUserDetail._id}</p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+              </div>
+
+              {/* Footer */}
+              <div className="flex-shrink-0 border-t border-gray-100 bg-white px-5 py-4">
+                <button
+                  onClick={() => handleDeleteUser(selectedUserDetail._id)}
+                  disabled={processingIds.has(selectedUserDetail._id)}
+                  className="w-full flex items-center justify-center gap-2 rounded-2xl bg-red-50 px-4 py-3 text-xs font-bold text-red-600 border border-red-100 transition hover:bg-red-100 disabled:opacity-50"
+                >
+                  {processingIds.has(selectedUserDetail._id) ? <Loader2 size={14} className="animate-spin" /> : <Trash2 size={14} />}
+                  Supprimer cet utilisateur
+                </button>
+              </div>
+            </motion.div>
+          </div>
+        )}
+      </AnimatePresence>
 
       <AnimatePresence>
         {showEventDetailModal && selectedEventDetail && (
