@@ -586,90 +586,49 @@ const About = () => {
         <div className="absolute bottom-0 left-0 w-full h-1 bg-green-500/10"></div>
       </section>
 
-      {/* Partners - Slick & Modern Elaborated Section */}
-      <section className="py-32 bg-white relative overflow-hidden">
-        {/* Animated Background Ambience */}
-        <div className="absolute top-0 left-0 w-full h-full pointer-events-none">
-          <div className="absolute top-1/4 right-1/4 w-[600px] h-[600px] bg-green-50/30 rounded-full blur-[120px] animate-pulse" />
-          <div className="absolute bottom-1/4 left-1/4 w-[600px] h-[600px] bg-blue-50/20 rounded-full blur-[120px] animate-pulse" style={{ animationDelay: '2s' }} />
-        </div>
-
+      {/* Partners - Premium Grid Section */}
+      <section className="py-32 bg-slate-50 relative overflow-hidden">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
           <motion.div
             initial={{ y: 30, opacity: 0 }}
             whileInView={{ y: 0, opacity: 1 }}
             transition={{ duration: 0.8 }}
             viewport={{ once: true }}
-            className="text-center mb-24"
+            className="text-center mb-16"
           >
-            <h2 className="text-4xl md:text-6xl font-black text-gray-900 mb-6 tracking-tighter uppercase ">
+            <h2 className="text-3xl sm:text-4xl md:text-5xl font-extrabold text-slate-900 mb-6 uppercase tracking-tight">
               Écosystème de <span className="text-green-600">Confiance</span>
             </h2>
-            <div className="w-24 h-2 bg-gradient-to-r from-green-600 to-emerald-400 mx-auto rounded-full mb-8" />
-            <p className="text-lg text-gray-500 font-medium max-w-2xl mx-auto uppercase tracking-[0.2em]">
-              Collaborer avec les meilleurs pour propulser l'Afrique
+            <div className="w-24 h-1 bg-green-600 mx-auto mb-4" />
+            <p className="text-slate-500 text-lg uppercase tracking-widest font-light">
+              Partenaires stratégiques et institutionnels
             </p>
           </motion.div>
 
-          <div className="relative group/marquee mt-10">
-            {/* Soft Edge Blurs */}
-            <div className="absolute inset-y-0 left-0 w-32 bg-gradient-to-r from-white to-transparent z-20 pointer-events-none" />
-            <div className="absolute inset-y-0 right-0 w-32 bg-gradient-to-l from-white to-transparent z-20 pointer-events-none" />
-
-            <div className="flex overflow-hidden py-12">
+          <div className="grid grid-cols-2 md:grid-cols-3 border-t border-l border-slate-200/60 max-w-4xl mx-auto bg-white shadow-xl rounded-2xl overflow-hidden relative">
+            <div className="absolute top-0 right-0 w-24 h-24 bg-gradient-to-bl from-green-500/10 to-transparent pointer-events-none" />
+            <div className="absolute bottom-0 left-0 w-24 h-24 bg-gradient-to-tr from-[#182656]/10 to-transparent pointer-events-none" />
+            
+            {partners.map((partner, index) => (
               <motion.div
-                className="flex gap-8 px-4"
-                animate={{ x: ["0%", "-50%"] }}
-                transition={{
-                  x: {
-                    repeat: Infinity,
-                    repeatType: "loop",
-                    duration: 40,
-                    ease: "linear",
-                  },
-                }}
-                whileHover={{ animationPlayState: "paused" }}
-                style={{ width: "fit-content" }}
+                key={index}
+                initial={{ opacity: 0 }}
+                whileInView={{ opacity: 1 }}
+                transition={{ duration: 0.5, delay: index * 0.1 }}
+                viewport={{ once: true }}
+                className="group relative flex items-center justify-center p-8 lg:p-12 border-r border-b border-slate-200/60 bg-white hover:bg-slate-50/50 transition-colors duration-500 overflow-hidden"
               >
-                {[...partners, ...partners, ...partners, ...partners].map((partner, index) => (
-                  <motion.div
-                    key={index}
-                    whileHover={{ y: -10, scale: 1.05 }}
-                    className="w-72 h-44 flex-shrink-0 relative group/card"
-                  >
-                    {/* Glassmorphic Card */}
-                    <div className="absolute inset-0 bg-white/40 backdrop-blur-xl rounded-[2.5rem] border border-gray-100 shadow-xl group-hover/card:shadow-2xl transition-all duration-500 flex items-center justify-center p-12 overflow-hidden">
-                      {/* Decorative corner */}
-                      <div className="absolute top-0 right-0 w-16 h-16 bg-gradient-to-br from-green-500/5 to-transparent rounded-bl-[3rem] opacity-0 group-hover/card:opacity-100 transition-opacity" />
-
-                      <img
-                        src={partner.logo}
-                        alt={partner.name}
-                        className="max-h-16 w-auto filter grayscale opacity-40 group-hover/card:grayscale-0 group-hover/card:opacity-100 group-hover/card:scale-110 transition-all duration-500 ease-out relative z-10"
-                      />
-
-                      {/* Inner border glow */}
-                      <div className="absolute inset-[1px] rounded-[2.4rem] border border-white/50 pointer-events-none" />
-                    </div>
-                    {/* Visual Accent Glow */}
-                    <div className="absolute -inset-1 bg-gradient-to-br from-green-500/20 to-blue-500/10 rounded-[2.8rem] blur-2xl opacity-0 group-hover/card:opacity-100 transition-opacity -z-10" />
-                  </motion.div>
-                ))}
+                {/* Subtle Hover Glow */}
+                <div className="absolute inset-0 bg-gradient-to-br from-green-500/[0.03] to-[#182656]/[0.02] opacity-0 group-hover:opacity-100 transition-opacity duration-700" />
+                
+                <img
+                  src={partner.logo}
+                  alt={partner.name}
+                  className="max-h-12 lg:max-h-16 w-auto object-contain filter grayscale opacity-40 group-hover:grayscale-0 group-hover:opacity-100 group-hover:scale-[1.03] transition-all duration-700 ease-out relative z-10"
+                />
               </motion.div>
-            </div>
+            ))}
           </div>
-
-          <motion.div
-            initial={{ opacity: 0 }}
-            whileInView={{ opacity: 1 }}
-            transition={{ delay: 0.5 }}
-            viewport={{ once: true }}
-            className="text-center mt-12"
-          >
-            <p className="text-[10px] font-black text-gray-300 uppercase tracking-[0.5em]">
-              Partnering for Impact • Building the Future
-            </p>
-          </motion.div>
         </div>
       </section>
 

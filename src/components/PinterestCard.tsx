@@ -50,9 +50,12 @@ const PinterestCard = ({
 
       {/* Top Badge/Action - Floating Style */}
       <div className="absolute top-8 right-8 z-30 opacity-0 group-hover:opacity-100 translate-y-4 group-hover:translate-y-0 transition-all duration-500">
-        <div className="w-14 h-14 rounded-full bg-white/10 backdrop-blur-2xl border border-white/20 flex items-center justify-center text-white hover:bg-green-500 hover:border-green-400 transition-all duration-300 shadow-2xl">
+        <CardWrapper
+          {...(linkProps as any)}
+          className="w-14 h-14 rounded-full bg-white/10 backdrop-blur-2xl border border-white/20 flex items-center justify-center text-white hover:bg-green-500 hover:border-green-400 transition-all duration-300 shadow-2xl"
+        >
           <ArrowRight size={24} className="-rotate-45" />
-        </div>
+        </CardWrapper>
       </div>
 
       {/* Content Area */}
