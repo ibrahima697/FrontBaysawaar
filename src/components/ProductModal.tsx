@@ -7,9 +7,10 @@ interface ProductModalProps {
   product: Product | null;
   isOpen: boolean;
   onClose: () => void;
+  whatsappNumber?: string;
 }
 
-const ProductModal = ({ product, isOpen, onClose }: ProductModalProps) => {
+const ProductModal = ({ product, isOpen, onClose, whatsappNumber = '221788925878' }: ProductModalProps) => {
   const [activeImage, setActiveImage] = useState(0);
 
   if (!product) return null;
@@ -21,7 +22,7 @@ const ProductModal = ({ product, isOpen, onClose }: ProductModalProps) => {
 
   const handleWhatsAppEnquiry = () => {
     const message = `Bonjour, je suis intéressé par le produit "${product.name}" vu sur BAY SA WARR. Pouvez-vous me donner plus d'informations ?`;
-    window.open(`https://wa.me/221770000000?text=${encodeURIComponent(message)}`, '_blank');
+    window.open(`https://wa.me/${whatsappNumber}?text=${encodeURIComponent(message)}`, '_blank');
   };
 
   return (
