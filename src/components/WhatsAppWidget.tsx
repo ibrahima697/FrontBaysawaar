@@ -16,7 +16,7 @@ const WhatsAppIcon = ({ size = 24, className = "" }: { size?: number, className?
 const WhatsAppWidget = () => {
     const [showTooltip, setShowTooltip] = useState(false);
     const isDragging = useRef(false);
-    const phoneNumber = "221786349573";
+    const phoneNumber = "221788925878";
     const message = "Bonjour ! J'aimerais en savoir plus sur Baysawaar.";
 
     const handleWhatsAppClick = () => {
