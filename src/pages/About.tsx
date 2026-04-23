@@ -119,8 +119,8 @@ const About = () => {
             transition={{ duration: 0.8 }}
             className="text-center"
           >
-            <div className="inline-block p-8 sm:p-12 rounded-3xl bg-black/30 backdrop-blur-md border border-white/10 shadow-2xl max-w-4xl mx-auto">
-              <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold text-white mb-6 leading-tight">
+            <div className="inline-block p-6 sm:p-12 rounded-3xl bg-black/30 backdrop-blur-md border border-white/10 shadow-2xl max-w-4xl mx-auto">
+              <h1 className="text-2xl sm:text-4xl md:text-5xl lg:text-6xl font-bold text-white mb-6 leading-tight">
                 À propos de <span className="text-transparent bg-clip-text bg-gradient-to-r from-green-400 to-blue-400">BAY SA WARR</span>
               </h1>
               <p className="text-base sm:text-lg md:text-xl text-white/90 leading-relaxed">
@@ -169,30 +169,30 @@ const About = () => {
                 />
               </motion.div>
 
-              {/* Floating Stat Card */}
+              {/* Floating Stat Card - Hidden on very small mobiles, repositioned on sm+ */}
               <motion.div
                 initial={{ scale: 0, opacity: 0 }}
                 whileInView={{ scale: 1, opacity: 1 }}
                 transition={{ delay: 0.6, type: "spring", stiffness: 100 }}
                 viewport={{ once: true }}
-                className="absolute top-10 -right-6 lg:-right-12 z-30 bg-white p-6 rounded-3xl shadow-xl border border-gray-100 flex items-center gap-4"
+                className="absolute top-10 -right-4 sm:-right-6 lg:-right-12 z-30 bg-white p-4 sm:p-6 rounded-3xl shadow-xl border border-gray-100 flex items-center gap-3 sm:gap-4 hidden min-[400px]:flex"
               >
-                <div className="w-12 h-12 bg-green-500 rounded-2xl flex items-center justify-center text-white">
-                  <TrendingUp size={24} />
+                <div className="w-10 h-10 sm:w-12 sm:h-12 bg-green-500 rounded-2xl flex items-center justify-center text-white">
+                  <TrendingUp size={20} className="sm:w-6 sm:h-6" />
                 </div>
                 <div>
-                  <p className="text-2xl font-black text-slate-900 leading-none">10,000+</p>
-                  <p className="text-xs font-bold text-slate-400 uppercase tracking-widest mt-1">Entreprises</p>
+                  <p className="text-xl sm:text-2xl font-black text-slate-900 leading-none">10,000+</p>
+                  <p className="text-[10px] sm:text-xs font-bold text-slate-400 uppercase tracking-widest mt-1">Entreprises</p>
                 </div>
               </motion.div>
 
-              {/* Floating Trust Card */}
+              {/* Floating Trust Card - Hidden on small mobiles to avoid overflow */}
               <motion.div
                 initial={{ scale: 0, opacity: 0 }}
                 whileInView={{ scale: 1, opacity: 1 }}
                 transition={{ delay: 0.8, type: "spring", stiffness: 100 }}
                 viewport={{ once: true }}
-                className="absolute -bottom-6 -left-8 z-30 bg-[#182656] p-6 rounded-3xl shadow-xl border border-slate-800 flex flex-col gap-3"
+                className="absolute -bottom-6 -left-4 sm:-left-8 z-30 bg-[#182656] p-4 sm:p-6 rounded-3xl shadow-xl border border-slate-800 hidden sm:flex flex-col gap-3"
               >
                 <p className="text-white font-black text-lg">Très appréciée</p>
                 <div className="flex gap-1">
@@ -231,7 +231,7 @@ const About = () => {
                 <div className="inline-block px-4 py-1.5 bg-green-50 text-green-600 rounded-lg text-sm font-black uppercase tracking-[0.2em] mb-6">
                   Un peu sur nous
                 </div>
-                <h2 className="text-4xl sm:text-5xl lg:text-6xl font-black text-slate-900 mb-8 uppercase tracking-tighter leading-[0.9]">
+                <h2 className="text-3xl sm:text-5xl lg:text-6xl font-black text-slate-900 mb-8 uppercase tracking-tighter leading-[0.95] md:leading-[0.9]">
                   NOTRE <br />
                   <span className="text-green-600">HISTOIRE</span>
                 </h2>
@@ -270,8 +270,8 @@ const About = () => {
 
       {/* Mission & Vision - Precision Infographic Redesign */}
       <section className="py-32 relative overflow-hidden bg-white">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
-          <div className="relative flex flex-col md:flex-row items-center justify-center gap-16 lg:gap-32">
+        <div className="max-w-7xl mx-auto px-6 sm:px-6 lg:px-8 relative z-10">
+          <div className="relative flex flex-col md:flex-row items-center justify-center gap-24 sm:gap-16 lg:gap-32">
 
             {/* Connecting S-Curve Line (Desktop Only) */}
             <svg className="absolute hidden md:block w-full h-full pointer-events-none z-0" viewBox="0 0 1000 400">
@@ -312,7 +312,7 @@ const About = () => {
               className="relative w-full max-w-sm group"
             >
               {/* Image-accurate Border Frame */}
-              <div className="absolute -inset-6 pointer-events-none">
+              <div className="absolute inset-0 sm:-inset-6 pointer-events-none">
                 {/* Thin Base Border */}
                 <div className="absolute inset-0 border-[1.5px] border-green-200 rounded-[3rem]"></div>
                 {/* Dotted Top-Left Segment */}
@@ -321,8 +321,8 @@ const About = () => {
                 <div className="absolute -bottom-[1.5px] -left-[1.5px] w-1/3 h-1/3 border-b-[6px] border-l-[6px] border-green-600 rounded-bl-[3rem]"></div>
               </div>
 
-              <div className="relative bg-[#fcfcfc] p-10 rounded-[2.5rem] shadow-xl flex flex-col items-center text-center h-full">
-                <div className="w-16 h-16 bg-white rounded-2xl shadow-sm flex items-center justify-center mb-8">
+              <div className="relative bg-[#fcfcfc] p-8 sm:p-10 rounded-[2.5rem] shadow-xl flex flex-col items-center text-center h-full">
+                <div className="w-14 h-14 sm:w-16 sm:h-16 bg-white rounded-2xl shadow-sm flex items-center justify-center mb-6 sm:mb-8">
                   <Target className="text-green-600" size={32} />
                 </div>
 
@@ -344,7 +344,7 @@ const About = () => {
               className="relative w-full max-w-sm group"
             >
               {/* Image-accurate Border Frame */}
-              <div className="absolute -inset-6 pointer-events-none">
+              <div className="absolute inset-0 sm:-inset-6 pointer-events-none">
                 {/* Thin Base Border */}
                 <div className="absolute inset-0 border-[1.5px] border-slate-200 rounded-[3rem]"></div>
                 {/* Thick Navy Top-Right Bar */}
@@ -353,8 +353,8 @@ const About = () => {
                 <div className="absolute -bottom-[1.5px] -right-[1.5px] w-1/2 h-1/2 border-b-[3px] border-r-[3px] border-dotted border-[#182656] rounded-br-[3rem]"></div>
               </div>
 
-              <div className="relative bg-[#fcfcfc] p-10 rounded-[2.5rem] shadow-xl flex flex-col items-center text-center h-full">
-                <div className="w-16 h-16 bg-white rounded-2xl shadow-sm flex items-center justify-center mb-8">
+              <div className="relative bg-[#fcfcfc] p-8 sm:p-10 rounded-[2.5rem] shadow-xl flex flex-col items-center text-center h-full">
+                <div className="w-14 h-14 sm:w-16 sm:h-16 bg-white rounded-2xl shadow-sm flex items-center justify-center mb-6 sm:mb-8">
                   <Eye className="text-[#182656]" size={32} />
                 </div>
 
@@ -462,8 +462,8 @@ const About = () => {
                         <p className="text-slate-400 text-[13px] font-medium leading-relaxed">{value.description}</p>
                       </div>
 
-                      {/* Overlapping Icon Circle */}
-                      <div className={`relative ${isLeft ? '-ml-8 sm:-ml-12' : '-mr-8 sm:-mr-12'} z-20 transition-transform duration-500 group-hover:scale-110`}>
+                      {/* Overlapping Icon Circle - Adjusted for mobile */}
+                      <div className={`relative ${isLeft ? '-ml-4 sm:-ml-12' : '-mr-4 sm:-mr-12'} z-20 transition-transform duration-500 group-hover:scale-110`}>
                         <div className={`w-16 h-16 sm:w-20 sm:h-20 ${accentBg} rounded-full flex items-center justify-center shadow-2xl border-4 border-white`}>
                           <value.icon className="text-white" size={28} />
                         </div>
@@ -514,7 +514,7 @@ const About = () => {
                     >
                       {/* Image Container */}
                       <div className="relative w-full sm:w-56 h-64 sm:h-56 flex-shrink-0">
-                        <div className="absolute inset-0 bg-green-500/10 translate-x-3 translate-y-3 rounded-tl-[40px] rounded-br-[40px] group-hover:translate-x-1 group-hover:translate-y-1 transition-transform duration-300"></div>
+                        <div className="absolute inset-0 bg-green-500/10 translate-x-2 translate-y-2 sm:translate-x-3 sm:translate-y-3 rounded-tl-[40px] rounded-br-[40px] group-hover:translate-x-1 group-hover:translate-y-1 transition-transform duration-300"></div>
                         <img
                           src={member.image}
                           alt={member.name}
@@ -646,7 +646,7 @@ const About = () => {
                 target="_blank"
                 rel="noopener noreferrer"
                 whileHover={{ y: -8, scale: 1.02 }}
-                className="relative group p-10 rounded-[3rem] bg-gray-50/50 border border-transparent hover:bg-white hover:border-gray-200 transition-all duration-500 overflow-hidden"
+                className="relative group p-6 sm:p-10 rounded-[2.5rem] sm:rounded-[3rem] bg-gray-50/50 border border-transparent hover:bg-white hover:border-gray-200 transition-all duration-500 overflow-hidden"
               >
                 {/* Elaborated: Individual Brand Gradient Glow */}
                 <div className={`absolute -bottom-10 -right-10 w-40 h-40 ${social.color} opacity-0 group-hover:opacity-[0.08] rounded-full blur-3xl transition-all duration-700`} />
