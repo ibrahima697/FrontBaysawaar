@@ -1,6 +1,7 @@
 import { Link } from 'react-router-dom';
 import { useState } from 'react';
-import { Facebook, Instagram, Linkedin, Mail, MapPin, Youtube } from 'lucide-react';
+import { Facebook, Linkedin, Mail, MapPin, Youtube } from 'lucide-react';
+import { TiktokIcon } from './Icons';
 import { contactsAPI } from '../services/api';
 import Swal from 'sweetalert2';
 
@@ -73,7 +74,7 @@ const Footer = () => {
 
   const socialLinks = [
     { icon: Facebook, href: 'https://www.facebook.com/baysawarr', label: 'Facebook', color: 'hover:bg-blue-600' },
-    { icon: Instagram, href: 'https://www.instagram.com/plateforme_bay_sa_war/?fbclid=IwY2xjawMWgrlleHRuA2FlbQIxMABicmlkETFIM0Q1RkpEUlBXYWtkTm1MAR49Io3FB650UIqas5PzCal3eudmDsKiNqHWJxD9tz95S2bpzLjDEOctol4Jqg_aem_vyO-Noh6CZKOFMJkKb7TVA#', label: 'Instagram', color: 'hover:bg-pink-600' },
+    { icon: TiktokIcon, href: 'https://www.tiktok.com/@fabiraorganicproducts77?_r=1&_t=ZS-95mFafGMBwV', label: 'TikTok', color: 'hover:bg-black' },
     { icon: Linkedin, href: 'https://www.linkedin.com/in/plateforme-bay-sa-waar-3a899737b/', label: 'LinkedIn', color: 'hover:bg-blue-900' },
     { icon: Youtube, href: 'https://www.youtube.com/@fabiratv2023', label: 'Youtube', color: 'hover:bg-red-600' },
   ];
@@ -199,21 +200,21 @@ const Footer = () => {
           <p className="text-xs text-white/40 flex items-center gap-1">
             © Développé par{" "}
             <a
-              href="https://www.linkedin.com/in/ahmady-ibrahima-guisse-a7a198152"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="hover:text-green-400 transition-colors underline decoration-green-400/30 underline-offset-2"
-            >
-              Ibrahima Guissé
-            </a>
-            {" "} & {" "}
-            <a
               href="https://www.linkedin.com/in/ndiaga-l-4a7581139/"
               target="_blank"
               rel="noopener noreferrer"
               className="hover:text-green-400 transition-colors underline decoration-green-400/30 underline-offset-2"
             >
               Sohntech
+            </a>
+            {" "} & {" "}
+            <a
+              href="https://www.linkedin.com/in/ahmady-ibrahima-guisse-a7a198152"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="hover:text-green-400 transition-colors underline decoration-green-400/30 underline-offset-2"
+            >
+              Ibrahima Guissé
             </a>
           </p>
         </div>

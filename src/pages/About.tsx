@@ -1,7 +1,8 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Target, Eye, Heart, Users, Globe, TrendingUp, Facebook, Linkedin, Instagram, Youtube } from 'lucide-react';
+import { Target, Eye, Heart, Users, Globe, TrendingUp, Facebook, Linkedin, Youtube } from 'lucide-react';
+import { TiktokIcon } from '../components/Icons';
 
 const About = () => {
   const navigate = useNavigate();
@@ -38,12 +39,12 @@ const About = () => {
       link: 'https://www.facebook.com/baysawarr'
     },
     {
-      name: 'Instagram',
-      icon: Instagram,
-      description: 'Histoires visuelles de réussite des entreprises africaines',
-      followers: '100+',
-      color: 'bg-pink-600',
-      link: 'https://www.instagram.com/plateforme_bay_sa_war/?fbclid=IwY2xjawMWgrlleHRuA2FlbQIxMABicmlkETFIM0Q1RkpEUlBXYWtkTm1MAR49Io3FB650UIqas5PzCal3eudmDsKiNqHWJxD9tz95S2bpzLjDEOctol4Jqg_aem_vyO-Noh6CZKOFMJkKb7TVA#'
+      name: 'TikTok',
+      icon: TiktokIcon,
+      description: 'Découvrez nos coulisses et nos produits en vidéo',
+      followers: '1K+',
+      color: 'bg-black',
+      link: 'https://www.tiktok.com/@fabiraorganicproducts77?_r=1&_t=ZS-95mFafGMBwV'
     },
     {
       name: 'LinkedIn',

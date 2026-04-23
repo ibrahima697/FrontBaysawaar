@@ -1,6 +1,7 @@
 import { motion, AnimatePresence } from 'framer-motion';
 import { Link, useNavigate } from 'react-router-dom';
-import { Globe, ShoppingCart, BookOpen, Facebook, Instagram, Linkedin, ExternalLink, Users, TrendingUp, Shield, Zap, Youtube, X, CheckCircle, ArrowRight } from 'lucide-react';
+import { Globe, ShoppingCart, BookOpen, Facebook, Linkedin, ExternalLink, Users, TrendingUp, Shield, Zap, Youtube, X, ArrowRight } from 'lucide-react';
+import { TiktokIcon } from '../components/Icons';
 import { useState } from 'react';
 
 const Platforms = () => {
@@ -70,12 +71,12 @@ const Platforms = () => {
       link: 'https://www.facebook.com/baysawarr'
     },
     {
-      name: 'Instagram',
-      icon: Instagram,
-      description: 'Histoires visuelles de réussite des entreprises africaines',
-      followers: '100+',
-      color: 'bg-pink-600',
-      link: 'https://www.instagram.com/plateforme_bay_sa_war/?fbclid=IwY2xjawMWgrlleHRuA2FlbQIxMABicmlkETFIM0Q1RkpEUlBXYWtkTm1MAR49Io3FB650UIqas5PzCal3eudmDsKiNqHWJxD9tz95S2bpzLjDEOctol4Jqg_aem_vyO-Noh6CZKOFMJkKb7TVA#'
+      name: 'TikTok',
+      icon: TiktokIcon,
+      description: 'Découvrez nos coulisses et nos produits en vidéo',
+      followers: '1K+',
+      color: 'bg-black',
+      link: 'https://www.tiktok.com/@fabiraorganicproducts77?_r=1&_t=ZS-95mFafGMBwV'
     },
     {
       name: 'LinkedIn',
@@ -96,28 +97,7 @@ const Platforms = () => {
 
   ];
 
-  const benefits = [
-    {
-      icon: Users,
-      title: 'Accès communauté',
-      description: 'Connectez-vous avec des milliers de leaders d\'affaires et d\'entrepreneurs africains'
-    },
-    {
-      icon: TrendingUp,
-      title: 'Analytiques de croissance',
-      description: 'Suivez vos performances avec des outils de suivi et de reporting détaillés'
-    },
-    {
-      icon: Shield,
-      title: 'Transactions sécurisées',
-      description: 'Sécurité bancaire pour toutes les transactions et protection des données'
-    },
-    {
-      icon: Zap,
-      title: 'Setup rapide',
-      description: 'Démarrez en quelques minutes avec notre processus d\'onboarding simplifié'
-    }
-  ];
+
 
   return (
     <motion.div
@@ -250,7 +230,7 @@ const Platforms = () => {
           <h2 className="text-3xl font-black text-gray-900 mb-16 uppercase tracking-tighter">Nos réseaux sociaux</h2>
 
           <div className="grid grid-cols-2 lg:grid-cols-4 gap-6">
-            {socialPlatforms.map((social, index) => (
+            {socialPlatforms.map((social, _index) => (
               <motion.a
                 key={social.name}
                 href={social.link}

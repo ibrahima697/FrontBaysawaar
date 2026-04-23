@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
-import { Mail, Phone, MapPin, Clock, Send, CheckCircle, AlertCircle, Loader2, Facebook, Twitter, Linkedin, Instagram } from 'lucide-react';
+import { Mail, Phone, MapPin, Clock, Send, CheckCircle, AlertCircle, Loader2, Facebook, Twitter, Linkedin } from 'lucide-react';
+import { TiktokIcon } from '../components/Icons';
 
 const Contact = () => {
   const [activeTab, setActiveTab] = useState('information');
@@ -190,9 +191,14 @@ const Contact = () => {
               <div className="mt-10 pt-8 border-t border-gray-100">
                 <h3 className="font-bold text-gray-900 mb-4">Suivez-nous</h3>
                 <div className="flex gap-4">
-                  {[Facebook, Twitter, Linkedin, Instagram].map((Icon, i) => (
-                    <a key={i} href="#" className="w-10 h-10 bg-gray-50 rounded-full flex items-center justify-center text-gray-500 hover:bg-green-500 hover:text-white transition-all duration-300">
-                      <Icon size={20} />
+                  {[
+                    { Icon: Facebook, link: 'https://www.facebook.com/baysawarr' },
+                    { Icon: Twitter, link: '#' },
+                    { Icon: Linkedin, link: 'https://www.linkedin.com/in/plateforme-bay-sa-waar-3a899737b/' },
+                    { Icon: TiktokIcon, link: 'https://www.tiktok.com/@fabiraorganicproducts77?_r=1&_t=ZS-95mFafGMBwV' }
+                  ].map((social, i) => (
+                    <a key={i} href={social.link} target="_blank" rel="noopener noreferrer" className="w-10 h-10 bg-gray-50 rounded-full flex items-center justify-center text-gray-500 hover:bg-green-500 hover:text-white transition-all duration-300">
+                      <social.Icon size={20} />
                     </a>
                   ))}
                 </div>
