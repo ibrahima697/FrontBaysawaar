@@ -613,7 +613,7 @@ const About = () => {
             className="text-center mb-16"
           >
             <h2 className="text-3xl sm:text-4xl md:text-5xl font-extrabold text-slate-900 mb-6 uppercase tracking-tight">
-              Nos<span className="text-green-600">Partenaires</span>
+              Nos <span className="text-green-600">Partenaires</span>
             </h2>
             <div className="w-24 h-1 bg-green-600 mx-auto mb-4" />
             <p className="text-slate-500 text-lg uppercase tracking-widest font-light">
