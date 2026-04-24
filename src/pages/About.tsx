@@ -68,30 +68,49 @@ const About = () => {
     {
       name: 'Fatou Fabira Dramé',
       role: 'PDG & Fondatrice',
-      bio: 'Leader visionnaire avec plus de 15 ans d\'expérience dans le commerce international et le développement des affaires en Afrique.',
+      badge: 'CEO',
+      bio: 'Fondatrice et Directrice Générale de Bay Sa Warr.',
       image: 'https://res.cloudinary.com/drxouwbms/image/upload/v1755778170/Web_Photo_Editor_1_nik1li.jpg',
     },
     {
-      name: 'Ndiaga Lo',
-      role: 'Developpeur Frontend',
-      bio: 'Développeur Frontend avec une expertise approfondie en React et Next.js.',
-      image: 'https://res.cloudinary.com/drxouwbms/image/upload/v1743803438/learners/bwear6xjrbj69froahdp.jpg',
+      name: 'Dorica Okana',
+      role: 'Chargée des Relations Internationales',
+      badge: 'Relations',
+      bio: 'Chargée des Relations Internationales de Bay Sa Warr.',
+      image: 'https://res.cloudinary.com/drxouwbms/image/upload/v1777018262/Untitled_design_7_ruo0bj.png',
     },
     {
-      name: 'Ahmady Ibrahima Guissé',
-      role: 'Developpeur Backend',
-      bio: 'Développeur Backend avec une expertise approfondie en Node.js et Express.js.',
-      image: 'https://res.cloudinary.com/drxouwbms/image/upload/t_ahmadycrop/baysawarr/dz5p45walblwamgdzs0b.png',
+      name: 'Fatou Gueye',
+      role: 'Assistante de direction',
+      badge: 'Assistante',
+      bio: 'Assistante de direction de Bay Sa Warr.',
+      image: 'https://res.cloudinary.com/drxouwbms/image/upload/v1777018323/Untitled_design_8_hedpyp.png',
     },
+    {
+      name: 'Mbathio Camara',
+      role: 'Coordinatrice club Fabira family',
+      badge: 'Coordinatrice',
+      bio: 'Coordinatrice du club Fabira family.',
+      image: 'https://res.cloudinary.com/drxouwbms/image/upload/v1777018393/Untitled_design_9_us72hr.png',
+    },
+
   ];
 
   const partners = [
-    { name: 'Banque Africaine de Développement', logo: 'https://res.cloudinary.com/drxouwbms/image/upload/v1755780237/Logo_Afrikanische_Entwicklungsbank.svg_oa7ujv.png' },
-    { name: 'Commission du Commerce CEDEAO', logo: 'https://res.cloudinary.com/drxouwbms/image/upload/v1755780576/CEDEAO_Logo.svg_vobzi6.png' },
-    { name: 'Alliance Mondiale du Commerce', logo: 'https://res.cloudinary.com/drxouwbms/image/upload/v1756378077/345594175_690121569789202_3483034607438286277_n-removebg-preview_jv7nty.png' },
-    { name: 'Initiative Digitale Afrique', logo: 'https://res.cloudinary.com/drxouwbms/image/upload/v1755780910/cropped-cropped-DA_Logo_HG-1_zejbov.png' },
-    { name: 'Promotion Export Sénégal', logo: 'https://res.cloudinary.com/drxouwbms/image/upload/v1756378085/1630632559560-removebg-preview_sn0rfl.png' },
-    { name: 'Gouvernement du Sénégal', logo: 'https://res.cloudinary.com/drxouwbms/image/upload/v1755781150/Coat_of_arms_of_Senegal.svg_bzqaft.png' },
+    { name: 'Ministère de l\'Industrie et du Commerce', logo: 'https://res.cloudinary.com/drxouwbms/image/upload/v1777021730/Untitled_design_22_pjym1u.png' },
+    { name: 'Ministère de la Culture de l\'Artisanat et du Tourisme', logo: 'https://res.cloudinary.com/drxouwbms/image/upload/v1777022022/Untitled_design_23_q5mx0y.png' },
+    { name: 'Ministère de la Famille, de l\'Action Sociale et des Solidarités', logo: 'https://res.cloudinary.com/drxouwbms/image/upload/v1777021539/Untitled_design_20_oi5cde.png' },
+    { name: 'Radio Télévision Sénégalaise', logo: 'https://res.cloudinary.com/drxouwbms/image/upload/v1777023348/Untitled_design_24_x1upmw.png' },
+    { name: 'Agence de Développement et d\'encadrement des Petites et Moyennes Entreprises', logo: 'https://res.cloudinary.com/drxouwbms/image/upload/v1777019987/Untitled_design_11_vpv33b.png' },
+    { name: 'Agence Sénégalaise de Promotion des Exportations', logo: 'https://res.cloudinary.com/drxouwbms/image/upload/v1756378085/1630632559560-removebg-preview_sn0rfl.png' },
+    { name: 'Agence Sénégalaise pour la Propriété Industrielle et l’Innovation Technologique ', logo: 'https://res.cloudinary.com/drxouwbms/image/upload/v1777019469/Untitled_design_10_g1hwit.png' },
+    { name: 'Agence pour la Promotion et le Développement de l\'Artisanat', logo: 'https://res.cloudinary.com/drxouwbms/image/upload/v1777020178/Untitled_design_13_kgi0ps.png' },
+    { name: 'Agence Sénégalaise de Promotion Touristique', logo: 'https://res.cloudinary.com/drxouwbms/image/upload/v1777020412/Untitled_design_14_obq1bd.png' },
+    { name: 'Bureau de Mise à Niveau', logo: 'https://res.cloudinary.com/drxouwbms/image/upload/v1777020536/Untitled_design_15_g7htgp.png' },
+    { name: 'Conseil Sénégalais des Chargeurs', logo: 'https://res.cloudinary.com/drxouwbms/image/upload/v1777021327/Untitled_design_19_ljfyn3.png' },
+    { name: 'Chambre de Commerce d\'Industrie et d\'Agriculture de Dakar', logo: 'https://res.cloudinary.com/drxouwbms/image/upload/v1777020780/Untitled_design_17_nyrma3.png' },
+    { name: 'Casamançaise', logo: 'https://res.cloudinary.com/drxouwbms/image/upload/v1777020672/Untitled_design_16_um8b3g.png' },
+    { name: 'Institut Africain des Politiques Commerciales', logo: 'https://res.cloudinary.com/drxouwbms/image/upload/v1777021650/Untitled_design_21_oapmbi.png' },
   ];
 
   const [currentSlide, setCurrentSlide] = useState(0);
@@ -483,7 +502,7 @@ const About = () => {
 
       {/* Team Section - Carousel Slide Mode */}
       <section className="py-24 bg-gray-50 relative overflow-hidden">
-        <div className="absolute top-0 left-0 w-full h-1 bg-green-500/10"></div>
+
 
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
           <div className="text-center mb-16">
@@ -527,10 +546,7 @@ const About = () => {
                         {/* Role Tag */}
                         <div className="absolute -top-4 left-6 sm:left-10 bg-green-600 px-6 py-1.5 rounded-tr-xl rounded-bl-sm shadow-lg">
                           <span className="text-white font-black text-xs uppercase tracking-tighter">
-                            {member.role === 'PDG & Fondatrice' ? 'CEO' :
-                              member.role === 'Directrice des Opérations' ? 'COO' :
-                                member.role === 'Directeur Technique' ? 'CTO' :
-                                  member.role.toLowerCase().includes('developpeur') ? 'Engineer' : 'Director'}
+                            {member.badge}
                           </span>
                         </div>
 
@@ -584,7 +600,6 @@ const About = () => {
           </div>
         </div>
 
-        <div className="absolute bottom-0 left-0 w-full h-1 bg-green-500/10"></div>
       </section>
 
       {/* Partners - Premium Grid Section */}
@@ -606,10 +621,10 @@ const About = () => {
             </p>
           </motion.div>
 
-          <div className="grid grid-cols-2 md:grid-cols-3 border-t border-l border-slate-200/60 max-w-4xl mx-auto bg-white shadow-xl rounded-2xl overflow-hidden relative">
+          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 border-t border-l border-slate-200/60 max-w-6xl mx-auto bg-white shadow-xl rounded-2xl overflow-hidden relative">
             <div className="absolute top-0 right-0 w-24 h-24 bg-gradient-to-bl from-green-500/10 to-transparent pointer-events-none" />
             <div className="absolute bottom-0 left-0 w-24 h-24 bg-gradient-to-tr from-[#182656]/10 to-transparent pointer-events-none" />
-            
+
             {partners.map((partner, index) => (
               <motion.div
                 key={index}
@@ -621,12 +636,17 @@ const About = () => {
               >
                 {/* Subtle Hover Glow */}
                 <div className="absolute inset-0 bg-gradient-to-br from-green-500/[0.03] to-[#182656]/[0.02] opacity-0 group-hover:opacity-100 transition-opacity duration-700" />
-                
-                <img
-                  src={partner.logo}
-                  alt={partner.name}
-                  className="max-h-12 lg:max-h-16 w-auto object-contain filter grayscale opacity-40 group-hover:grayscale-0 group-hover:opacity-100 group-hover:scale-[1.03] transition-all duration-700 ease-out relative z-10"
-                />
+
+                <div className="flex flex-col items-center gap-4 relative z-10">
+                  <img
+                    src={partner.logo}
+                    alt={partner.name}
+                    className="max-h-20 lg:max-h-28 w-auto object-contain filter grayscale opacity-60 group-hover:grayscale-0 group-hover:opacity-100 group-hover:scale-[1.08] transition-all duration-700 ease-out"
+                  />
+                  <p className="text-[10px] lg:text-[11px] font-black text-slate-400 text-center uppercase tracking-tighter leading-tight opacity-0 group-hover:opacity-100 group-hover:text-green-600 transition-all duration-500">
+                    {partner.name}
+                  </p>
+                </div>
               </motion.div>
             ))}
           </div>
