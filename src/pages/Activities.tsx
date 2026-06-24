@@ -125,7 +125,9 @@ const Activities = () => {
 
 
   const getFormationShareUrl = (formation: Formation) =>
-    `${BACKEND_URL}/share/formations/${formation._id}`;
+    import.meta.env.DEV
+      ? `${window.location.origin}/activities?formation=${formation._id}`
+      : `${BACKEND_URL}/share/formations/${formation._id}`;
 
   const shareFormation = (platform: 'whatsapp' | 'facebook', formation: Formation) => {
     const shareUrl = getFormationShareUrl(formation);

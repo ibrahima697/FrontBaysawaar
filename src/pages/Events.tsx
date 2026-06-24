@@ -175,7 +175,9 @@ const Events = () => {
   };
 
   const getEventShareUrl = (event: Event) =>
-    `${BACKEND_URL}/share/events/${event.slug}`;
+    import.meta.env.DEV
+      ? `${window.location.origin}/events?event=${event.slug}`
+      : `${BACKEND_URL}/share/events/${event.slug}`;
 
   const shareEvent = (platform: 'whatsapp' | 'facebook', event: Event) => {
     const shareUrl = getEventShareUrl(event);
