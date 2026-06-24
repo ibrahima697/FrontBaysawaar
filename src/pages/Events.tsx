@@ -4,7 +4,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import {
   Calendar, MapPin, Users, ArrowRight, Globe,
   Award, CheckCircle, X, ChevronLeft, ChevronRight,
-  Clock
+  Clock, MessageCircle, Facebook, Share2
 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import Swal from 'sweetalert2';
@@ -159,6 +159,16 @@ const Events = () => {
       const regUserId = r.user?._id || r.user || r.userId || r;
       return String(regUserId) === String(userId);
     });
+  };
+
+  const shareEvent = (platform: 'whatsapp' | 'facebook', event: Event) => {
+    const url = window.location.origin + '/events';
+    const text = `${event.title}\n${event.shortDescription}`;
+    if (platform === 'whatsapp') {
+      window.open(`https://wa.me/?text=${encodeURIComponent(`${text}\n${url}`)}`, '_blank', 'noopener,noreferrer');
+    } else {
+      window.open(`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(url)}`, '_blank', 'noopener,noreferrer,width=600,height=400');
+    }
   };
 
   const stats = [
@@ -763,7 +773,25 @@ const Events = () => {
                 </div>
 
                 {/* Footer Action Area */}
-                <div className="mt-auto pt-4 border-t border-white/5 flex items-center justify-between gap-4">
+                <div className="mt-auto pt-4 border-t border-white/5 space-y-3">
+                <div className="flex items-center gap-2">
+                  <span className="text-[9px] text-gray-600 uppercase tracking-widest font-black flex-1 flex items-center gap-1.5"><Share2 size={10} /> Partager</span>
+                  <button
+                    onClick={() => selectedEvent && shareEvent('whatsapp', selectedEvent)}
+                    title="Partager sur WhatsApp"
+                    className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-white/5 hover:bg-[#25D366]/20 border border-white/10 hover:border-[#25D366]/40 text-[10px] font-black text-gray-400 hover:text-[#25D366] transition-all uppercase tracking-wider"
+                  >
+                    <MessageCircle size={13} /> WhatsApp
+                  </button>
+                  <button
+                    onClick={() => selectedEvent && shareEvent('facebook', selectedEvent)}
+                    title="Partager sur Facebook"
+                    className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-white/5 hover:bg-[#1877F2]/20 border border-white/10 hover:border-[#1877F2]/40 text-[10px] font-black text-gray-400 hover:text-[#1877F2] transition-all uppercase tracking-wider"
+                  >
+                    <Facebook size={13} /> Facebook
+                  </button>
+                </div>
+                <div className="flex items-center justify-between gap-4">
                   {new Date(selectedEvent?.dateEnd || '') < new Date() ? (
                     <div className="w-full bg-gray-900 border border-white/5 text-gray-500 py-4 rounded-xl flex items-center justify-center gap-3 font-black tracking-widest text-[10px] uppercase">
                       <Clock size={16} /> Événement Terminé
@@ -813,6 +841,7 @@ const Events = () => {
                       )}
                     </>
                   )}
+                </div>
                 </div>
               </div>
             </motion.div>
