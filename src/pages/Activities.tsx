@@ -10,9 +10,6 @@ import Swal from 'sweetalert2';
 
 import { User, Formation } from '../types';
 
-const BACKEND_URL = import.meta.env.VITE_BACKEND_URL ||
-  (import.meta.env.DEV ? 'http://localhost:5005' : 'https://api-shop.fabiratrading.com');
-
 const Activities = () => {
   const { user, token } = useAuth() as { user: User | null; token: string | null };
   const [formations, setFormations] = useState<Formation[]>([]);
@@ -124,19 +121,13 @@ const Activities = () => {
   };
 
 
-  const getFormationShareUrl = (formation: Formation) =>
-    import.meta.env.DEV
-      ? `${window.location.origin}/activities?formation=${formation._id}`
-      : `${BACKEND_URL}/share/formations/${formation._id}`;
-
   const shareFormation = (platform: 'whatsapp' | 'facebook', formation: Formation) => {
-    const shareUrl = getFormationShareUrl(formation);
-    const frontUrl = `${window.location.origin}/activities?formation=${formation._id}`;
+    const url = `${window.location.origin}/activities?formation=${formation._id}`;
     const text = `${formation.title} — ${formation.location}`;
     if (platform === 'whatsapp') {
-      window.open(`https://wa.me/?text=${encodeURIComponent(`${text}\n${frontUrl}`)}`, '_blank', 'noopener,noreferrer');
+      window.open(`https://wa.me/?text=${encodeURIComponent(`${text}\n${url}`)}`, '_blank', 'noopener,noreferrer');
     } else {
-      window.open(`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(shareUrl)}`, '_blank', 'noopener,noreferrer,width=600,height=400');
+      window.open(`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(url)}`, '_blank', 'noopener,noreferrer,width=600,height=400');
     }
   };
 

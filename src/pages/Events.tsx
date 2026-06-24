@@ -29,9 +29,6 @@ interface Event {
   isFeatured: boolean;
 }
 
-const BACKEND_URL = import.meta.env.VITE_BACKEND_URL ||
-  (import.meta.env.DEV ? 'http://localhost:5005' : 'https://api-shop.fabiratrading.com');
-
 const Events = () => {
   const [events, setEvents] = useState<Event[]>([]);
   const [upcomingEvents, setUpcomingEvents] = useState<Event[]>([]);
@@ -174,19 +171,13 @@ const Events = () => {
     });
   };
 
-  const getEventShareUrl = (event: Event) =>
-    import.meta.env.DEV
-      ? `${window.location.origin}/events?event=${event.slug}`
-      : `${BACKEND_URL}/share/events/${event.slug}`;
-
   const shareEvent = (platform: 'whatsapp' | 'facebook', event: Event) => {
-    const shareUrl = getEventShareUrl(event);
-    const frontUrl = `${window.location.origin}/events?event=${event.slug}`;
+    const url = `${window.location.origin}/events?event=${event.slug}`;
     const text = `${event.title}\n${event.shortDescription}`;
     if (platform === 'whatsapp') {
-      window.open(`https://wa.me/?text=${encodeURIComponent(`${text}\n${frontUrl}`)}`, '_blank', 'noopener,noreferrer');
+      window.open(`https://wa.me/?text=${encodeURIComponent(`${text}\n${url}`)}`, '_blank', 'noopener,noreferrer');
     } else {
-      window.open(`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(shareUrl)}`, '_blank', 'noopener,noreferrer,width=600,height=400');
+      window.open(`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(url)}`, '_blank', 'noopener,noreferrer,width=600,height=400');
     }
   };
 
