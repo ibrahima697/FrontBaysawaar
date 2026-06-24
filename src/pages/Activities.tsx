@@ -1,6 +1,6 @@
 import { motion } from 'framer-motion';
 
-import { BookOpen, Users, FileText, Calendar, MapPin, ExternalLink, ChevronLeft, ChevronRight } from 'lucide-react';
+import { BookOpen, Users, FileText, Calendar, MapPin, ExternalLink, ChevronLeft, ChevronRight, MessageCircle, Facebook } from 'lucide-react';
 import ActivityCard from '../components/ActivityCard';
 import { useEffect, useState } from 'react';
 import { useAuth } from '../context/AuthContext';
@@ -107,6 +107,16 @@ const Activities = () => {
   };
 
 
+  const shareFormation = (platform: 'whatsapp' | 'facebook', formation: Formation) => {
+    const url = window.location.origin + '/activities';
+    const text = `${formation.title} — ${formation.location}`;
+    if (platform === 'whatsapp') {
+      window.open(`https://wa.me/?text=${encodeURIComponent(`${text}\n${url}`)}`, '_blank', 'noopener,noreferrer');
+    } else {
+      window.open(`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(url)}`, '_blank', 'noopener,noreferrer,width=600,height=400');
+    }
+  };
+
   return (
     <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="min-h-screen bg-gradient-to-b from-green-50 to-white">
       {/* Hero */}
@@ -177,10 +187,27 @@ const Activities = () => {
                           </div>
                         </div>
 
-                        <div className="flex items-center gap-6">
+                        <div className="flex items-center gap-4">
                           <div className="text-right hidden sm:block">
                             <p className="text-gray-900 font-black text-lg">{formation.maxSeats - formation.enrolledUsers.length}</p>
                             <p className="text-[10px] font-black uppercase tracking-widest text-gray-400">Places Disponibles</p>
+                          </div>
+
+                          <div className="flex items-center gap-2">
+                            <button
+                              onClick={() => shareFormation('whatsapp', formation)}
+                              title="Partager sur WhatsApp"
+                              className="p-2.5 rounded-xl border border-gray-200 hover:border-[#25D366] hover:bg-[#25D366]/10 text-gray-400 hover:text-[#25D366] transition-all"
+                            >
+                              <MessageCircle size={16} />
+                            </button>
+                            <button
+                              onClick={() => shareFormation('facebook', formation)}
+                              title="Partager sur Facebook"
+                              className="p-2.5 rounded-xl border border-gray-200 hover:border-[#1877F2] hover:bg-[#1877F2]/10 text-gray-400 hover:text-[#1877F2] transition-all"
+                            >
+                              <Facebook size={16} />
+                            </button>
                           </div>
 
                           {user?.role !== 'admin' && (
