@@ -1,14 +1,17 @@
 import { motion } from 'framer-motion';
 
-import { BookOpen, Users, FileText, Calendar, MapPin, ExternalLink, ChevronLeft, ChevronRight, MessageCircle, Facebook } from 'lucide-react';
+import { BookOpen, Users, FileText, Calendar, MapPin, ExternalLink, ChevronLeft, ChevronRight, MessageCircle, Facebook, Copy, Check } from 'lucide-react';
 import ActivityCard from '../components/ActivityCard';
 import { useEffect, useState } from 'react';
 import { useAuth } from '../context/AuthContext';
-import { useNavigate, Link } from 'react-router-dom';
+import { useNavigate, Link, useLocation } from 'react-router-dom';
 import { formationsAPI } from '../services/api';
 import Swal from 'sweetalert2';
 
 import { User, Formation } from '../types';
+
+const BACKEND_URL = import.meta.env.VITE_BACKEND_URL ||
+  (import.meta.env.DEV ? 'http://localhost:5005' : 'https://api-shop.fabiratrading.com');
 
 const Activities = () => {
   const { user, token } = useAuth() as { user: User | null; token: string | null };
@@ -19,7 +22,10 @@ const Activities = () => {
   const [rejectedFormationIds, setRejectedFormationIds] = useState<Set<string>>(new Set());
   const [formationsCurrentPage, setFormationsCurrentPage] = useState(1);
   const [formationsPerPage] = useState(3); // Most likely 3 or 4 for activities
+  const [copiedFormationId, setCopiedFormationId] = useState<string | null>(null);
+  const [highlightedFormationId, setHighlightedFormationId] = useState<string | null>(null);
   const navigate = useNavigate();
+  const location = useLocation();
 
   useEffect(() => {
     const fetchFormations = async () => {
@@ -28,6 +34,17 @@ const Activities = () => {
         const res = await formationsAPI.getAll();
         const allFormations: Formation[] = res.data.formations || [];
         setFormations(allFormations);
+
+        const params = new URLSearchParams(location.search);
+        const formationId = params.get('formation');
+        if (formationId && allFormations.some(f => f._id === formationId)) {
+          setHighlightedFormationId(formationId);
+          setTimeout(() => {
+            const el = document.getElementById(`formation-${formationId}`);
+            if (el) el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+          }, 300);
+          setTimeout(() => setHighlightedFormationId(null), 3000);
+        }
 
         const userId = user?._id || user?.id;
         if (userId && token) {
@@ -107,14 +124,25 @@ const Activities = () => {
   };
 
 
+  const getFormationShareUrl = (formation: Formation) =>
+    `${BACKEND_URL}/share/formations/${formation._id}`;
+
   const shareFormation = (platform: 'whatsapp' | 'facebook', formation: Formation) => {
-    const url = window.location.origin + '/activities';
+    const shareUrl = getFormationShareUrl(formation);
+    const frontUrl = `${window.location.origin}/activities?formation=${formation._id}`;
     const text = `${formation.title} — ${formation.location}`;
     if (platform === 'whatsapp') {
-      window.open(`https://wa.me/?text=${encodeURIComponent(`${text}\n${url}`)}`, '_blank', 'noopener,noreferrer');
+      window.open(`https://wa.me/?text=${encodeURIComponent(`${text}\n${frontUrl}`)}`, '_blank', 'noopener,noreferrer');
     } else {
-      window.open(`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(url)}`, '_blank', 'noopener,noreferrer,width=600,height=400');
+      window.open(`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(shareUrl)}`, '_blank', 'noopener,noreferrer,width=600,height=400');
     }
+  };
+
+  const copyFormationLink = async (formationId: string) => {
+    const url = `${window.location.origin}/activities?formation=${formationId}`;
+    await navigator.clipboard.writeText(url);
+    setCopiedFormationId(formationId);
+    setTimeout(() => setCopiedFormationId(null), 2000);
   };
 
   return (
@@ -173,7 +201,7 @@ const Activities = () => {
                 {formations
                   .slice((formationsCurrentPage - 1) * formationsPerPage, formationsCurrentPage * formationsPerPage)
                   .map(formation => (
-                    <div key={formation._id} className="group/item relative bg-gray-50/50 p-6 rounded-2xl border border-gray-100 hover:bg-white hover:shadow-xl transition-all duration-300">
+                    <div key={formation._id} id={`formation-${formation._id}`} className={`group/item relative p-6 rounded-2xl border transition-all duration-300 hover:bg-white hover:shadow-xl ${highlightedFormationId === formation._id ? 'bg-green-50 border-green-400 shadow-lg shadow-green-100' : 'bg-gray-50/50 border-gray-100'}`}>
                       <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
                         <div>
                           <h4 className="font-black text-xl mb-2 text-gray-900">{formation.title}</h4>
@@ -207,6 +235,13 @@ const Activities = () => {
                               className="p-2.5 rounded-xl border border-gray-200 hover:border-[#1877F2] hover:bg-[#1877F2]/10 text-gray-400 hover:text-[#1877F2] transition-all"
                             >
                               <Facebook size={16} />
+                            </button>
+                            <button
+                              onClick={() => copyFormationLink(formation._id)}
+                              title="Copier le lien"
+                              className={`p-2.5 rounded-xl border transition-all ${copiedFormationId === formation._id ? 'border-green-400 bg-green-50 text-green-500' : 'border-gray-200 hover:border-gray-400 hover:bg-gray-100 text-gray-400'}`}
+                            >
+                              {copiedFormationId === formation._id ? <Check size={16} /> : <Copy size={16} />}
                             </button>
                           </div>
 

@@ -4,9 +4,10 @@ import { motion, AnimatePresence } from 'framer-motion';
 import {
   Calendar, MapPin, Users, ArrowRight, Globe,
   Award, CheckCircle, X, ChevronLeft, ChevronRight,
-  Clock, MessageCircle, Facebook, Share2
+  Clock, MessageCircle, Facebook, Share2, Copy, Check
 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
+import { useLocation } from 'react-router-dom';
 import Swal from 'sweetalert2';
 import { eventsAPI } from '../services/api';
 
@@ -28,6 +29,9 @@ interface Event {
   isFeatured: boolean;
 }
 
+const BACKEND_URL = import.meta.env.VITE_BACKEND_URL ||
+  (import.meta.env.DEV ? 'http://localhost:5005' : 'https://api-shop.fabiratrading.com');
+
 const Events = () => {
   const [events, setEvents] = useState<Event[]>([]);
   const [upcomingEvents, setUpcomingEvents] = useState<Event[]>([]);
@@ -38,7 +42,9 @@ const Events = () => {
   const [selectedEvent, setSelectedEvent] = useState<Event | null>(null);
   const [showFullImage, setShowFullImage] = useState(false);
   const [isRegistering, setIsRegistering] = useState(false);
+  const [copiedLink, setCopiedLink] = useState(false);
   const { user } = useAuth();
+  const location = useLocation();
 
   const updateEventsState = (allEvents: Event[]) => {
     setEvents(allEvents);
@@ -54,14 +60,21 @@ const Events = () => {
   useEffect(() => {
     eventsAPI.getAll()
       .then(res => {
-        updateEventsState(res.data.events);
+        const allEvents: Event[] = res.data.events;
+        updateEventsState(allEvents);
         setLoading(false);
+        const params = new URLSearchParams(location.search);
+        const eventSlug = params.get('event');
+        if (eventSlug) {
+          const target = allEvents.find(e => e.slug === eventSlug);
+          if (target) setSelectedEvent(target);
+        }
       })
       .catch((err) => {
         console.error("Error fetching events:", err);
         setLoading(false);
       });
-  }, []);
+  }, [location.search]);
 
   // Scroll to events section when page changes
   const eventsGridRef = useRef<HTMLDivElement>(null);
@@ -161,14 +174,25 @@ const Events = () => {
     });
   };
 
+  const getEventShareUrl = (event: Event) =>
+    `${BACKEND_URL}/share/events/${event.slug}`;
+
   const shareEvent = (platform: 'whatsapp' | 'facebook', event: Event) => {
-    const url = window.location.origin + '/events';
+    const shareUrl = getEventShareUrl(event);
+    const frontUrl = `${window.location.origin}/events?event=${event.slug}`;
     const text = `${event.title}\n${event.shortDescription}`;
     if (platform === 'whatsapp') {
-      window.open(`https://wa.me/?text=${encodeURIComponent(`${text}\n${url}`)}`, '_blank', 'noopener,noreferrer');
+      window.open(`https://wa.me/?text=${encodeURIComponent(`${text}\n${frontUrl}`)}`, '_blank', 'noopener,noreferrer');
     } else {
-      window.open(`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(url)}`, '_blank', 'noopener,noreferrer,width=600,height=400');
+      window.open(`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(shareUrl)}`, '_blank', 'noopener,noreferrer,width=600,height=400');
     }
+  };
+
+  const copyEventLink = async (event: Event) => {
+    const url = `${window.location.origin}/events?event=${event.slug}`;
+    await navigator.clipboard.writeText(url);
+    setCopiedLink(true);
+    setTimeout(() => setCopiedLink(false), 2000);
   };
 
   const stats = [
@@ -789,6 +813,14 @@ const Events = () => {
                     className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-white/5 hover:bg-[#1877F2]/20 border border-white/10 hover:border-[#1877F2]/40 text-[10px] font-black text-gray-400 hover:text-[#1877F2] transition-all uppercase tracking-wider"
                   >
                     <Facebook size={13} /> Facebook
+                  </button>
+                  <button
+                    onClick={() => selectedEvent && copyEventLink(selectedEvent)}
+                    title="Copier le lien"
+                    className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg border text-[10px] font-black transition-all uppercase tracking-wider ${copiedLink ? 'bg-green-500/20 border-green-500/40 text-green-400' : 'bg-white/5 border-white/10 text-gray-400 hover:bg-white/10 hover:border-white/20 hover:text-white'}`}
+                  >
+                    {copiedLink ? <Check size={13} /> : <Copy size={13} />}
+                    {copiedLink ? 'Copié !' : 'Copier'}
                   </button>
                 </div>
                 <div className="flex items-center justify-between gap-4">
